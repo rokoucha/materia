@@ -1,0 +1,7 @@
+*.b64
+*.ign
+*.controller.bu
+*.worker.bu
+
+nodes/*
+!.gitkeep
