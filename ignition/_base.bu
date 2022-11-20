@@ -40,6 +40,10 @@ storage:
       mode: 0644
     - path: /var/lib/systemd/linger/core
       mode: 0644
+    - path: /var/home/core/.env
+      contents:
+        local: .env
+      mode: 0600
   links:
     - path: /etc/localtime
       target: /usr/share/zoneinfo/Asia/Tokyo
@@ -86,6 +90,41 @@ systemd:
             --volume=/run/systemd:/run/systemd \
             --volume=/sys/fs/cgroup:/sys/fs/cgroup \
             open-vm-tools
+        ExecStop=/usr/bin/podman stop --ignore --cidfile=%t/%n.ctr-id
+        ExecStopPost=/usr/bin/podman rm -f --ignore --cidfile=%t/%n.ctr-id
+        Type=notify
+        NotifyAccess=all
+
+        [Install]
+        WantedBy=default.target
+    - name: add-cloudflare-dns-record.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Add cloudflare dns record
+        Wants=network-online.target
+        After=network-online.target systemd-machine-id-commit.service
+        ConditionPathExists=!/var/lib/add-cloudflare-dns-record.stamp
+
+        [Service]
+        Environment=PODMAN_SYSTEMD_UNIT=%n
+        Restart=on-failure
+        TimeoutStopSec=70
+        ExecStartPre=/bin/rm -f %t/%n.ctr-id
+        ExecStart=/usr/bin/podman run \
+            --cidfile=%t/%n.ctr-id \
+            --cgroups=no-conmon \
+            --rm \
+            --sdnotify=conmon \
+            --detach \
+            --replace \
+            --name=cloudflare-ddns \
+            --net=host \
+            --env-file /var/home/core/.env \
+            ghcr.io/rokoucha/cloudflare-ddns:latest \
+            --hostname=%H \
+            --subdomain=luminous \
+            ggrel.net
         ExecStop=/usr/bin/podman stop --ignore --cidfile=%t/%n.ctr-id
         ExecStopPost=/usr/bin/podman rm -f --ignore --cidfile=%t/%n.ctr-id
         Type=notify

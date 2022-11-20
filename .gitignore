@@ -2,6 +2,4 @@
 *.ign
 *.controller.bu
 *.worker.bu
-
-nodes/*
-!.gitkeep
+.env

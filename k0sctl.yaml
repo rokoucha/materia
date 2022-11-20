@@ -1,0 +1,55 @@
+apiVersion: k0sctl.k0sproject.io/v1beta1
+kind: Cluster
+metadata:
+  name: luminous-witches
+spec:
+  hosts:
+    - role: controller
+      privateAddress: 172.16.2.31
+      ssh:
+        address: gracie.luminous.ggrel.net
+        user: core
+        port: 22
+        keyPath: ~/.ssh/id_ed25519
+    - role: worker
+      privateAddress: 172.16.2.32
+      ssh:
+        address: ginny.luminous.ggrel.net
+        user: core
+        port: 22
+        keyPath: ~/.ssh/id_ed25519
+  k0s:
+    version: 1.25.4+k0s.0
+    dynamicConfig: false
+    config:
+      apiVersion: k0s.k0sproject.io/v1beta1
+      kind: ClusterConfig
+      metadata:
+        name: luminous-witches
+      spec:
+        api:
+          address: 172.16.2.31
+          k0sApiPort: 9443
+          port: 6443
+          sans:
+            - luminous.ggrel.net
+            - gracie.luminous.ggrel.net
+        network:
+          calico:
+            mode: "bird"
+          clusterDomain: cluster.local
+          dualStack:
+            enabled: true
+            IPv6podCIDR: "fd00::/108"
+            IPv6serviceCIDR: "fd01::/108"
+          kubeProxy:
+            mode: iptables
+          podCIDR: 10.244.0.0/16
+          provider: calico
+          serviceCIDR: 10.96.0.0/12
+        storage:
+          type: kine
+          kine:
+            dataSource: "sqlite:///var/lib/k0s/db/state.db?more=rwc&_journal=WAL&cache=shared"
+        telemetry:
+          enabled: true

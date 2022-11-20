@@ -1,17 +1,19 @@
 # luminous
 
-Orchestrating better containers
+Everyone's World and Flying Skyhigh
 
 ## Nodes
 
-- 1x Control plane
-  - Gracie
+- Control plane
+  - gracie
     - 2 vCPU
     - 2 GB RAM
-    - 20 GB SSD
-- 1x Worker
+    - 15 GB SSD
+- Worker
   - ginny
     - 4 vCPU
     - 8 GB RAM
-    - 20 GB SSD
+    - 15 GB SSD
     - 40 GB HDD
+
+gzip+base64

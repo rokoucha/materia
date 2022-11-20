@@ -56,28 +56,3 @@ storage:
           }
       mode: 0600
       overwrite: true
-    - path: /etc/k0s/k0s.yaml
-      contents:
-        local: k0s.yaml
-      mode: 0644
-systemd:
-  units:
-    - name: setup-k0s.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Setup k0s
-        Wants=network-online.target
-        After=network-online.target systemd-machine-id-commit.service
-        ConditionPathExists=!/var/lib/setup-k0s.stamp
-
-        [Service]
-        Type=oneshot
-        RemainAfterExit=yes
-        ExecStart=/bin/sh -c "curl -sSLf https://get.k0s.sh | sh"
-        ExecStart=/usr/local/bin/k0s install controller
-        ExecStart=/usr/local/bin/k0s start
-        ExecStart=/bin/touch /var/lib/setup-k0s.stamp
-
-        [Install]
-        WantedBy=multi-user.target
