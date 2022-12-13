@@ -44,6 +44,10 @@ storage:
 
               # Allow k0s controller
               tcp dport { 2380, 6443, 8132, 9443, 10250 } accept;
+
+              # Allow Linux local ports
+              tcp dport 32768-61000 accept;
+              udp dport 32768-61000 accept;
             }
 
             chain forward {

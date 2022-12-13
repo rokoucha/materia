@@ -3,3 +3,4 @@
 *.controller.bu
 *.worker.bu
 .env
+/kubeconfig

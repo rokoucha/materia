@@ -16,4 +16,13 @@ Everyone's World and Flying Skyhigh
     - 15 GB SSD
     - 40 GB HDD
 
-gzip+base64
+## How to setup
+
+- Options
+
+  - Ignition config data
+    - Paste `*.worker.b64`
+  - Ignition config data encoding
+    - `gzip+base64`
+
+- `k0sctl apply`
