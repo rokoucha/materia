@@ -125,7 +125,7 @@ systemd:
           --hostname=%H \
           --subdomain=luminous \
           ggrel.net
-        ExecStart=/usr/bin/touch /var/lib/%N.stamp
+        ExecStartPost=/usr/bin/touch /var/lib/%N.stamp
         ExecStop=/usr/bin/podman stop \
           --ignore -t 10 \
           --cidfile=%t/%n.ctr-id
