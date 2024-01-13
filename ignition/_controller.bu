@@ -45,6 +45,10 @@ storage:
               # Allow k0s controller
               tcp dport { 2380, 6443, 8132, 9443, 10250 } accept;
 
+              # Allow cilium controller
+              tcp dport { 2379-2380, 4240, 4244-4255, 4250-4251, 6060-6062, 9878-9891, 9893, 9962-9964 } accept;
+              udp dport { 8472, 51871 } accept;
+
               # Allow Linux local ports
               tcp dport 32768-61000 accept;
               udp dport 32768-61000 accept;

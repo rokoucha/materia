@@ -1,6 +1,7 @@
-*.b64
-*.ign
-*.controller.bu
-*.worker.bu
 .env
+.env.*
+*.b64
+*.controller.bu
+*.ign
+*.worker.bu
 /kubeconfig

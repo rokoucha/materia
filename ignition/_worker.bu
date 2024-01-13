@@ -44,23 +44,29 @@ storage:
 
               # Allow k0s worker
               tcp dport { 179, 8132, 10250 } accept;
-              udp dport { 4789 } accept;
+              udp dport 4789 accept;
+
+              # Allow cilium controller
+              tcp dport { 4240, 4244-4255, 4250-4251, 6060-6062, 9878-9891, 9893, 9962-9964 } accept;
+              udp dport { 8472, 51871 } accept;
 
               # Allow Linux local ports
               tcp dport 32768-61000 accept;
               udp dport 32768-61000 accept;
 
               # Allow pod and service IP
-              ip saddr { 10.244.0.0/16, 10.96.0.0/12 } accept;
-              ip6 saddr { fd00::/108, fd01::/108 } accept;
+              ip daddr { 10.244.0.0/16, 10.96.0.0/12 } accept;
+              ip6 daddr { fd00::/108, fd01::/108 } accept;
             }
 
             chain forward {
               type filter hook forward priority 0; policy drop;
 
               # Allow pod and service IP
-              ip { daddr, saddr } { 10.244.0.0/16, 10.96.0.0/12 } accept;
-              ip6 { daddr, addr } { fd00::/108, fd01::/108 } accept;
+              ip saddr { 10.244.0.0/16, 10.96.0.0/12 } accept;
+              ip daddr { 10.244.0.0/16, 10.96.0.0/12 } accept;
+              ip6 saddr { fd00::/108, fd01::/108 } accept;
+              ip6 daddr { fd00::/108, fd01::/108 } accept;
             }
 
             chain output {

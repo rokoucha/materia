@@ -10,16 +10,15 @@ spec:
         address: gracie.luminous.ggrel.net
         user: core
         port: 22
-        keyPath: ~/.ssh/id_ed25519
     - role: worker
       privateAddress: 172.16.2.32
       ssh:
         address: ginny.luminous.ggrel.net
         user: core
         port: 22
-        keyPath: ~/.ssh/id_ed25519
   k0s:
-    version: 1.25.4+k0s.0
+    version: null
+    versionChannel: stable
     dynamicConfig: false
     config:
       apiVersion: k0s.k0sproject.io/v1beta1
@@ -35,17 +34,15 @@ spec:
             - luminous.ggrel.net
             - gracie.luminous.ggrel.net
         network:
-          calico:
-            mode: "bird"
-          clusterDomain: cluster.local
+          clusterDomain: luminous.ggrel.net
           dualStack:
             enabled: true
             IPv6podCIDR: "fd00::/108"
             IPv6serviceCIDR: "fd01::/108"
           kubeProxy:
-            mode: iptables
+            disabled: true
           podCIDR: 10.244.0.0/16
-          provider: calico
+          provider: custom
           serviceCIDR: 10.96.0.0/12
         storage:
           type: kine
