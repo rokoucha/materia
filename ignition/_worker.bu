@@ -75,3 +75,12 @@ storage:
           }
       mode: 0600
       overwrite: true
+    - path: /etc/modules-load.d/cilium.conf
+      contents:
+        inline: |
+          cls_bpf
+          sch_ingress
+          xt_mark
+          xt_socket
+          xt_TPROXY
+      mode: 0660
