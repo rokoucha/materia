@@ -8,7 +8,7 @@ Everyone's World and Flying Skyhigh
   - gracie
     - 2 vCPU
     - 2 GB RAM
-    - 15 GB SSD
+    - 10 GB SSD
 - Worker
   - ginny
     - 2 vCPU

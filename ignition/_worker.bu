@@ -46,9 +46,12 @@ storage:
               tcp dport { 179, 8132, 10250 } accept;
               udp dport 4789 accept;
 
-              # Allow cilium controller
+              # Allow cilium
               tcp dport { 4240, 4244-4255, 4250-4251, 6060-6062, 9878-9891, 9893, 9962-9964 } accept;
               udp dport { 8472, 51871 } accept;
+
+              # Allow cilium connectivity test required ports
+              tcp dport 80 accept;
 
               # Allow Linux local ports
               tcp dport 32768-61000 accept;
