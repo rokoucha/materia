@@ -1,38 +1,64 @@
-cluster:
-  name: luminous-witches
-hubble:
-  peerService:
-    clusterDomain: luminous.ggrel.net
-  relay:
-    enabled: true
-  ui:
-    enabled: true
-    frontend:
-      server:
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+spec:
+  destination:
+    name: ""
+    namespace: kube-system
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    chart: cilium
+    helm:
+      values: |
+        cluster:
+          name: luminous-witches
+        hubble:
+          peerService:
+            clusterDomain: luminous.ggrel.net
+          relay:
+            enabled: true
+          ui:
+            enabled: true
+            ingress:
+              annotations:
+                nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+                nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+              enabled: true
+              className: nginx
+              hosts: [""]
+              paths:
+                - /hubble
+            baseUrl: /hubble/
+        ipam:
+          operator:
+            clusterPoolIPv4MaskSize: 24
+            clusterPoolIPv4PodCIDRList:
+              - 10.244.0.0/16
+            clusterPoolIPv6MaskSize: 120
+            clusterPoolIPv6PodCIDRList:
+              - fd00::/108
+        ipv4:
+          enabled: true
         ipv6:
           enabled: true
-ipam:
-  operator:
-    clusterPoolIPv4MaskSize: 24
-    clusterPoolIPv4PodCIDRList:
-    - 10.244.0.0/16
-    clusterPoolIPv6MaskSize: 120
-    clusterPoolIPv6PodCIDRList:
-    - fd00::/108
-ipv4:
-  enabled: true
-ipv6:
-  enabled: true
-k8sServiceHost: gracie.luminous.ggrel.net
-k8sServicePort: 6443
-kubeProxyReplacement: strict
-operator:
-  replicas: 1
-rollOutCiliumPods: true
-routingMode: tunnel
-serviceAccounts:
-  cilium:
-    name: cilium
-  operator:
-    name: cilium-operator
-tunnelProtocol: vxlan
+        k8sServiceHost: gracie.luminous.ggrel.net
+        k8sServicePort: 6443
+        kubeProxyReplacement: strict
+        operator:
+          replicas: 1
+        rollOutCiliumPods: true
+        routingMode: tunnel
+        serviceAccounts:
+          cilium:
+            name: cilium
+          operator:
+            name: cilium-operator
+        tunnelProtocol: vxlan
+    path: ""
+    repoURL: https://helm.cilium.io/
+    targetRevision: 1.14.6
+  sources: []
+  syncPolicy:
+    automated: {}

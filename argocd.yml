@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  plugin:
+    name: argocd-vault-plugin
+  project: default
+  source:
+    chart: argo-cd
+    helm:
+      values: |
+        configs:
+          params:
+            "server.rootpath": argocd
+        server:
+          ingress:
+            annotations:
+              nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+              nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+              nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+            enabled: true
+            https: true
+            ingressClassName: nginx
+            paths:
+              - /argocd
+    repoURL: https://argoproj.github.io/argo-helm
+    targetRevision: 5.53.2
+  syncPolicy:
+    automated: {}
+    syncOptions:
+      - CreateNamespace=true
