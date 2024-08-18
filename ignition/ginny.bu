@@ -7,20 +7,22 @@ storage:
       mode: 0644
       contents:
         inline: ginny
-    - path: /etc/NetworkManager/system-connections/eth0.nmconnection
+    - path: /etc/NetworkManager/system-connections/enp1s0.nmconnection
       contents:
         inline: |
           [connection]
-          interface-name=ens192
+          interface-name=enp1s0
           type=ethernet
 
           [ipv4]
           addresses=172.16.2.32
-          dns=172.16.2.1;1.1.1.1
+          dns=172.16.2.1
           gateway=172.16.2.1
           method=manual
 
           [ipv6]
+          addr-gen-mode=eui64
+          may-fail=false
           method=auto
       mode: 0600
       overwrite: true
