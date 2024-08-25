@@ -28,7 +28,7 @@ spec:
             paths:
               - /argocd
     repoURL: https://argoproj.github.io/argo-helm
-    targetRevision: 5.53.2
+    targetRevision: 7.4.4
   syncPolicy:
     automated: {}
     syncOptions:

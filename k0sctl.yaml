@@ -1,19 +1,17 @@
 apiVersion: k0sctl.k0sproject.io/v1beta1
 kind: Cluster
 metadata:
-  name: luminous-witches
+  name: elements-cluster
 spec:
   hosts:
     - role: controller
-      privateAddress: 172.16.2.31
       ssh:
-        address: gracie.luminous.ggrel.net
+        address: boron.dns.ggrel.net
         user: core
         port: 22
     - role: worker
-      privateAddress: 172.16.2.32
       ssh:
-        address: ginny.luminous.ggrel.net
+        address: carbon.dns.ggrel.net
         user: core
         port: 22
   k0s:
@@ -24,18 +22,19 @@ spec:
       apiVersion: k0s.k0sproject.io/v1beta1
       kind: ClusterConfig
       metadata:
-        name: luminous-witches
+        name: elements-cluster
       spec:
         api:
-          address: 172.16.2.31
+          address: boron.dns.ggrel.net
           k0sApiPort: 9443
           port: 6443
           sans:
-            - 172.16.2.31
-            - luminous.ggrel.net
-            - gracie.luminous.ggrel.net
+            - elements.ggrel.net
+            - boron.dns.ggrel.net
+          extraArgs:
+            service-node-port-range: 80-32767
         network:
-          clusterDomain: luminous.ggrel.net
+          clusterDomain: elements.ggrel.net
           dualStack:
             enabled: true
             IPv6podCIDR: "fd00::/108"

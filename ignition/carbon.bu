@@ -6,7 +6,7 @@ storage:
       overwrite: true
       mode: 0644
       contents:
-        inline: gracie
+        inline: carbon
     - path: /etc/NetworkManager/system-connections/enp1s0.nmconnection
       contents:
         inline: |
@@ -15,10 +15,10 @@ storage:
           type=ethernet
 
           [ipv4]
-          addresses=172.16.2.31
+          addresses=172.16.2.32
           dns=172.16.2.1
           gateway=172.16.2.1
-          method=manual
+          method=auto
 
           [ipv6]
           addr-gen-mode=eui64

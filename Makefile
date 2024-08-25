@@ -5,8 +5,8 @@ YQ_MERGE = yq eval-all '. as $$item ireduce ({}; . *+ $$item )'
 
 BASE_DIR = ./ignition/
 
-CONTROLLERS = gracie
-WORKERS = ginny
+CONTROLLERS = boron
+WORKERS = carbon
 
 BASE_CONFIG = _base.bu
 CONTROLLER_BASE_CONFIG = _controller.bu
