@@ -1,7 +1,7 @@
 apiVersion: k0sctl.k0sproject.io/v1beta1
 kind: Cluster
 metadata:
-  name: elements-cluster
+  name: materia-cluster
 spec:
   hosts:
     - role: controller
@@ -22,19 +22,19 @@ spec:
       apiVersion: k0s.k0sproject.io/v1beta1
       kind: ClusterConfig
       metadata:
-        name: elements-cluster
+        name: materia-cluster
       spec:
         api:
-          address: boron.dns.ggrel.net
+          address: materia-cluster.ggrel.net
           k0sApiPort: 9443
           port: 6443
           sans:
-            - elements.ggrel.net
+            - materia-cluster.ggrel.net
             - boron.dns.ggrel.net
           extraArgs:
             service-node-port-range: 80-32767
         network:
-          clusterDomain: elements.ggrel.net
+          clusterDomain: materia-cluster.ggrel.net
           dualStack:
             enabled: true
             IPv6podCIDR: "fd00::/108"

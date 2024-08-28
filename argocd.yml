@@ -13,20 +13,27 @@ spec:
     chart: argo-cd
     helm:
       values: |
+        global:
+          domain: carbon.dns.ggrel.net
+
         configs:
           params:
-            "server.rootpath": argocd
+            server.insecure: true
+            server.basehref: /argocd/
+            server.rootpath: argocd
+
+        certificate:
+          enabled: true
+
         server:
           ingress:
+            enabled: true
+            ingressClassName: nginx
             annotations:
               nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
               nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-              nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-            enabled: true
-            https: true
-            ingressClassName: nginx
-            paths:
-              - /argocd
+            path: /argocd/
+            tls: true
     repoURL: https://argoproj.github.io/argo-helm
     targetRevision: 7.4.4
   syncPolicy:
