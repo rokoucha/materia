@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: haproxy-controller
 
 resources:
-  - https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/v3.0.2/deploy/kustomization.yaml
+  - https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/v3.0.2/deploy/haproxy-ingress.yaml
 
 patches:
   - path: ./patches/haproxy-ingress-cm.yaml
