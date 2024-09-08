@@ -11,9 +11,10 @@ metadata:
 spec:
   ingressClassName: haproxy
   rules:
-    - http:
+    - host: materia.ggrel.net
+      http:
         paths:
-          - path: /argocd/
+          - path: /argocd
             pathType: Prefix
             backend:
               service:
