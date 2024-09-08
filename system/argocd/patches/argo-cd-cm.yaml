@@ -6,6 +6,13 @@ metadata:
 
 data:
   server.insecure: "true"
-  server.basehref: "/argocd/"
-  server.rootpath: argocd
+  server.basehref: /argocd
+  server.rootpath: /argocd
   kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
+  resource.customizations: |
+    networking.k8s.io/Ingress:
+      health.lua: |
+        hs = {}
+        hs.status = "Healthy"
+        hs.message = "Probably just fine"
+        return hs
