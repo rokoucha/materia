@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: haproxy-controller
+
+resources:
+  - https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/v3.0.2/deploy/kustomization.yaml
+
+patches:
+  - path: ./patches/haproxy-ingress-cm.yaml
+  - path: ./patches/service.yaml
+
+images:
+  - name: haproxytech/kubernetes-ingress
+    newTag: 3.0.2
