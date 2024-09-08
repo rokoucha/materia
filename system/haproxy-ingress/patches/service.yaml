@@ -11,6 +11,10 @@ spec:
   selector:
     run: haproxy-ingress
   type: NodePort
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ipFamilyPolicy: RequireDualStack
   ports:
     - name: http
       nodePort: 80
