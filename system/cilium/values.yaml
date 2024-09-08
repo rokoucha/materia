@@ -1,8 +1,8 @@
 cluster:
-  name: elements-cluster
+  name: materia-cluster
 hubble:
   peerService:
-    clusterDomain: elements.ggrel.net
+    clusterDomain: materia.ggrel.net
   relay:
     enabled: true
   ui:
