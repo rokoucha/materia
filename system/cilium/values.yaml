@@ -2,7 +2,7 @@ cluster:
   name: materia-cluster
 hubble:
   peerService:
-    clusterDomain: materia.ggrel.net
+    clusterDomain: materia-cluster.ggrel.net
   relay:
     enabled: true
   ui:
