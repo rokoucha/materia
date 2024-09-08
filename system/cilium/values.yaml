@@ -6,13 +6,13 @@ hubble:
   relay:
     enabled: true
   ui:
-    enabled: false
+    enabled: true
     ingress:
       annotations:
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+        haproxy.org/ssl-redirect: "true"
+        haproxy.org/ssl-passthrough: "true"
       enabled: true
-      className: nginx
+      className: haproxy
       hosts: [""]
       paths:
         - /hubble
