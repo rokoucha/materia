@@ -5,7 +5,7 @@ metadata:
   name: argocd-cm
 
 data:
-  server.insecure: true
+  server.insecure: "true"
   server.basehref: /argocd/
   server.rootpath: argocd
   kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
