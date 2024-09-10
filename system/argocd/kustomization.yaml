@@ -4,8 +4,7 @@ kind: Kustomization
 namespace: argocd
 
 resources:
-  - ./resources/ingress-grpc.yaml
-  - ./resources/ingress-http.yaml
+  - ./resources/ingress.yaml
   - ./resources/namespace.yaml
   - https://raw.githubusercontent.com/argoproj/argo-cd/v2.12.3/manifests/install.yaml
 
