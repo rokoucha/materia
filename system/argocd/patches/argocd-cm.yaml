@@ -5,9 +5,6 @@ metadata:
   name: argocd-cm
 
 data:
-  server.insecure: "true"
-  server.basehref: /argocd
-  server.rootpath: /argocd
   kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
   resource.customizations: |
     networking.k8s.io/Ingress:
