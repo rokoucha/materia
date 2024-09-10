@@ -2,11 +2,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 
 metadata:
-  name: argocd-server-ingress
+  name: argocd-server-http-ingress
   namespace: argocd
   annotations:
     haproxy.org/ssl-redirect: "true"
-    haproxy.org/ssl-passthrough: "true"
+    #haproxy.org/ssl-passthrough: "true"
     haproxy.org/path-rewrite: /argocd/(.*) /\1
 
 spec:
@@ -21,4 +21,7 @@ spec:
               service:
                 name: argocd-server
                 port:
-                  name: https
+                  name: http
+      tls:
+        - hosts:
+            - materia.ggrel.net
