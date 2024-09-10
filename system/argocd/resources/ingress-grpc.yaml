@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: argocd-server-grpc-ingress
+  namespace: argocd
+
+spec:
+  ingressClassName: haproxy
+  rules:
+    - host: materia.ggrel.net
+      http:
+        paths:
+          - path: /argocd
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  name: https
+  tls: {}
