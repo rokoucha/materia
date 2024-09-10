@@ -6,5 +6,5 @@ metadata:
 
 data:
   server.insecure: "true"
-  server.basehref: /argocd
-  server.rootpath: /argocd
+  server.basehref: /argocd/
+  server.rootpath: argocd
