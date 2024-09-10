@@ -10,10 +10,10 @@ hubble:
     ingress:
       annotations:
         haproxy.org/ssl-redirect: "true"
-        haproxy.org/ssl-passthrough: "true"
       enabled: true
       className: haproxy
-      hosts: [""]
+      hosts:
+        - materia.ggrel.net
       paths:
         - /hubble
     baseUrl: /hubble/
