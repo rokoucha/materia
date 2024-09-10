@@ -6,7 +6,7 @@ metadata:
   namespace: haproxy-controller
 
 data:
-  global-config-snippet: |
+  global-config-snippet: >
     # generated 2024-09-08, Mozilla Guideline v5.7, HAProxy 2.1, OpenSSL 1.1.1k, intermediate configuration
     # https://ssl-config.mozilla.org/#server=haproxy&version=2.1&config=intermediate&openssl=1.1.1k&guideline=5.7
 
