@@ -6,7 +6,6 @@ metadata:
   namespace: argocd
   annotations:
     haproxy.org/ssl-redirect: "true"
-    #haproxy.org/path-rewrite: /argocd/(.*) /\1
 
 spec:
   ingressClassName: haproxy
