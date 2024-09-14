@@ -1,0 +1,26 @@
+kind: DaemonSet
+apiVersion: apps/v1
+
+metadata:
+  name: synology-csi-node
+  namespace: synology-csi
+
+spec:
+  selector:
+    matchLabels:
+      app: synology-csi-node
+  template:
+    spec:
+      volumes:
+        - name: kubelet-dir
+          hostPath:
+            path: /var/lib/k0s/kubelet
+            type: Directory
+        - name: plugin-dir
+          hostPath:
+            path: /var/lib/k0s/kubelet/plugins/csi.san.synology.com/
+            type: DirectoryOrCreate
+        - name: registration-dir
+          hostPath:
+            path: /var/lib/k0s/kubelet/plugins_registry
+            type: Directory
