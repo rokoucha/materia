@@ -8,7 +8,7 @@ metadata:
 
 provisioner: csi.san.synology.com
 parameters:
-  fstype: btrfs
+  fsType: btrfs
   dsm: "172.16.2.17"
   location: /volume1
   formatOptions: --nodiscard
