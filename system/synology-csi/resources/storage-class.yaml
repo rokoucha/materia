@@ -12,5 +12,5 @@ parameters:
   dsm: "172.16.2.17"
   location: /volume1
   formatOptions: --nodiscard
-reclaimPolicy: Retain
+reclaimPolicy: Delete
 allowVolumeExpansion: true

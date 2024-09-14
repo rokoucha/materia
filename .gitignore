@@ -8,3 +8,4 @@
 /bootstrap/1password-credentials.json
 /bootstrap/1password.env
 charts/
+/system/synology-csi/client-info.yml
