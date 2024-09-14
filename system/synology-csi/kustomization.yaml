@@ -10,6 +10,7 @@ resources:
   - https://raw.githubusercontent.com/SynologyOpenSource/synology-csi/main/deploy/kubernetes/v1.20/namespace.yml
   - https://raw.githubusercontent.com/SynologyOpenSource/synology-csi/main/deploy/kubernetes/v1.20/node.yml
   - https://raw.githubusercontent.com/SynologyOpenSource/synology-csi/main/deploy/kubernetes/v1.20/storage-class.yml
+  - ./resources/storage-class.yaml
 
 patches:
   - path: ./patches/node-k0s.yaml
