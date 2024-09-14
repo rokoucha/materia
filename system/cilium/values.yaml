@@ -26,7 +26,7 @@ ipv4:
   enabled: true
 ipv6:
   enabled: true
-k8sServiceHost: boron.dns.ggrel.net
+k8sServiceHost: materia-cluster.ggrel.net
 k8sServicePort: 6443
 kubeProxyReplacement: true
 operator:
