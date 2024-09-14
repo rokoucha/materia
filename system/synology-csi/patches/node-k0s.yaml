@@ -15,7 +15,7 @@ spec:
         - name: csi-driver-registrar
           env:
             - name: REGISTRATION_PATH
-              value: /var/lib/k0s/kubelet/plugins/csi.synology.com/csi.sock
+              value: /var/lib/k0s/kubelet/plugins/csi.san.synology.com/csi.sock
         - name: csi-plugin
           volumeMounts:
             - name: kubelet-dir
