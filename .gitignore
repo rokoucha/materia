@@ -5,3 +5,6 @@
 *.ign
 *.worker.bu
 /kubeconfig
+/bootstrap/1password-credentials.json
+/bootstrap/1password.env
+charts/

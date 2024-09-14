@@ -41,6 +41,8 @@ ls -laZ /var/lib/libvirt/boot/carbon.worker.ign
 sudo virt-install --connect="qemu:///system" --name="carbon" --vcpus="2" --memory="4096" --boot uefi --os-variant="fedora-coreos-stable" --import --graphics=none --disk="size=30,backing_store=/var/lib/libvirt/images/fedora-coreos-40.20240728.3.0-qemu.x86_64.qcow2" --network type=direct,source=enp2s0f0 --qemu-commandline="-fw_cfg name=opt/com.coreos/config,file=/var/lib/libvirt/boot/carbon.worker.ign"
 ```
 
+kubectl kustomize --enable-helm ./bootstrap | kubectl apply -f -
+
 ### Deploy k0s by k0sctl
 
 `SSH_KNOWN_HOSTS=/dev/null k0sctl apply --no-wait`
