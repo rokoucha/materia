@@ -20,4 +20,4 @@ data:
     # curl https://ssl-config.mozilla.org/ffdhe2048.txt > /path/to/dhparam
     #ssl-dh-param-file /path/to/dhparam
 
-  ssl-certificate: tls-certificate-default
+  ssl-certificate: haproxy-controller/materia-ggrel-net-tls
