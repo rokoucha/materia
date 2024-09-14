@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+
+metadata:
+  name: materia-ggrel-net-certificate
+
+spec:
+  secretName: materia-ggrel-net-tls
+  commonName: materia.ggrel.net
+  privateKey:
+    algorithm: ECDSA
+    size: 384
+  dnsNames:
+    - materia.ggrel.net
+    - "*.materia.ggrel.net"
+  issuerRef:
+    name: letsencrypt-issuer
+    kind: ClusterIssuer
