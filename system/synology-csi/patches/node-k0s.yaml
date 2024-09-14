@@ -11,6 +11,16 @@ spec:
       app: synology-csi-node
   template:
     spec:
+      containers:
+        - name: csi-driver-registrar
+          env:
+            - name: REGISTRATION_PATH
+              value: /var/lib/k0s/kubelet/plugins/csi.synology.com/csi.sock
+        - name: csi-plugin
+          volumeMounts:
+            - name: kubelet-dir
+              mountPath: /var/lib/k0s/kubelet
+              mountPropagation: Bidirectional
       volumes:
         - name: kubelet-dir
           hostPath:
