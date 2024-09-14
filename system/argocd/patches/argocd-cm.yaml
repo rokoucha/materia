@@ -16,3 +16,10 @@ data:
         hs.status = "Healthy"
         hs.message = "Probably just fine"
         return hs
+  resource.exclusions: |
+    - apiGroups:
+        - cilium.io
+      kinds:
+        - CiliumIdentity
+      clusters:
+        - "*"
