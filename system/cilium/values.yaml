@@ -10,14 +10,10 @@ hubble:
     ingress:
       annotations:
         haproxy.org/ssl-redirect: "true"
-        haproxy.org/path-rewrite: /hubble/(.*) /\1
       enabled: true
       className: haproxy
       hosts:
-        - materia.ggrel.net
-      paths:
-        - /hubble
-    baseUrl: /hubble/
+        - hubble.materia.ggrel.net
 ipam:
   operator:
     clusterPoolIPv4MaskSize: 24
