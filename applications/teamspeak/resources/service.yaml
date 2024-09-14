@@ -8,6 +8,10 @@ spec:
   selector:
     app: default
   type: NodePort
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ipFamilyPolicy: RequireDualStack
   ports:
     - name: voice
       port: 9987
