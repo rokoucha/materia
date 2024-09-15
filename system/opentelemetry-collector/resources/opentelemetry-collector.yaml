@@ -21,8 +21,15 @@ spec:
     exporters:
       otlp/mackerel:
         endpoint: otlp.mackerelio.com:4317
+        compression: gzip
         headers:
           Mackerel-Api-Key: ${env:MACKEREL_APIKEY}
+
+      otlphttp/vaxila:
+        endpoint: https://otlp-vaxila.mackerelio.com
+        headers:
+          Accept: "*/*"
+          Mackerel-Api-Key: ${env:VAXILA_APIKEY}
 
     service:
       telemetry:
@@ -35,6 +42,13 @@ spec:
           receivers: [otlp]
           processors: [batch]
           exporters: [otlp/mackerel]
+
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [otlphttp/vaxila]
   envFrom:
     - secretRef:
         name: mackerel-apikey
+    - secretRef:
+        name: vaxila-apikey
