@@ -6,7 +6,13 @@ metadata:
 
 spec:
   config: |
-    receivers: []
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
 
     processors:
       batch:
@@ -26,7 +32,7 @@ spec:
 
       pipelines:
         metrics:
-          receivers: []
+          receivers: [otlp]
           processors: [batch]
           exporters: [otlp/mackerel]
   envFrom:
