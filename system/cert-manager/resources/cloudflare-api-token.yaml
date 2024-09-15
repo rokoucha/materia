@@ -3,6 +3,7 @@ kind: OnePasswordItem
 
 metadata:
   name: cloudflare-api-token-secret
+  namespace: cert-manager
 
 spec:
   itemPath: vaults/materia/items/certbot-cloudflare

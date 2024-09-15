@@ -3,6 +3,7 @@ kind: ClusterIssuer
 
 metadata:
   name: letsencrypt-issuer
+  namespace: cert-manager
 
 spec:
   acme:
