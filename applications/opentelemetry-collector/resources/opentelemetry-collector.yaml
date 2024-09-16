@@ -48,7 +48,7 @@ spec:
         metrics:
           receivers: [otlp, prometheus]
           processors: [batch]
-          exporters: [debug, otlp/mackerel]
+          exporters: [otlp/mackerel]
         traces:
           receivers: [otlp]
           processors: [batch]
