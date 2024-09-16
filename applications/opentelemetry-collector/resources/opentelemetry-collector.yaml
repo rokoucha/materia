@@ -1,11 +1,11 @@
-apiVersion: opentelemetry.io/v1alpha1
+apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 
 metadata:
   name: opentelemetry-collector
 
 spec:
-  config: |
+  config:
     receivers:
       otlp:
         protocols:
