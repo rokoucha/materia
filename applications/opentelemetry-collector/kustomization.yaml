@@ -4,8 +4,7 @@ kind: Kustomization
 namespace: opentelemetry-collector
 
 resources:
-  []
-  # - ./resources/mackerel-apikey.yaml
-  # - ./resources/namespace.yaml
-  # - ./resources/opentelemetry-collector.yaml
-  # - ./resources/vaxila-apikey.yaml
+  - ./resources/mackerel-apikey.yaml
+  - ./resources/namespace.yaml
+  - ./resources/opentelemetry-collector.yaml
+  - ./resources/vaxila-apikey.yaml
