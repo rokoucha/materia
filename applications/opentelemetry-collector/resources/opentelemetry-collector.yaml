@@ -37,7 +37,6 @@ spec:
         compression: gzip
         headers:
           Mackerel-Api-Key: ${env:MACKEREL_APIKEY}
-
       otlphttp/vaxila:
         endpoint: https://otlp-vaxila.mackerelio.com
         headers:
