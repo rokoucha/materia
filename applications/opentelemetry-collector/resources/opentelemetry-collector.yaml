@@ -13,12 +13,25 @@ spec:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+      prometheus:
+        config:
+          scrape_configs:
+            - job_name: prometheus
+              static_configs:
+                - targets: ["prometheus:9090"]
+
+            - job_name: apcupsd-exporter
+              static_configs:
+                - targets:
+                    - service.apcupsd-exporter.svc.materia-cluster.ggrel.net:9162
 
     processors:
       batch:
         timeout: 1m
 
     exporters:
+      debug:
+        verbosity: detailed
       otlp/mackerel:
         endpoint: otlp.mackerelio.com:4317
         compression: gzip
@@ -36,13 +49,11 @@ spec:
         metrics:
           address: :18888
           level: detailed
-
       pipelines:
         metrics:
           receivers: [otlp]
           processors: [batch]
           exporters: [otlp/mackerel]
-
         traces:
           receivers: [otlp]
           processors: [batch]
