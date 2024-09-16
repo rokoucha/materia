@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: service
+
+spec:
+  selector:
+    app: default
+  type: ClusterIP
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ipFamilyPolicy: RequireDualStack
+  ports:
+    - name: telemetry
+      port: 9162
+      targetPort: 9162
