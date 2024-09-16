@@ -47,8 +47,13 @@ spec:
           receivers: [otlp]
           processors: [batch]
           exporters: [otlphttp/vaxila]
+  managementState: managed
   envFrom:
     - secretRef:
         name: mackerel-apikey
     - secretRef:
         name: vaxila-apikey
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ipFamilyPolicy: RequireDualStack
