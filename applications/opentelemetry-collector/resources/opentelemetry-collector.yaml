@@ -38,6 +38,10 @@ spec:
         headers:
           Accept: "*/*"
           Mackerel-Api-Key: ${env:VAXILA_APIKEY}
+      prometheusremotewrite:
+        endpoint: http://service.apcupsd-exporter.svc.materia-cluster.ggrel.net:9090/api/v1/write
+        resource_to_telemetry_conversion:
+          enabled: true
 
     service:
       telemetry:
@@ -48,7 +52,7 @@ spec:
         metrics:
           receivers: [otlp, prometheus]
           processors: [batch]
-          exporters: [otlp/mackerel]
+          exporters: [otlp/mackerel, prometheusremotewrite]
         traces:
           receivers: [otlp]
           processors: [batch]
