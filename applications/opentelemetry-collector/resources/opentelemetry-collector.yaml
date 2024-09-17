@@ -13,6 +13,8 @@ spec:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
+      podman_stats:
+        endpoint: unix://run/podman/podman.sock
       prometheus:
         config:
           scrape_configs:
@@ -20,7 +22,6 @@ spec:
               static_configs:
                 - targets:
                     - service.apcupsd-exporter.svc.materia-cluster.ggrel.net:9162
-
     processors:
       batch:
         timeout: 1m
@@ -48,7 +49,7 @@ spec:
           level: detailed
       pipelines:
         metrics:
-          receivers: [otlp, prometheus]
+          receivers: [otlp, podman_stats, prometheus]
           processors: [batch]
           exporters: [otlp/mackerel, prometheusremotewrite]
         traces:
@@ -66,3 +67,11 @@ spec:
     - IPv4
     - IPv6
   ipFamilyPolicy: RequireDualStack
+  volumeMounts:
+    - name: podman-socket
+      mountPath: /run/podman/podman.sock
+  volumes:
+    - name: podman-socket
+      hostPath:
+        path: /run/podman/podman.sock
+        type: Socket
