@@ -19,11 +19,20 @@ spec:
         endpoint: unix://run/podman/podman.sock
       prometheus:
         config:
+          global:
+            scrape_interval: 15s
           scrape_configs:
             - job_name: apcupsd-exporter
               static_configs:
                 - targets:
                     - service.apcupsd-exporter.svc.materia-cluster.ggrel.net:9162
+            - job_name: otelcol
+              static_configs:
+                - targets: [0.0.0.0:8888]
+              metric_relabel_configs:
+                - source_labels: [__name__]
+                  regex: ".*grpc_io.*"
+                  action: drop
 
     processors:
       batch:
@@ -48,7 +57,7 @@ spec:
     service:
       telemetry:
         metrics:
-          address: :18888
+          address: :8888
           level: detailed
       pipelines:
         metrics:
