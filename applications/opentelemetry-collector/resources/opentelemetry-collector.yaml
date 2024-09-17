@@ -7,6 +7,8 @@ metadata:
 spec:
   config:
     receivers:
+      haproxy:
+        endpoint: http://haproxy-kubernetes-ingress.haproxy-controller.svc.materia-cluster.ggrel.net:1024
       otlp:
         protocols:
           grpc:
@@ -22,6 +24,7 @@ spec:
               static_configs:
                 - targets:
                     - service.apcupsd-exporter.svc.materia-cluster.ggrel.net:9162
+
     processors:
       batch:
         timeout: 1m
@@ -49,7 +52,11 @@ spec:
           level: detailed
       pipelines:
         metrics:
-          receivers: [otlp, podman_stats, prometheus]
+          receivers:
+            - haproxy
+            - otlp
+            - podman_stats
+            - prometheus
           processors: [batch]
           exporters: [otlp/mackerel, prometheusremotewrite]
         traces:
