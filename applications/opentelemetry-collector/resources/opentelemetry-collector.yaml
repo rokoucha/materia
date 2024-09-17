@@ -39,7 +39,7 @@ spec:
           Accept: "*/*"
           Mackerel-Api-Key: ${env:VAXILA_APIKEY}
       prometheusremotewrite:
-        endpoint: http://service.apcupsd-exporter.svc.materia-cluster.ggrel.net:9090/api/v1/write
+        endpoint: http://service.prometheus.svc.materia-cluster.ggrel.net:9090/api/v1/write
         resource_to_telemetry_conversion:
           enabled: true
 
