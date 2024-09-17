@@ -16,5 +16,4 @@ spec:
               service:
                 name: service
                 port:
-                  name: http-grafana
                   number: 3000
