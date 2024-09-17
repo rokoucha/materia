@@ -8,7 +8,7 @@ spec:
   config:
     receivers:
       haproxy:
-        endpoint: http://haproxy-kubernetes-ingress.haproxy-controller.svc.materia-cluster.ggrel.net:1024
+        endpoint: http://haproxy-kubernetes-ingress.haproxy-controller.svc.materia-cluster.ggrel.net:1024/stats
       otlp:
         protocols:
           grpc:
