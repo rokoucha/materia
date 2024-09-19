@@ -41,6 +41,21 @@ spec:
               static_configs:
                 - targets:
                     - service.prometheus.svc.materia-cluster.ggrel.net:9090
+            - job_name: switchbot-meter
+              scrape_interval: 1m
+              metrics_path: /probe
+              static_configs:
+                - targets:
+                    - CED37C9CA281
+                    - D4DF46B693B1
+                    - ED867D5919E9
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: service.switchbot-meter-exporter.svc.materia-cluster.ggrel.net:8080
 
     processors:
       batch:
