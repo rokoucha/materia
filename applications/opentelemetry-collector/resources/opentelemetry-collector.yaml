@@ -37,6 +37,16 @@ spec:
     processors:
       batch:
         timeout: 1m
+      resource/haproxy:
+        attributes:
+          - key: service.name
+            value: haproxy
+            action: insert
+      resource/podman_stats:
+        attributes:
+          - key: service.name
+            value: podman_stats
+            action: insert
 
     exporters:
       debug:
@@ -61,12 +71,16 @@ spec:
           level: detailed
       pipelines:
         metrics:
-          receivers:
-            - haproxy
-            - otlp
-            - podman_stats
-            - prometheus
+          receivers: [otlp, prometheus]
           processors: [batch]
+          exporters: [otlp/mackerel, prometheusremotewrite]
+        metrics/haproxy:
+          receivers: [haproxy]
+          processors: [resource/haproxy, batch]
+          exporters: [otlp/mackerel, prometheusremotewrite]
+        metrics/podman_stats:
+          receivers: [podman_stats]
+          processors: [resource/podman_stats, batch]
           exporters: [otlp/mackerel, prometheusremotewrite]
         traces:
           receivers: [otlp]
