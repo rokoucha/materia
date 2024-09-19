@@ -33,6 +33,10 @@ spec:
                 - source_labels: [__name__]
                   regex: ".*grpc_io.*"
                   action: drop
+            - job_name: prometheus
+              static_configs:
+                - targets:
+                    - service.prometheus.svc.materia-cluster.ggrel.net:9090
 
     processors:
       batch:
