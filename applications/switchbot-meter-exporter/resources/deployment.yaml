@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: default
+  template:
+    metadata:
+      labels:
+        app: default
+    spec:
+      containers:
+        - args:
+            - --port
+            - "8888"
+          image: ghcr.io/rokoucha/switchbot-meter-exporter:latest
+          name: switchbot-meter-exporter
+          ports:
+            - containerPort: 8888
+          envFrom:
+            - secretRef:
+                name: switchbot-token
