@@ -52,10 +52,10 @@ spec:
               relabel_configs:
                 - source_labels: [__address__]
                   target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
                 - target_label: __address__
                   replacement: service.switchbot-meter-exporter.svc.materia-cluster.ggrel.net:8888
-                - source_labels: [__address__]
-                  target_label: instance
 
     processors:
       batch:
