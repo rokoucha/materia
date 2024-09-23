@@ -4,6 +4,9 @@
     "config:recommended",
     ":dependencyDashboard"
   ],
+  "kubernetes": {
+    "fileMatch": ["applications/.+\\.yaml$", "system/.+\\.yaml$"]
+  },
   "regexManagers": [
     {
       "datasourceTemplate": "github-releases",
