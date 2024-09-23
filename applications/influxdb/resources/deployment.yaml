@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: default
+  template:
+    metadata:
+      labels:
+        app: default
+    spec:
+      containers:
+        - image: docker.io/library/influxdb:2.7.10-alpine
+          name: influxdb
+          ports:
+            - containerPort: 8086
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/influxdb2
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+      restartPolicy: Always
