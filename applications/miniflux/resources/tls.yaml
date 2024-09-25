@@ -5,3 +5,9 @@ metadata:
   name: tls
   annotations:
     reflector.v1.k8s.emberstack.com/reflects: haproxy-controller/ggrel-net-certificate
+
+type: kubernetes.io/tls
+
+data:
+  tls.key: ""
+  tls.crt: ""
