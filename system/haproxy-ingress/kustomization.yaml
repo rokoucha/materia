@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: haproxy-controller
 
 resources:
+  - ./resources/ggrel-net-certificate.yaml
   - ./resources/ingress-class.yaml
   - ./resources/materia-ggrel-net-certificate.yaml
   - https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/v3.0.2/deploy/haproxy-ingress.yaml
