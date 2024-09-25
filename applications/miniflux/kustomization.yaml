@@ -8,3 +8,4 @@ resources:
   - ./resources/ingress.yaml
   - ./resources/namespace.yaml
   - ./resources/service.yaml
+  - ./resources/tls.yaml

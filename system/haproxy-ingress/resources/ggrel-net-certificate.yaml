@@ -3,6 +3,8 @@ kind: Certificate
 
 metadata:
   name: ggrel-net-certificate
+  annotations:
+    reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
 
 spec:
   secretName: ggrel-net-tls
