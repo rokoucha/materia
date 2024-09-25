@@ -3,12 +3,11 @@ kind: Ingress
 
 metadata:
   name: ingress
+  annotations:
+    haproxy.org/server-crt: haproxy-controller/ggrel-net-certificate
 
 spec:
   ingressClassName: haproxy
-  tls:
-    - hosts:
-        - ggrel.net
   rules:
     - host: miniflux.ggrel.net
       http:
