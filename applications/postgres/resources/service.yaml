@@ -7,7 +7,7 @@ metadata:
 spec:
   selector:
     app: default
-  type: NodePort
+  type: ClusterIP
   ipFamilies:
     - IPv4
     - IPv6
@@ -16,4 +16,3 @@ spec:
     - name: postgres
       port: 5432
       targetPort: 5432
-      nodePort: 5432
