@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+
+metadata:
+  name: ggrel-net-certificate
+
+spec:
+  secretName: ggrel-net-tls
+  commonName: ggrel.net
+  privateKey:
+    algorithm: ECDSA
+    size: 384
+  dnsNames:
+    - ggrel.net
+    - "*.ggrel.net"
+  issuerRef:
+    name: letsencrypt-issuer
+    kind: ClusterIssuer

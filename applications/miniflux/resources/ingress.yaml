@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: ingress
+
+spec:
+  ingressClassName: haproxy
+  tls:
+    - secretName: haproxy-controller/ggrel-net-tls
+      hosts:
+        - miniflux.ggrel.net
+  rules:
+    - host: miniflux.ggrel.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service
+                port:
+                  number: 8080

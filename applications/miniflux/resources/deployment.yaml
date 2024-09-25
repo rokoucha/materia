@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: default
+  template:
+    metadata:
+      labels:
+        app: default
+    spec:
+      containers:
+        - image: docker.io/miniflux/miniflux:2.2.0
+          name: miniflux
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BASE_URL
+              value: https://miniflux.ggrel.net/
+            - name: DATABASE_URL
+              value: postgres://miniflux:miniflux@service.postgresql.svc.materia-cluster.ggrel.net/miniflux?sslmode=disable
+            - name: POLLING_FREQUENCY
+              value: "10"
+            - name: RUN_MIGRATIONS
+              value: "1"
