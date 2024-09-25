@@ -9,5 +9,5 @@ spec:
     requests:
       storage: 20Gi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   storageClassName: beryllium-iscsi
