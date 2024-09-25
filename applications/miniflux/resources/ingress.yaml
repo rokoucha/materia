@@ -8,7 +8,7 @@ spec:
   ingressClassName: haproxy
   tls:
     - hosts:
-        - miniflux.ggrel.net
+        - ggrel.net
   rules:
     - host: miniflux.ggrel.net
       http:
