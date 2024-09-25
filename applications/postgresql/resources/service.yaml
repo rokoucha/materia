@@ -13,6 +13,6 @@ spec:
     - IPv6
   ipFamilyPolicy: RequireDualStack
   ports:
-    - name: postgres
+    - name: postgresql
       port: 5432
       targetPort: 5432
