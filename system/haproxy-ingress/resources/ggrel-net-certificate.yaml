@@ -3,10 +3,11 @@ kind: Certificate
 
 metadata:
   name: ggrel-net-certificate
-  annotations:
-    reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
 
 spec:
+  secretTemplate:
+    annotations:
+      reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
   secretName: ggrel-net-tls
   commonName: ggrel.net
   privateKey:
