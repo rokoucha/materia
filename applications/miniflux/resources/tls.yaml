@@ -4,6 +4,8 @@ kind: Secret
 metadata:
   name: tls
   annotations:
+    reflector.v1.k8s.emberstack.com/reflected-at: ""
+    reflector.v1.k8s.emberstack.com/reflected-version: "0"
     reflector.v1.k8s.emberstack.com/reflects: haproxy-controller/ggrel-net-tls
 
 type: kubernetes.io/tls
