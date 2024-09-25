@@ -4,6 +4,7 @@ kind: Secret
 metadata:
   name: tls
   annotations:
+    cert-manager.io/common-name: ggrel.net
     reflector.v1.k8s.emberstack.com/reflects: haproxy-controller/ggrel-net-tls
 
 type: kubernetes.io/tls
