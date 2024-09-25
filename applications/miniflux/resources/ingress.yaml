@@ -7,7 +7,8 @@ metadata:
 spec:
   ingressClassName: haproxy
   tls:
-    - hosts:
+    - secretName: tls
+      hosts:
         - ggrel.net
   rules:
     - host: miniflux.ggrel.net
