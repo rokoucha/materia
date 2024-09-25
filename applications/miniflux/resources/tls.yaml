@@ -1,5 +1,5 @@
-apiVersion: cert-manager.io/v1
-kind: Certificate
+apiVersion: v1
+kind: Secret
 
 metadata:
   name: tls
