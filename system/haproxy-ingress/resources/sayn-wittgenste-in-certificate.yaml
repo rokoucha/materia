@@ -1,0 +1,21 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+
+metadata:
+  name: sayn-wittgenste-in-certificate
+
+spec:
+  secretTemplate:
+    annotations:
+      reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+  secretName: sayn-wittgenste-in-tls
+  commonName: sayn-wittgenste.in
+  privateKey:
+    algorithm: ECDSA
+    size: 384
+  dnsNames:
+    - sayn-wittgenste.in
+    - heinrike.prinzessin.zu.sayn-wittgenste.in
+  issuerRef:
+    name: letsencrypt-issuer
+    kind: ClusterIssuer
