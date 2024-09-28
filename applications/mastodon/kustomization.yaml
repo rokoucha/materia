@@ -6,6 +6,7 @@ namespace: mastodon
 resources:
   - ./resources/deployment.yaml
   - ./resources/ingress.yaml
+  - ./resources/mastodon-secrets.yaml
   - ./resources/namespace.yaml
   - ./resources/service.yaml
   - ./resources/tls.yaml
