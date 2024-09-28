@@ -4,12 +4,15 @@ kind: Kustomization
 namespace: mastodon
 
 resources:
+  - ./resources/deployment-redis.yaml
   - ./resources/deployment-sidekiq.yaml
   - ./resources/deployment-streaming.yaml
   - ./resources/deployment-web.yaml
   - ./resources/ingress.yaml
   - ./resources/mastodon-secrets.yaml
   - ./resources/namespace.yaml
+  - ./resources/pvc-redis.yaml
+  - ./resources/service-redis.yaml
   - ./resources/service-streaming.yaml
   - ./resources/service-web.yaml
   - ./resources/tls.yaml
