@@ -6,4 +6,5 @@ namespace: external-services
 resources:
   - ./resources/dot-rokoucha-net-ingress.yaml
   - ./resources/ggrel-net-tls.yaml
+  - ./resources/namespace.yaml
   - ./resources/rokoucha-net-tls.yaml
