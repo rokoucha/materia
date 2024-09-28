@@ -9,3 +9,4 @@ resources:
   - ./resources/namespace.yaml
   - ./resources/persistent-volume-claim.yaml
   - ./resources/service.yaml
+  - ./resources/tls.yaml

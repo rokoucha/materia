@@ -6,8 +6,12 @@ metadata:
 
 spec:
   ingressClassName: haproxy
+  tls:
+    - secretName: tls
+      hosts:
+        - monitor.ggrel.net
   rules:
-    - host: grafana.materia.ggrel.net
+    - host: monitor.ggrel.net
       http:
         paths:
           - path: /
