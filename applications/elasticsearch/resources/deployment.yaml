@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: default
+  template:
+    metadata:
+      labels:
+        app: default
+    spec:
+      containers:
+        - image: docker.elastic.co/elasticsearch/elasticsearch:8.15.2
+          name: elasticsearch
+          ports:
+            - containerPort: 9200
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+          env:
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-password
+                  key: ELASTIC_PASSWORD
+            - name: bootstrap.memory_lock
+              value: "false"
+            - name: cluster.name
+              value: es
+            - name: discovery.type
+              value: single-node
+            - name: ES_JAVA_OPTS
+              value: "-Xms128m -Xmx128m -Des.enforce.bootstrap.checks=true"
+            - name: node.store.allow_mmap
+              value: "true"
+            - name: thread_pool.write.queue_size
+              value: "1000"
+            - name: xpack.graph.enabled
+              value: "false"
+            - name: xpack.license.self_generated.type
+              value: basic
+            - name: xpack.ml.enabled
+              value: "false"
+            - name: xpack.security.enabled
+              value: "false"
+            - name: xpack.watcher.enabled
+              value: "false"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+      restartPolicy: Always

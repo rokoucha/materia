@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: elasticsearch
+
+resources:
+  - ./resources/deployment.yaml
+  - ./resources/elasticsearch-password.yaml
+  - ./resources/namespace.yaml
+  - ./resources/persistent-volume-claim.yaml
+  - ./resources/service.yaml
