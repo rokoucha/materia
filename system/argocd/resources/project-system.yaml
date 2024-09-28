@@ -14,6 +14,6 @@ spec:
     - namespace: "*"
       server: "*"
   orphanedResources:
-    warn: true
+    warn: false
   sourceRepos:
     - "*"
