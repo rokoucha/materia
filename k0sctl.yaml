@@ -49,4 +49,7 @@ spec:
           kine:
             dataSource: "sqlite:///var/lib/k0s/db/state.db?more=rwc&_journal=WAL&cache=shared"
         telemetry:
-          enabled: true
+        featureGates:
+          - name: DelegateFSGroupToCSIDriver
+            enabled: false
+            components: ["kubelet"]
