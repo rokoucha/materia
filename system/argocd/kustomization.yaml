@@ -6,6 +6,8 @@ namespace: argocd
 resources:
   - ./resources/ingress.yaml
   - ./resources/namespace.yaml
+  - ./resources/project-applications.yaml
+  - ./resources/project-system.yaml
   - https://raw.githubusercontent.com/argoproj/argo-cd/v2.12.3/manifests/install.yaml
 
 patches:
