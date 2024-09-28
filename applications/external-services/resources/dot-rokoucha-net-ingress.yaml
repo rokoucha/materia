@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: dot-rokoucha-net-ingress
+  annotations:
+    haproxy.org/request-redirect: raw.githubusercontent.com
+    haproxy.org/path-rewrite: /rokoucha/dotfiles/master/.local/bin/dotfiles
+
+spec:
+  ingressClassName: haproxy
+  tls:
+    - secretName: rokoucha-net-tls
+      hosts:
+        - dot.rokoucha.net
+  rules:
+    - host: dot.rokoucha.net
