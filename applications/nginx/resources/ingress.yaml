@@ -24,6 +24,16 @@ spec:
                 name: service
                 port:
                   number: 80
+    - host: dtv.ggrel.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service
+                port:
+                  number: 80
     - host: dot.rokoucha.net
       http:
         paths:
