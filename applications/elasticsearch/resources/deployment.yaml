@@ -15,12 +15,12 @@ spec:
         app: default
     spec:
       securityContext:
-        runAsUser: 0
+        #runAsUser: 0
         fsGroup: 1000
       containers:
         - image: docker.elastic.co/elasticsearch/elasticsearch:8.15.2
           name: elasticsearch
-          command: ["sleep", "10000000"]
+          #command: ["sleep", "10000000"]
           ports:
             - containerPort: 9200
           volumeMounts:
