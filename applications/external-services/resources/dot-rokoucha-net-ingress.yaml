@@ -24,4 +24,4 @@ spec:
               service:
                 name: dummy
                 port:
-                  number: 0
+                  number: 1
