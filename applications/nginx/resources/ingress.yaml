@@ -54,3 +54,23 @@ spec:
                 name: service
                 port:
                   number: 80
+    - host: sayn-wittgenste.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service
+                port:
+                  number: 80
+    - host: heinrike.prinzessin.zu.sayn-wittgenste.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service
+                port:
+                  number: 80
