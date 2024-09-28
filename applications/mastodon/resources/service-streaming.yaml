@@ -3,6 +3,9 @@ kind: Service
 
 metadata:
   name: mastodon-streaming
+  annotations:
+    haproxy.org/backend-config-snippet: |
+      timeout http-keep-alive 70s
 
 spec:
   selector:
