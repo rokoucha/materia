@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: mastodon-previewcards-remove
+
+spec:
+  schedule: 5 4 * * 0
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - image: ghcr.io/mastodon/mastodon:v4.2.10
+              name: mastodon-previewcards-remove
+              command: ["bin/tootctl", "preview_cards", "remove"]
+              envFrom:
+                - configMapRef:
+                    name: config
+                - secretRef:
+                    name: mastodon-secrets
+          restartPolicy: OnFailure

@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: mastodon-media-remove
+
+spec:
+  schedule: 0 4 * * 0
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - image: ghcr.io/mastodon/mastodon:v4.2.10
+              name: mastodon-media-remove
+              command: ["bin/tootctl", "media", "remove"]
+              envFrom:
+                - configMapRef:
+                    name: config
+                - secretRef:
+                    name: mastodon-secrets
+          restartPolicy: OnFailure

@@ -4,6 +4,8 @@ kind: Kustomization
 namespace: mastodon
 
 resources:
+  - ./resources/cronjob-media-remove.yaml
+  - ./resources/cronjob-previewcards-remove.yaml
   - ./resources/deployment-redis.yaml
   - ./resources/deployment-sidekiq.yaml
   - ./resources/deployment-streaming.yaml
