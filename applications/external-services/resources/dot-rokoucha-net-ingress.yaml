@@ -16,7 +16,4 @@ spec:
   rules:
     - host: dot.rokoucha.net
       http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend: {}
+        paths: []
