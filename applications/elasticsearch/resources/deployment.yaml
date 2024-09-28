@@ -19,6 +19,7 @@ spec:
       containers:
         - image: docker.elastic.co/elasticsearch/elasticsearch:8.15.2
           name: elasticsearch
+          command: ["sleep", "10000000"]
           ports:
             - containerPort: 9200
           volumeMounts:
