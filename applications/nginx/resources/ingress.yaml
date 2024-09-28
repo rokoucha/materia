@@ -10,9 +10,15 @@ spec:
     - secretName: ggrel-net-tls
       hosts:
         - ggrel.net
+        - dtv.ggrel.net
     - secretName: rokoucha-net-tls
       hosts:
         - dot.rokoucha.net
+        - pl.rokoucha.net
+    - secretName: sayn-wittgenste-in-tls
+      hosts:
+        - sayn-wittgenste.in
+        - heinrike.prinzessin.zu.sayn-wittgenste.in
   rules:
     - host: ggrel.net
       http:
