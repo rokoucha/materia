@@ -4,11 +4,14 @@ kind: Kustomization
 namespace: mastodon
 
 resources:
-  - ./resources/deployment.yaml
+  - ./resources/deployment-sidekiq.yaml
+  - ./resources/deployment-streaming.yaml
+  - ./resources/deployment-web.yaml
   - ./resources/ingress.yaml
   - ./resources/mastodon-secrets.yaml
   - ./resources/namespace.yaml
-  - ./resources/service.yaml
+  - ./resources/service-streaming.yaml
+  - ./resources/service-web.yaml
   - ./resources/tls.yaml
 
 configMapGenerator:

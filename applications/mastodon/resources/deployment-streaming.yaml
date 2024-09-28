@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: mastodon-streaming
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: streaming
+  template:
+    metadata:
+      labels:
+        app: streaming
+    spec:
+      containers:
+        - image: ghcr.io/mastodon/mastodon:v4.2.10
+          name: mastodon-streaming
+          ports:
+            - containerPort: 4000
+          command: ["node", "./streaming"]
+          envFrom:
+            - configMapRef:
+                name: config
+            - secretRef:
+                name: mastodon-secrets
