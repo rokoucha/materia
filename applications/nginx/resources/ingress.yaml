@@ -7,10 +7,23 @@ metadata:
 spec:
   ingressClassName: haproxy
   tls:
+    - secretName: ggrel-net-tls
+      hosts:
+        - ggrel.net
     - secretName: rokoucha-net-tls
       hosts:
         - dot.rokoucha.net
   rules:
+    - host: ggrel.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service
+                port:
+                  number: 80
     - host: dot.rokoucha.net
       http:
         paths:
