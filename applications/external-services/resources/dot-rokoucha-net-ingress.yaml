@@ -5,6 +5,7 @@ metadata:
   name: dot-rokoucha-net-ingress
   annotations:
     haproxy.org/request-redirect: raw.githubusercontent.com
+    haproxy.org/request-redirect-code: "301"
     haproxy.org/path-rewrite: /rokoucha/dotfiles/master/.local/bin/dotfiles
 
 spec:
@@ -16,4 +17,11 @@ spec:
   rules:
     - host: dot.rokoucha.net
       http:
-        paths: []
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ""
+                port:
+                  number: 0
