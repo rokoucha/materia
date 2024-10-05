@@ -62,9 +62,6 @@ spec:
                   target_label: instance
                 - target_label: __address__
                   replacement: service.switchbot-meter-exporter.svc.materia-cluster.ggrel.net:8888
-      redis/argocd:
-        endpoint: argocd-redis.argocd.svc.materia-cluster.ggrel.net:6379
-        collection_interval: 10s
       redis/mastodon:
         endpoint: redis.mastodon.svc.materia-cluster.ggrel.net:6379
         collection_interval: 10s
@@ -86,14 +83,6 @@ spec:
         attributes:
           - key: service.name
             value: podman_stats
-            action: insert
-      resource/redis/argocd:
-        attributes:
-          - key: service.name
-            value: redis
-            action: insert
-          - key: service.namespace
-            value: argocd
             action: insert
       resource/redis/mastodon:
         attributes:
@@ -143,10 +132,6 @@ spec:
         metrics/podman_stats:
           receivers: [podman_stats]
           processors: [resource/podman_stats, batch]
-          exporters: [otlp/mackerel, prometheusremotewrite]
-        metrics/redis/argocd:
-          receivers: [redis/argocd]
-          processors: [resource/redis/argocd, batch]
           exporters: [otlp/mackerel, prometheusremotewrite]
         metrics/redis/mastodon:
           receivers: [redis/mastodon]
