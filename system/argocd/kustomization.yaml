@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: argocd
 
 resources:
+  - ./resources/argocd-notifications-secret.yaml
   - ./resources/ingress.yaml
   - ./resources/namespace.yaml
   - ./resources/project-applications.yaml
@@ -13,3 +14,4 @@ resources:
 patches:
   - path: ./patches/argocd-cm.yaml
   - path: ./patches/argocd-cmd-params-cm.yaml
+  - path: ./patches/argocd-notifications-cm.yaml

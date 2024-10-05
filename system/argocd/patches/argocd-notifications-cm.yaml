@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: argocd-notifications-cm
+
+data:
+  service.github: |
+    appID: 980715
+    installationID: 54216756
+    privateKey: $github-privateKey
