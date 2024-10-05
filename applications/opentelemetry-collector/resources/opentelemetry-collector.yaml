@@ -65,6 +65,9 @@ spec:
       redis/mastodon:
         endpoint: redis.mastodon.svc.materia-cluster.ggrel.net:6379
         collection_interval: 10s
+      statsd:
+        endpoint: "[::]:8125"
+        enable_metric_type: true
 
     processors:
       batch:
@@ -118,7 +121,7 @@ spec:
           level: detailed
       pipelines:
         metrics:
-          receivers: [otlp, prometheus]
+          receivers: [otlp, prometheus, statsd]
           processors: [batch]
           exporters: [otlp/mackerel, prometheusremotewrite]
         metrics/haproxy:
