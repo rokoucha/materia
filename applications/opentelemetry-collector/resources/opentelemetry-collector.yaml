@@ -95,7 +95,7 @@ spec:
           - key: service.namespace
             value: mastodon
             action: insert
-      resouces/statsd:
+      resource/statsd:
         attributes:
           - key: service.name
             value: statsd
