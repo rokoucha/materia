@@ -102,7 +102,7 @@ spec:
           level: detailed
       pipelines:
         metrics:
-          receivers: [otlp, prometheus]
+          receivers: [nginx, otlp, prometheus]
           processors: [batch]
           exporters: [otlp/mackerel, prometheusremotewrite]
         metrics/haproxy:
