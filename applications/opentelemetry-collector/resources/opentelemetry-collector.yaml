@@ -71,6 +71,11 @@ spec:
           - key: service.name
             value: haproxy
             action: insert
+      resource/nginx:
+        attributes:
+          - key: service.name
+            value: nginx
+            action: insert
       resource/podman_stats:
         attributes:
           - key: service.name
@@ -102,12 +107,16 @@ spec:
           level: detailed
       pipelines:
         metrics:
-          receivers: [nginx, otlp, prometheus]
+          receivers: [otlp, prometheus]
           processors: [batch]
           exporters: [otlp/mackerel, prometheusremotewrite]
         metrics/haproxy:
           receivers: [haproxy]
           processors: [resource/haproxy, batch]
+          exporters: [otlp/mackerel, prometheusremotewrite]
+        metrics/nginx:
+          receivers: [nginx]
+          processors: [resource/nginx, batch]
           exporters: [otlp/mackerel, prometheusremotewrite]
         metrics/podman_stats:
           receivers: [podman_stats]
