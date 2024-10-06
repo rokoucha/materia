@@ -13,6 +13,18 @@ spec:
         - namespaceSelector:
             matchLabels:
               name: opentelemetry-collector
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: argocd-server
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: argocd-repo-server
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: argocd-application-controller
+      ports:
+        - port: 6379
+          protocol: TCP
   podSelector:
     matchLabels:
       app.kubernetes.io/name: argocd-redis
