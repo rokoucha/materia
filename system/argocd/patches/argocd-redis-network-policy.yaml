@@ -9,10 +9,10 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels:
-              project: grafana
+              kubernetes.io/metadata.name: grafana
         - namespaceSelector:
             matchLabels:
-              project: opentelemetry-collector
+              kubernetes.io/metadata.name: opentelemetry-collector
         - podSelector:
             matchLabels:
               app.kubernetes.io/name: argocd-server
