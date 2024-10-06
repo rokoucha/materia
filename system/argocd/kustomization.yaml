@@ -5,6 +5,7 @@ namespace: argocd
 
 resources:
   - ./resources/argocd-notifications-secret.yaml
+  - ./resources/argocd-redis.yaml
   - ./resources/ingress.yaml
   - ./resources/namespace.yaml
   - ./resources/project-applications.yaml

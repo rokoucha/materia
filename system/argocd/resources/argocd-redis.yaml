@@ -1,0 +1,8 @@
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+
+metadata:
+  name: argocd-redis
+
+spec:
+  itemPath: vaults/materia/items/argocd-redis
