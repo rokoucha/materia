@@ -16,4 +16,5 @@ patches:
   - path: ./patches/argocd-cm.yaml
   - path: ./patches/argocd-cmd-params-cm.yaml
   - path: ./patches/argocd-notifications-cm.yaml
+  - path: ./patches/argocd-redis-network-policy.yaml
   - path: ./patches/argocd-redis.yaml
