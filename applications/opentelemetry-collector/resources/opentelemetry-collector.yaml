@@ -188,3 +188,20 @@ spec:
       hostPath:
         path: /run/podman/podman.sock
         type: Socket
+  ports:
+    - appProtocol: grpc
+      name: otlp-grpc
+      port: 4317
+      nodePort: 4317
+      protocol: TCP
+      targetPort: 4317
+    - appProtocol: http
+      name: otlp-http
+      port: 4318
+      nodePort: 4318
+      protocol: TCP
+      targetPort: 4318
+    - name: statsd
+      port: 8125
+      protocol: UDP
+      targetPort: 8125

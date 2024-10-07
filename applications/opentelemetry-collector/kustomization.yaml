@@ -8,5 +8,4 @@ resources:
   - ./resources/mackerel-apikey.yaml
   - ./resources/namespace.yaml
   - ./resources/opentelemetry-collector.yaml
-  - ./resources/statsd-service.yaml
   - ./resources/vaxila-apikey.yaml
