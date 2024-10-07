@@ -7,5 +7,6 @@ resources:
   - ./resources/argocd-redis-password.yaml
   - ./resources/mackerel-apikey.yaml
   - ./resources/namespace.yaml
+  - ./resources/nodeport.yaml
   - ./resources/opentelemetry-collector.yaml
   - ./resources/vaxila-apikey.yaml
