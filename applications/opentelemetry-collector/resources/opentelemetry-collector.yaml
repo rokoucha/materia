@@ -71,9 +71,6 @@ spec:
         password: ${env:ARGOCD_REDIS_PASSWORD}
       redis/mastodon:
         endpoint: redis.mastodon.svc.materia-cluster.ggrel.net:6379
-      statsd:
-        endpoint: "[::]:8125"
-        enable_metric_type: true
 
     processors:
       batch:
@@ -112,11 +109,6 @@ spec:
             action: insert
           - key: service.namespace
             value: mastodon
-            action: insert
-      resource/statsd:
-        attributes:
-          - key: service.name
-            value: statsd
             action: insert
 
     exporters:
@@ -167,10 +159,6 @@ spec:
         metrics/redis/mastodon:
           receivers: [redis/mastodon]
           processors: [resource/redis/mastodon, batch]
-          exporters: [prometheusremotewrite, otlp/mackerel]
-        metrics/statsd:
-          receivers: [statsd]
-          processors: [resource/statsd, batch]
           exporters: [prometheusremotewrite, otlp/mackerel]
         traces/vaxila:
           receivers: [otlp]
