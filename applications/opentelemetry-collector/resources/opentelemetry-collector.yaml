@@ -78,10 +78,6 @@ spec:
     processors:
       batch:
         timeout: 5s
-      batch/mackerel:
-        send_batch_max_size: 5000
-        send_batch_size: 5000
-        timeout: 5s
       batch/vaxila:
         send_batch_max_size: 5000
         send_batch_size: 5000
@@ -151,59 +147,31 @@ spec:
         metrics:
           receivers: [otlp, prometheus]
           processors: [batch]
-          exporters: [prometheusremotewrite]
+          exporters: [prometheusremotewrite, otlp/mackerel]
         metrics/haproxy:
           receivers: [haproxy]
           processors: [resource/haproxy, batch]
-          exporters: [prometheusremotewrite]
+          exporters: [prometheusremotewrite, otlp/mackerel]
         metrics/nginx:
           receivers: [nginx]
           processors: [resource/nginx, batch]
-          exporters: [prometheusremotewrite]
+          exporters: [prometheusremotewrite, otlp/mackerel]
         metrics/podman_stats:
           receivers: [podman_stats]
           processors: [resource/podman_stats, batch]
-          exporters: [prometheusremotewrite]
+          exporters: [prometheusremotewrite, otlp/mackerel]
         metrics/redis/argocd:
           receivers: [redis/argocd]
           processors: [resource/redis/argocd, batch]
-          exporters: [prometheusremotewrite]
+          exporters: [prometheusremotewrite, otlp/mackerel]
         metrics/redis/mastodon:
           receivers: [redis/mastodon]
           processors: [resource/redis/mastodon, batch]
-          exporters: [prometheusremotewrite]
+          exporters: [prometheusremotewrite, otlp/mackerel]
         metrics/statsd:
           receivers: [statsd]
           processors: [resource/statsd, batch]
-          exporters: [prometheusremotewrite]
-        metrics/mackerel:
-          receivers: [otlp, prometheus]
-          processors: [batch/mackerel]
-          exporters: [otlp/mackerel]
-        metrics/mackerel/haproxy:
-          receivers: [haproxy]
-          processors: [resource/haproxy, batch/mackerel]
-          exporters: [otlp/mackerel]
-        metrics/mackerel/nginx:
-          receivers: [nginx]
-          processors: [resource/nginx, batch/mackerel]
-          exporters: [otlp/mackerel]
-        metrics/mackerel/podman_stats:
-          receivers: [podman_stats]
-          processors: [resource/podman_stats, batch/mackerel]
-          exporters: [otlp/mackerel]
-        metrics/mackerel/redis/argocd:
-          receivers: [redis/argocd]
-          processors: [resource/redis/argocd, batch/mackerel]
-          exporters: [otlp/mackerel]
-        metrics/mackerel/redis/mastodon:
-          receivers: [redis/mastodon]
-          processors: [resource/redis/mastodon, batch/mackerel]
-          exporters: [otlp/mackerel]
-        metrics/mackerel/statsd:
-          receivers: [statsd]
-          processors: [resource/statsd, batch/mackerel]
-          exporters: [otlp/mackerel]
+          exporters: [prometheusremotewrite, otlp/mackerel]
         traces/vaxila:
           receivers: [otlp]
           processors: [batch/vaxila]
