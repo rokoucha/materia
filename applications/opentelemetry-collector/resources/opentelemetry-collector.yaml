@@ -77,7 +77,7 @@ spec:
 
     processors:
       batch:
-        send_batch_max_size: 10000
+        send_batch_max_size: 5000
         timeout: 1m
       resource/haproxy:
         attributes:
