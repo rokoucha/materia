@@ -76,11 +76,12 @@ spec:
         enable_metric_type: true
 
     processors:
-      batch: {}
+      batch:
+        timeout: 5s
       batch/mackerel:
         send_batch_max_size: 5000
         send_batch_size: 5000
-        timeout: 5m
+        timeout: 5s
       batch/vaxila:
         send_batch_max_size: 5000
         send_batch_size: 5000
