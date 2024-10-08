@@ -36,6 +36,10 @@ spec:
               static_configs:
                 - targets:
                     - haproxy-kubernetes-ingress.haproxy-controller.svc.materia-cluster.ggrel.net:1024
+            - job_name: intel-igpu
+              static_configs:
+                - targets:
+                    - haruka.dns.ggrel.net:8080
             - job_name: otelcol
               static_configs:
                 - targets: [0.0.0.0:8888]
