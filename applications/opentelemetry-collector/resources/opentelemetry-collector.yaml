@@ -28,7 +28,7 @@ spec:
               static_configs:
                 - targets:
                     - service.apcupsd-exporter.svc.materia-cluster.ggrel.net:9162
-            - job_name: blackbox
+            - job_name: blackbox/ping_bbix-4over6-v4
               scrape_interval: 1m
               metrics_path: /probe
               params:
@@ -46,9 +46,9 @@ spec:
                   target_label: instance
                 - target_label: __address__
                   replacement: nitrogen.dns.ggrel.net:9115
-                - source_labels: [__param_module]
-                  target_label: module
-            - job_name: blackbox
+                - target_label: network
+                  replacement: bbix-4over6-v4
+            - job_name: blackbox/ping_bbix-pppoe-v4
               scrape_interval: 1m
               metrics_path: /probe
               params:
@@ -68,7 +68,9 @@ spec:
                   replacement: nitrogen.dns.ggrel.net:9115
                 - source_labels: [__param_module]
                   target_label: module
-            - job_name: blackbox
+                - target_label: network
+                  replacement: bbix-pppoe-v4
+            - job_name: blackbox/ping_mobile-v4
               scrape_interval: 1m
               metrics_path: /probe
               params:
@@ -88,7 +90,9 @@ spec:
                   replacement: nitrogen.dns.ggrel.net:9115
                 - source_labels: [__param_module]
                   target_label: module
-            - job_name: blackbox
+                - target_label: network
+                  replacement: mobile-v4
+            - job_name: blackbox/ping_itscom-v4
               scrape_interval: 1m
               metrics_path: /probe
               params:
@@ -108,6 +112,8 @@ spec:
                   replacement: nitrogen.dns.ggrel.net:9115
                 - source_labels: [__param_module]
                   target_label: module
+                - target_label: network
+                  replacement: itscom-v4
             - job_name: blackbox_exporter
               static_configs:
                 - targets:
