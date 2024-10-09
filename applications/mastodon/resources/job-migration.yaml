@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: mastodon-migration
+
+spec:
+  backoffLimit: 3
+  parallelism: 1
+  completions: 1
+  template:
+    spec:
+      containers:
+        - image: ghcr.io/mastodon/mastodon:v4.3.0
+          name: mastodon-migration
+          command: ["bundle", "exec", "rails", "db:migrate"]
+          env:
+            - name: SKIP_POST_DEPLOYMENT_MIGRATIONS
+              value: "true"
+          envFrom:
+            - configMapRef:
+                name: config
+            - secretRef:
+                name: mastodon-secrets
+      restartPolicy: OnFailure
