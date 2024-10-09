@@ -49,6 +49,8 @@ spec:
                   target_label: instance
                 - target_label: __address__
                   replacement: nitrogen.dns.ggrel.net:9115
+                - source_labels: [__param_module]
+                  target_label: module
             - job_name: blackbox_exporter
               static_configs:
                 - targets:
