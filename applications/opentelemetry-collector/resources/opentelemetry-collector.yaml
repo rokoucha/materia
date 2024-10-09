@@ -28,15 +28,71 @@ spec:
               static_configs:
                 - targets:
                     - service.apcupsd-exporter.svc.materia-cluster.ggrel.net:9162
-            - job_name: ping-pong
+            - job_name: blackbox
               scrape_interval: 1m
               metrics_path: /probe
               params:
-                module:
-                  - ping_bbix-4over6-v4
-                  - ping_bbix-pppoe-v4
-                  - ping_mobile-v4
-                  - ping_itscom-v4
+                module: [ping_bbix-4over6-v4]
+              static_configs:
+                - targets:
+                    - 172.16.10.1
+                    - 1.1.1.1
+                    - 8.8.8.8
+                    - ping-e.sinet.ad.jp
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: nitrogen.dns.ggrel.net:9115
+                - source_labels: [__param_module]
+                  target_label: module
+            - job_name: blackbox
+              scrape_interval: 1m
+              metrics_path: /probe
+              params:
+                module: [ping_bbix-pppoe-v4]
+              static_configs:
+                - targets:
+                    - 172.16.10.1
+                    - 1.1.1.1
+                    - 8.8.8.8
+                    - ping-e.sinet.ad.jp
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: nitrogen.dns.ggrel.net:9115
+                - source_labels: [__param_module]
+                  target_label: module
+            - job_name: blackbox
+              scrape_interval: 1m
+              metrics_path: /probe
+              params:
+                module: [ping_mobile-v4]
+              static_configs:
+                - targets:
+                    - 172.16.10.1
+                    - 1.1.1.1
+                    - 8.8.8.8
+                    - ping-e.sinet.ad.jp
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: nitrogen.dns.ggrel.net:9115
+                - source_labels: [__param_module]
+                  target_label: module
+            - job_name: blackbox
+              scrape_interval: 1m
+              metrics_path: /probe
+              params:
+                module: [ping_itscom-v4]
               static_configs:
                 - targets:
                     - 172.16.10.1
