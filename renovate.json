@@ -10,11 +10,11 @@
   "regexManagers": [
     {
       "datasourceTemplate": "github-releases",
+      "depNameTemplate": "k0sproject/k0s",
       "fileMatch": "k0sctl.yaml",
       "matchStrings": [
         "version: v(?<currentValue>.*?)\/"
-      ],
-      "depNameTemplate": "k0sproject/k0s"
+      ]
     },
     {
       "datasourceTemplate": "github-releases",
