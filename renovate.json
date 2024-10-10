@@ -13,7 +13,7 @@
       "depNameTemplate": "k0sproject/k0s",
       "fileMatch": "k0sctl.yaml",
       "matchStrings": [
-        "version: (?<currentValue>.*?)"
+        "version: (?<currentValue>.*)"
       ]
     },
     {
