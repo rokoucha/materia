@@ -10,9 +10,17 @@
   "regexManagers": [
     {
       "datasourceTemplate": "github-releases",
+      "fileMatch": "k0sctl.yaml",
+      "matchStrings": [
+        "version: v(?<currentValue>.*?)\/"
+      ],
+      "depNameTemplate": "k0sproject/k0s"
+    },
+    {
+      "datasourceTemplate": "github-releases",
       "fileMatch": "kustomization.yaml",
       "matchStrings": [
-        "https:\/\/github.com\/(?<depName>.*\/.*?)\/releases\/download\/(?<currentValue>.*?)\/"
+        "https:\/\/raw.githubusercontent.com\/(?<depName>[^\/]*\/[^\/]*)\/(?<currentValue>.*?)\/"
       ]
     },
     {
