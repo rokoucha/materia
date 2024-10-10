@@ -130,6 +130,10 @@ spec:
               static_configs:
                 - targets:
                     - haruka.dns.ggrel.net:8080
+            - job_name: litestream
+              static_configs:
+                - targets:
+                    - boron.dns.ggrel.net:9090
             - job_name: otelcol
               static_configs:
                 - targets: [0.0.0.0:8888]
