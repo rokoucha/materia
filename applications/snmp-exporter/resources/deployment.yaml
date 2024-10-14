@@ -24,7 +24,7 @@ spec:
           volumeMounts:
             - name: snmp-config
               mountPath: /snmp.yml
-              subPath: snmp.conf
+              subPath: snmp.yml
               readOnly: true
       volumes:
         - name: snmp-config
