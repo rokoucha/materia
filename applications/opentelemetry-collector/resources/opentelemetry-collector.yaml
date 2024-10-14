@@ -141,6 +141,10 @@ spec:
                 - source_labels: [__name__]
                   regex: ".*grpc_io.*"
                   action: drop
+            - job_name: postgres
+              static_configs:
+                - targets:
+                    - service.postgres-exporter.svc.materia-cluster.ggrel.net:9187
             - job_name: prometheus
               static_configs:
                 - targets:
