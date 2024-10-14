@@ -145,6 +145,25 @@ spec:
                 - source_labels: [__name__]
                   regex: ".*grpc_io.*"
                   action: drop
+            - job_name: snmp
+              static_configs:
+                - targets:
+                    - "172.16.2.1"
+              metrics_path: /snmp
+              params:
+                auth: [public_v2]
+                module: [if_mib, nec_ix]
+              relabel_configs:
+                - source_labels: [__address__]
+                  target_label: __param_target
+                - source_labels: [__param_target]
+                  target_label: instance
+                - target_label: __address__
+                  replacement: service.snmp-exporter.svc.materia-cluster.ggrel.net:9116
+            - job_name: snmp_exporter
+              static_configs:
+                - targets:
+                    - service.snmp-exporter.svc.materia-cluster.ggrel.net:9116
             - job_name: postgres
               static_configs:
                 - targets:
