@@ -9,6 +9,9 @@ spec:
     matchLabels:
       run: haproxy-ingress
   template:
+    metadata:
+      labels:
+        run: haproxy-ingress
     spec:
       containers:
         - name: haproxy-ingress
