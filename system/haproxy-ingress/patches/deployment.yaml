@@ -3,15 +3,13 @@ kind: Deployment
 
 metadata:
   name: haproxy-kubernetes-ingress
+  namespace: haproxy-controller
 
 spec:
   selector:
     matchLabels:
       run: haproxy-ingress
   template:
-    metadata:
-      labels:
-        run: haproxy-ingress
     spec:
       containers:
         - name: haproxy-ingress
