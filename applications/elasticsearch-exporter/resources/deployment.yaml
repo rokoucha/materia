@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: default
+  template:
+    metadata:
+      labels:
+        app: default
+    spec:
+      containers:
+        - name: elasticsearch-exporter
+          image: quay.io/prometheuscommunity/elasticsearch-exporter:v1.8.0
+          args:
+            - -es.uri=http://service.elasticsearch.svc.materia-cluster.ggrel.net:9200
+          ports:
+            - containerPort: 9114
+          envFrom:
+            - secretRef:
+                name: elasticsearch-exporter-secret
