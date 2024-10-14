@@ -37,7 +37,7 @@ spec:
             - name: discovery.type
               value: single-node
             - name: ES_JAVA_OPTS
-              value: "-Xms128m -Xmx128m -Des.enforce.bootstrap.checks=true -Des.insecure.allow.root=true"
+              value: -Xms128m -Xmx512m -Des.enforce.bootstrap.checks=true -Des.insecure.allow.root=true
             - name: node.store.allow_mmap
               value: "true"
             - name: thread_pool.write.queue_size
