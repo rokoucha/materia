@@ -13,6 +13,7 @@ resources:
   - https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/v3.0.3/deploy/haproxy-ingress.yaml
 
 patches:
+  - path: ./patches/deployment.yaml
   - path: ./patches/haproxy-ingress-cm.yaml
   - path: ./patches/service.yaml
 

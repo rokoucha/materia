@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: haproxy-kubernetes-ingress
+
+spec:
+  selector:
+    matchLabels:
+      run: haproxy-ingress
+  template:
+    spec:
+      containers:
+        - name: haproxy-ingress
+          args:
+            - --configmap=haproxy-controller/haproxy-kubernetes-ingress
+            - --quic-announce-port=443

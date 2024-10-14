@@ -21,3 +21,4 @@ data:
     #ssl-dh-param-file /path/to/dhparam
 
   ssl-certificate: haproxy-controller/materia-ggrel-net-tls
+  quic-alt-svc-max-age: "86400"

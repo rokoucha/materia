@@ -26,6 +26,11 @@ spec:
       port: 443
       protocol: TCP
       targetPort: 8443
+    - name: quic
+      nodePort: 443
+      port: 443
+      protocol: UDP
+      targetPort: 8443
     - name: stat
       port: 1024
       protocol: TCP
