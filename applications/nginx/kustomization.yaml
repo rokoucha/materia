@@ -8,6 +8,7 @@ resources:
   - ./resources/ggrel-net-tls.yaml
   - ./resources/ingress.yaml
   - ./resources/namespace.yaml
+  - ./resources/noa-pp-ua-tls.yaml
   - ./resources/rokoucha-net-tls.yaml
   - ./resources/sayn-wittgenste-in-tls.yaml
   - ./resources/service.yaml

@@ -1,0 +1,21 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+
+metadata:
+  name: noa-pp-ua-certificate
+
+spec:
+  secretTemplate:
+    annotations:
+      reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+  secretName: noa-pp-ua-tls
+  commonName: noa.pp.ua
+  privateKey:
+    algorithm: ECDSA
+    size: 384
+  dnsNames:
+    - noa.pp.ua
+    - "*.noa.pp.ua"
+  issuerRef:
+    name: letsencrypt-issuer
+    kind: ClusterIssuer

@@ -11,6 +11,10 @@ spec:
       hosts:
         - ggrel.net
         - dtv.ggrel.net
+    - secretName: noa-pp-ua-tls
+      hosts:
+        - noa.pp.ua
+        - "*.noa.pp.ua"
     - secretName: rokoucha-net-tls
       hosts:
         - dot.rokoucha.net
@@ -71,6 +75,26 @@ spec:
                 port:
                   number: 80
     - host: heinrike.prinzessin.zu.sayn-wittgenste.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service
+                port:
+                  number: 80
+    - host: noa.pp.ua
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service
+                port:
+                  number: 80
+    - host: himesaka.noa.pp.ua
       http:
         paths:
           - path: /
