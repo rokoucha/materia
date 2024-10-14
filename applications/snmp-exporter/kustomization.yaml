@@ -6,7 +6,6 @@ namespace: postgres-exporter
 resources:
   - ./resources/deployment.yaml
   - ./resources/namespace.yaml
-  - ./resources/postgres-exporter-secret.yaml
   - ./resources/service.yaml
 
 configMapGenerator:
