@@ -122,10 +122,6 @@ spec:
               static_configs:
                 - targets:
                     - cert-manager.cert-manager.svc.materia-cluster.ggrel.net:9402
-            - job_name: cilium
-              static_configs:
-                - targets:
-                    - carbon.dns.ggrel.net:9963
             - job_name: elasticsearch
               static_configs:
                 - targets:
@@ -138,6 +134,23 @@ spec:
               static_configs:
                 - targets:
                     - haruka.dns.ggrel.net:8080
+            - job_name: kubernetes-pods
+              kubernetes_sd_configs:
+                - role: pod
+              relabel_configs:
+                - source_labels:
+                    [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+                  action: keep
+                  regex: true
+                - source_labels:
+                    [
+                      __address__,
+                      __meta_kubernetes_pod_annotation_prometheus_io_port,
+                    ]
+                  action: replace
+                  regex: ([^:]+)(?::\d+)?;(\d+)
+                  replacement: ${1}:${2}
+                  target_label: __address__
             - job_name: litestream
               static_configs:
                 - targets:
