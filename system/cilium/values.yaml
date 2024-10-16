@@ -30,7 +30,11 @@ k8sServiceHost: materia-cluster.ggrel.net
 k8sServicePort: 6443
 kubeProxyReplacement: true
 operator:
+  prometheus:
+    enabled: true
   replicas: 1
+prometheus:
+  enabled: true
 rollOutCiliumPods: true
 routingMode: tunnel
 serviceAccounts:
