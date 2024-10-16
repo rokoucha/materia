@@ -122,6 +122,10 @@ spec:
               static_configs:
                 - targets:
                     - cert-manager.cert-manager.svc.materia-cluster.ggrel.net:9402
+            - job_name: cilium
+              static_configs:
+                - targets:
+                    - carbon.dns.ggrel.net:9963
             - job_name: elasticsearch
               static_configs:
                 - targets:
