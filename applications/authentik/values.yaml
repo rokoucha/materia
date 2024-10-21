@@ -11,10 +11,8 @@ server:
     hosts:
       - authentik.domain.tld
 
-postgresql:
-  enabled: true
-  auth:
-    password: "ThisIsNotASecurePassword"
-
 redis:
   enabled: true
+  master:
+    persistence:
+      enabled: false
