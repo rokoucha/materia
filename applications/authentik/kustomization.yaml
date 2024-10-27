@@ -14,7 +14,7 @@ helmCharts:
 resources:
   - ./resources/ggrel-net-tls.yaml
   - ./resources/namespace.yaml
-  - ./resources/secret.yaml
+  - ./resources/secret-authentik.yaml
 
 patches:
   - target:
@@ -24,10 +24,10 @@ patches:
     patch: |-
       - path: /data
         op: remove
-  - target:
-      version: v1
-      kind: Secret
-      name: authentik-redis
-    patch: |-
-      - path: /data
-        op: remove
+  # - target:
+  #     version: v1
+  #     kind: Secret
+  #     name: authentik-redis
+  #   patch: |-
+  #     - path: /data
+  #       op: remove
