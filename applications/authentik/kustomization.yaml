@@ -12,4 +12,6 @@ helmCharts:
     valuesFile: ./values.yaml
 
 resources:
+  - ./resources/ggrel-net-tls.yaml
   - ./resources/namespace.yaml
+  - ./resources/secret.yaml

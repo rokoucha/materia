@@ -1,17 +1,36 @@
 authentik:
-  secret_key: "PleaseGenerateA50CharKey"
+  secret_key: dummy
+  email:
+    host: smtp.gmail.com
+    port: 587
+    username: dummy
+    password: dummy
+    use_tls: true
+    from: admin+authentik@ggrel.net
   error_reporting:
     enabled: false
   postgresql:
-    password: "ThisIsNotASecurePassword"
+    host: service.postgresql.svc.materia-cluster.ggrel.net
+    name: authentik
+    user: authentik
+    password: dummy
+  redis:
+    password: dummy
 
 server:
   ingress:
     enabled: true
     hosts:
-      - authentik.domain.tld
+      - auth.ggrel.net
+    tls:
+      - secretName: ggrel-net-tls
+        hosts:
+          - auth.ggrel.net
 
 redis:
+  auth:
+    enabled: true
+    password: dummy
   enabled: true
   master:
     persistence:
