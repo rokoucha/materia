@@ -1,22 +1,3 @@
-authentik:
-  secret_key: dummy
-  email:
-    host: smtp.gmail.com
-    port: 587
-    username: dummy
-    password: dummy
-    use_tls: true
-    from: admin+authentik@ggrel.net
-  error_reporting:
-    enabled: false
-  postgresql:
-    host: service.postgresql.svc.materia-cluster.ggrel.net
-    name: authentik
-    user: authentik
-    password: dummy
-  redis:
-    password: dummy
-
 server:
   ingress:
     enabled: true
