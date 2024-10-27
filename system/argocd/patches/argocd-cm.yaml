@@ -8,7 +8,21 @@ metadata:
   name: argocd-cm
 
 data:
-  kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
+  url: https://argocd.materia.ggrel.net
+  dex.config: |
+    connectors:
+      - type: oidc
+        id: authentik
+        name: authentik
+        config:
+          issuer: https://auth.ggrel.net/application/o/materia-argocd/
+          clientID: TrkjevcCNKOaFluWdtpE3A7siE3XwlnzI9IdMbds
+          clientSecret: $dex.authentik.clientSecret
+          insecureEnableGroups: true
+          scopes:
+            - openid
+            - profile
+            - email
   resource.customizations: |
     networking.k8s.io/Ingress:
       health.lua: |
@@ -23,3 +37,4 @@ data:
         - CiliumIdentity
       clusters:
         - "*"
+  kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
