@@ -5,8 +5,14 @@ namespace: grafana
 
 resources:
   - ./resources/deployment.yaml
+  - ./resources/grafana-secrets.yaml
   - ./resources/ingress.yaml
   - ./resources/namespace.yaml
   - ./resources/persistent-volume-claim.yaml
   - ./resources/service.yaml
   - ./resources/tls.yaml
+
+configMapGenerator:
+  - name: config
+    envs:
+      - ./config/config.env
