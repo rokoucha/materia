@@ -6,6 +6,12 @@ namespace: miniflux
 resources:
   - ./resources/deployment.yaml
   - ./resources/ingress.yaml
+  - ./resources/miniflux-secrets.yaml
   - ./resources/namespace.yaml
   - ./resources/service.yaml
   - ./resources/tls.yaml
+
+configMapGenerator:
+  - name: config
+    envs:
+      - ./config/config.env

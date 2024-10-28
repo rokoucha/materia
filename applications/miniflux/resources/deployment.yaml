@@ -19,12 +19,8 @@ spec:
           name: miniflux
           ports:
             - containerPort: 8080
-          env:
-            - name: BASE_URL
-              value: https://miniflux.ggrel.net/
-            - name: DATABASE_URL
-              value: postgres://miniflux:miniflux@service.postgresql.svc.materia-cluster.ggrel.net/miniflux?sslmode=disable
-            - name: POLLING_FREQUENCY
-              value: "10"
-            - name: RUN_MIGRATIONS
-              value: "1"
+          envFrom:
+            - configMapRef:
+                name: config
+            - secretRef:
+                name: miniflux-secrets
