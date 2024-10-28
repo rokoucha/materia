@@ -24,7 +24,8 @@ spec:
           ports:
             - containerPort: 5432
           args:
-            - sleep 10000
+            - sleep
+            - "10000"
             # - pg_resetwal
             # - -f
             # - /var/lib/postgres/data
