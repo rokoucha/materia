@@ -24,13 +24,24 @@ spec:
           image: quay.io/prometheus/prometheus:v2.55.0
           name: prometheus
           ports:
-            - containerPort: 9090
+            - name: http
+              containerPort: 9090
           volumeMounts:
             - name: config
               mountPath: /etc/prometheus
               readOnly: true
             - name: data
               mountPath: /prometheus
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: http
+          startupProbe:
+            httpGet:
+              path: /-/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
       volumes:
         - name: config
           configMap:

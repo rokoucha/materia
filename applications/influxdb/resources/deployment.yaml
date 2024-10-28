@@ -18,10 +18,15 @@ spec:
         - image: docker.io/library/influxdb:2.7.10-alpine
           name: influxdb
           ports:
-            - containerPort: 8086
+            - name: http
+              containerPort: 8086
           volumeMounts:
             - name: data
               mountPath: /var/lib/influxdb2
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
       volumes:
         - name: data
           persistentVolumeClaim:

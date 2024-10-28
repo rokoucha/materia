@@ -23,13 +23,19 @@ spec:
             - name: TS3SERVER_LICENSE
               value: accept
           ports:
-            - containerPort: 9987
+            - name: voice
+              containerPort: 9987
               protocol: UDP
-            - containerPort: 10011
-            - containerPort: 30033
+            - name: serverquery
+              containerPort: 10011
+            - name: filetransfer
+              containerPort: 30033
           volumeMounts:
             - name: data
               mountPath: /var/ts3server
+          livenessProbe:
+            tcpSocket:
+              port: serverquery
       volumes:
         - name: data
           persistentVolumeClaim:

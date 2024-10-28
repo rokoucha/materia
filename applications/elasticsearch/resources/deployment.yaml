@@ -20,7 +20,8 @@ spec:
         - image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
           name: elasticsearch
           ports:
-            - containerPort: 9200
+            - name: http
+              containerPort: 9200
           volumeMounts:
             - name: data
               mountPath: /usr/share/elasticsearch/data
@@ -52,6 +53,16 @@ spec:
               value: "false"
             - name: xpack.watcher.enabled
               value: "false"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
       volumes:
         - name: data
           persistentVolumeClaim:
