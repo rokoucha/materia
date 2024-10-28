@@ -38,16 +38,6 @@ spec:
                 - postgres
                 - -d
                 - postgres
-          startupProbe:
-            exec:
-              command:
-                - pg_isready
-                - -U
-                - postgres
-                - -d
-                - postgres
-            initialDelaySeconds: 10
-            periodSeconds: 5
       volumes:
         - name: data
           persistentVolumeClaim:

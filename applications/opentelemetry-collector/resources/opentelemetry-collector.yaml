@@ -130,6 +130,10 @@ spec:
               static_configs:
                 - targets:
                     - haproxy-kubernetes-ingress.haproxy-controller.svc.materia-cluster.ggrel.net:1024
+            - job_name: influxdb
+              static_configs:
+                - targets:
+                    - service.influxdb.svc.materia-cluster.ggrel.net:8086
             - job_name: intel-igpu
               static_configs:
                 - targets:
