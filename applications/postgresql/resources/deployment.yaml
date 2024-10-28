@@ -18,17 +18,9 @@ spec:
         fsGroup: 999
       containers:
         - image: docker.io/library/postgres:16.4
-          # securityContext:
-          #   runAsUser: 999
           name: postgresql
           ports:
             - containerPort: 5432
-          args:
-            - sleep
-            - "10000"
-            # - pg_resetwal
-            # - -f
-            # - /var/lib/postgres/data
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
@@ -40,14 +32,14 @@ spec:
                   key: POSTGRES_PASSWORD
             - name: PGDATA
               value: /var/lib/postgresql/data
-          # livenessProbe:
-          #   exec:
-          #     command:
-          #       - pg_isready
-          #       - -U
-          #       - postgres
-          #       - -d
-          #       - postgres
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+                - -d
+                - postgres
       volumes:
         - name: data
           persistentVolumeClaim:
