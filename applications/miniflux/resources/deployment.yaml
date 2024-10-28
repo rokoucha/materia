@@ -18,9 +18,18 @@ spec:
         - image: docker.io/miniflux/miniflux:2.2.1
           name: miniflux
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8080
           envFrom:
             - configMapRef:
                 name: config
             - secretRef:
                 name: miniflux-secrets
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 1
+            failureThreshold: 3
