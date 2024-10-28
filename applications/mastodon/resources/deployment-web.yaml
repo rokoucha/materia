@@ -30,3 +30,17 @@ spec:
                 name: config
             - secretRef:
                 name: mastodon-secrets
+          livenessProbe:
+            tcpSocket:
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            failureThreshold: 30
+            periodSeconds: 5

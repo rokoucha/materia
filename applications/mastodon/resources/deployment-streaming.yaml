@@ -25,3 +25,18 @@ spec:
                 name: config
             - secretRef:
                 name: mastodon-secrets
+          livenessProbe:
+            httpGet:
+              path: /api/v1/streaming/health
+              port: streaming
+          readinessProbe:
+            httpGet:
+              path: /api/v1/streaming/health
+              port: streaming
+          startupProbe:
+            httpGet:
+              path: /api/v1/streaming/health
+              port: streaming
+            initialDelaySeconds: 5
+            failureThreshold: 15
+            periodSeconds: 5
