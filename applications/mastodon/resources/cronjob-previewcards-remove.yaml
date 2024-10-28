@@ -13,7 +13,16 @@ spec:
           containers:
             - image: ghcr.io/mastodon/mastodon:v4.3.1
               name: mastodon-previewcards-remove
-              command: ["bin/tootctl", "preview_cards", "remove"]
+              command:
+                [
+                  "bin/tootctl",
+                  "preview_cards",
+                  "remove",
+                  "--days",
+                  "14",
+                  "--concurrency",
+                  "10",
+                ]
               envFrom:
                 - configMapRef:
                     name: config

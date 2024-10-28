@@ -13,7 +13,16 @@ spec:
           containers:
             - image: ghcr.io/mastodon/mastodon:v4.3.1
               name: mastodon-media-remove
-              command: ["bin/tootctl", "media", "remove"]
+              command:
+                [
+                  "bin/tootctl",
+                  "media",
+                  "remove",
+                  "--days",
+                  "7",
+                  "--concurrency",
+                  "10",
+                ]
               envFrom:
                 - configMapRef:
                     name: config
