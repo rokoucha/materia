@@ -40,14 +40,14 @@ spec:
                   key: POSTGRES_PASSWORD
             - name: PGDATA
               value: /var/lib/postgresql/data
-          livenessProbe:
-            exec:
-              command:
-                - pg_isready
-                - -U
-                - postgres
-                - -d
-                - postgres
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - pg_isready
+          #       - -U
+          #       - postgres
+          #       - -d
+          #       - postgres
       volumes:
         - name: data
           persistentVolumeClaim:
