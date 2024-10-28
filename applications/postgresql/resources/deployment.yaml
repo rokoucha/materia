@@ -19,6 +19,10 @@ spec:
           name: postgresql
           ports:
             - containerPort: 5432
+          args:
+            - pg_resetwal
+            - -f
+            - /var/lib/postgres/data
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
