@@ -36,12 +36,6 @@ spec:
             httpGet:
               path: /-/healthy
               port: http
-          startupProbe:
-            httpGet:
-              path: /-/ready
-              port: http
-            initialDelaySeconds: 10
-            periodSeconds: 5
       volumes:
         - name: config
           configMap:
