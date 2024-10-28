@@ -18,7 +18,8 @@ spec:
         - image: ghcr.io/mastodon/mastodon:v4.3.1
           name: mastodon-web
           ports:
-            - containerPort: 3000
+            - name: http
+              containerPort: 3000
           command:
             [
               "bash",

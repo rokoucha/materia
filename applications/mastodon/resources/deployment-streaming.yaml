@@ -18,7 +18,8 @@ spec:
         - image: ghcr.io/mastodon/mastodon-streaming:v4.3.1
           name: mastodon-streaming
           ports:
-            - containerPort: 4000
+            - name: streaming
+              containerPort: 4000
           command: ["node", "./streaming"]
           envFrom:
             - configMapRef:
