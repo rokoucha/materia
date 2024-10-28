@@ -14,17 +14,20 @@ spec:
       labels:
         app: default
     spec:
+      securityContext:
+        fsGroup: 999
       containers:
         - image: docker.io/library/postgres:16.4
-          securityContext:
-            runAsUser: 999
+          # securityContext:
+          #   runAsUser: 999
           name: postgresql
           ports:
             - containerPort: 5432
           args:
-            - pg_resetwal
-            - -f
-            - /var/lib/postgres/data
+            - sleep 10000
+            # - pg_resetwal
+            # - -f
+            # - /var/lib/postgres/data
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
