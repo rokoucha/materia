@@ -25,7 +25,7 @@ spec:
         name: materia-cluster
       spec:
         api:
-          address: materia-cluster.ggrel.net
+          address: 172.16.2.31
           k0sApiPort: 9443
           port: 6443
           sans:
