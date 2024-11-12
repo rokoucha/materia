@@ -9,6 +9,8 @@ spec:
   selector:
     matchLabels:
       app: default
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
