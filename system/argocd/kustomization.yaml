@@ -16,6 +16,7 @@ resources:
 patches:
   - path: ./patches/argocd-cm.yaml
   - path: ./patches/argocd-cmd-params-cm.yaml
+  - path: ./patches/argocd-dex-server.yaml
   - path: ./patches/argocd-notifications-cm.yaml
   - path: ./patches/argocd-rbac-cm.yaml
   - path: ./patches/argocd-redis-network-policy.yaml
