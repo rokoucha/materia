@@ -15,7 +15,7 @@ spec:
         app: default
     spec:
       containers:
-        - image: docker.io/library/nginx:1.27.2
+        - image: docker.io/library/nginx:1.27.3
           name: nginx
           ports:
             - containerPort: 80
