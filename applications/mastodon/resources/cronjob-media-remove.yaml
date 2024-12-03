@@ -12,7 +12,7 @@ spec:
       template:
         spec:
           containers:
-            - image: ghcr.io/mastodon/mastodon:v4.3.1
+            - image: ghcr.io/mastodon/mastodon:v4.3.2
               name: mastodon-media-remove
               command:
                 [
