@@ -15,7 +15,7 @@ spec:
         user: core
         port: 22
   k0s:
-    version: v1.31.5+k0s.0
+    version: v1.32.1+k0s.0
     versionChannel: stable
     dynamicConfig: false
     config:
