@@ -19,7 +19,7 @@ spec:
           - 0
       containers:
         - name: grafana
-          image: docker.io/grafana/grafana:11.5.0
+          image: docker.io/grafana/grafana:11.5.1
           ports:
             - containerPort: 3000
               name: http-grafana
