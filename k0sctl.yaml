@@ -9,11 +9,13 @@ spec:
         address: boron.dns.ggrel.net
         user: core
         port: 22
+      privateAddress: 2400:2410:3800:2502:5054:ff:feb4:b114
     - role: worker
       ssh:
         address: carbon.dns.ggrel.net
         user: core
         port: 22
+      privateAddress: 2400:2410:3800:2502:5054:ff:feed:6c4
   k0s:
     version: v1.32.1+k0s.0
     versionChannel: stable
