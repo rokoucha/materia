@@ -36,6 +36,7 @@ spec:
               port: streaming
           startupProbe:
             httpGet:
+              host: 127.0.0.1
               path: /api/v1/streaming/health
               port: streaming
             initialDelaySeconds: 5

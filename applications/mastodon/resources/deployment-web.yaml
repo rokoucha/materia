@@ -40,6 +40,7 @@ spec:
               port: http
           startupProbe:
             httpGet:
+              host: 127.0.0.1
               path: /health
               port: http
             initialDelaySeconds: 15
