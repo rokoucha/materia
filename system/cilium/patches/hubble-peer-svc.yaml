@@ -3,6 +3,7 @@ kind: Service
 
 metadata:
   name: hubble-peer
+  namespace: kube-system
 
 spec:
   ipFamilies:
