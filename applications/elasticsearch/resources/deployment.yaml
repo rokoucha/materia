@@ -17,12 +17,10 @@ spec:
         app: default
     spec:
       securityContext:
-        runAsUser: 0
         fsGroup: 1000
       containers:
         - image: docker.elastic.co/elasticsearch/elasticsearch:8.17.2
           name: elasticsearch
-          command: ["sleep", "10000000"]
           ports:
             - name: http
               containerPort: 9200
