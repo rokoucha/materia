@@ -38,4 +38,4 @@ data:
       clusters:
         - "*"
   kustomize.buildOptions: --enable-helm --load-restrictor LoadRestrictionsNone
-  admin.enabled: "false"
+  admin.enabled: "true"
