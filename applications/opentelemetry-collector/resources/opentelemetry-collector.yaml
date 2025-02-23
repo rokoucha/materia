@@ -175,7 +175,7 @@ spec:
                     - boron.dns.ggrel.net:9090
             - job_name: otelcol
               static_configs:
-                - targets: [0.0.0.0:8888]
+                - targets: [localhost:8888]
               metric_relabel_configs:
                 - source_labels: [__name__]
                   regex: ".*grpc_io.*"
