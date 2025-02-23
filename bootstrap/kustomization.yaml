@@ -2,7 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ../system/1password-connect
+  - ../system/cilium
+  - ../system/1password-connect/kustomization.bootstrap.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
