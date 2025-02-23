@@ -17,5 +17,5 @@ helmCharts:
 
 resources:
   - ./resources/namespace.yaml
-  - ./kustomization.bootstrap.yaml
+  - ./resources/onepassword-token.yaml
   - ./resources/op-credentials.yaml
