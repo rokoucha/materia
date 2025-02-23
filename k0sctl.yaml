@@ -4,18 +4,18 @@ metadata:
   name: materia-cluster
 spec:
   hosts:
-    - role: controller
+    - role: controller+worker
       ssh:
-        address: boron.dns.ggrel.net
+        address: lithium.dns.ggrel.net
         user: core
         port: 22
-      privateAddress: 2400:2410:3800:2502:5054:ff:feb4:b114
+      privateAddress: 2400:2410:3800:2502:6e4b:90ff:feef:5391
     - role: worker
       ssh:
-        address: carbon.dns.ggrel.net
+        address: hydrogen.dns.ggrel.net
         user: core
         port: 22
-      privateAddress: 2400:2410:3800:2502:5054:ff:feed:6c4
+      privateAddress: 2400:2410:3800:2502:da9e:f3ff:fe9d:854e
   k0s:
     version: v1.32.1+k0s.0
     versionChannel: stable
@@ -27,12 +27,12 @@ spec:
         name: materia-cluster
       spec:
         api:
-          address: 172.16.2.31
+          address: 2400:2410:3800:2502:6e4b:90ff:feef:5391
           k0sApiPort: 9443
           port: 6443
           sans:
             - materia-cluster.ggrel.net
-            - boron.dns.ggrel.net
+            - lithium.dns.ggrel.net
           extraArgs:
             service-node-port-range: 80-32767
         network:
