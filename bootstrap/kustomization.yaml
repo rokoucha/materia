@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - ../system/cilium
-  - ../system/1password-connect/kustomization.bootstrap.yaml
+  - ../system/1password-connect
 
 generatorOptions:
   disableNameSuffixHash: true

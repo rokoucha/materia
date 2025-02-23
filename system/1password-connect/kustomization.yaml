@@ -3,6 +3,19 @@ kind: Kustomization
 
 namespace: 1password
 
+helmCharts:
+  - name: connect
+    releaseName: connect
+    namespace: 1password
+    version: "1.17.0"
+    repo: https://1password.github.io/connect-helm-charts
+    includeCRDs: true
+    valuesInline:
+      operator:
+        autoRestart: true
+        create: true
+
 resources:
+  - ./resources/namespace.yaml
   - ./kustomization.bootstrap.yaml
   - ./resources/op-credentials.yaml
