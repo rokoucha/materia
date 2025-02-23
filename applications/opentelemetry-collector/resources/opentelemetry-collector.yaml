@@ -17,8 +17,6 @@ spec:
             endpoint: 0.0.0.0:4317
           http:
             endpoint: 0.0.0.0:4318
-      podman_stats:
-        endpoint: unix://run/podman/podman.sock
       prometheus:
         config:
           global:
@@ -251,11 +249,6 @@ spec:
           - key: service.name
             value: nginx
             action: insert
-      resource/podman_stats:
-        attributes:
-          - key: service.name
-            value: podman_stats
-            action: insert
       resource/redis/argocd:
         attributes:
           - key: service.name
@@ -310,10 +303,6 @@ spec:
           receivers: [nginx]
           processors: [resource/nginx, batch]
           exporters: [prometheusremotewrite]
-        metrics/podman_stats:
-          receivers: [podman_stats]
-          processors: [resource/podman_stats, batch]
-          exporters: [prometheusremotewrite]
         metrics/redis/argocd:
           receivers: [redis/argocd]
           processors: [resource/redis/argocd, batch]
@@ -333,10 +322,6 @@ spec:
         metrics/mackerel/nginx:
           receivers: [nginx]
           processors: [resource/nginx, batch/mackerel]
-          exporters: [otlp/mackerel]
-        metrics/mackerel/podman_stats:
-          receivers: [podman_stats]
-          processors: [resource/podman_stats, batch/mackerel]
           exporters: [otlp/mackerel]
         metrics/mackerel/redis/argocd:
           receivers: [redis/argocd]
@@ -363,11 +348,3 @@ spec:
     - IPv4
     - IPv6
   ipFamilyPolicy: RequireDualStack
-  volumeMounts:
-    - name: podman-socket
-      mountPath: /run/podman/podman.sock
-  volumes:
-    - name: podman-socket
-      hostPath:
-        path: /run/podman/podman.sock
-        type: Socket
