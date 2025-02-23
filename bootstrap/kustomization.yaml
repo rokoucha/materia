@@ -2,8 +2,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ../system/cilium
   - ../system/1password-connect
+  - ../system/argocd
+  - ../system/cert-manager
+  - ../system/cilium
+  - ../system/haproxy-ingress
+  - ../system/reflector
+  - ../system/synology-csi
 
 generatorOptions:
   disableNameSuffixHash: true
