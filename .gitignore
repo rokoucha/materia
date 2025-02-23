@@ -4,8 +4,8 @@
 *.controller.bu
 *.ign
 *.worker.bu
-/kubeconfig
+/1password-credentials.json
 /bootstrap/1password-credentials.json
 /bootstrap/1password.env
+/kubeconfig
 charts/
-/system/synology-csi/client-info.yml
