@@ -10,7 +10,7 @@ resources:
   - ./resources/noa-pp-ua-certificate.yaml
   - ./resources/rokoucha-net-certificate.yaml
   - ./resources/sayn-wittgenste-in-certificate.yaml
-  - https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/v3.1.2/deploy/haproxy-ingress.yaml
+  - https://raw.githubusercontent.com/haproxytech/kubernetes-ingress/v3.1.4/deploy/haproxy-ingress.yaml
 
 patches:
   - path: ./patches/deployment.yaml
@@ -19,4 +19,4 @@ patches:
 
 images:
   - name: haproxytech/kubernetes-ingress
-    newTag: 3.1.2
+    newTag: 3.1.4
