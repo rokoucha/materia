@@ -14,8 +14,6 @@ spec:
     kind: PersistentVolumeClaim
     name: data
     namespace: grafana
-    resourceVersion: "34463"
-    uid: 4e55ad3a-6dfd-49a7-8701-35f94bca49fe
   csi:
     driver: csi.san.synology.com
     fsType: btrfs
