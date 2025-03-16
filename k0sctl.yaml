@@ -29,7 +29,7 @@ spec:
         name: materia-cluster
       spec:
         api:
-          address: 2400:2410:3800:2502:6e4b:90ff:feef:5391
+          address: 172.16.2.11
           k0sApiPort: 9443
           port: 6443
           sans:
