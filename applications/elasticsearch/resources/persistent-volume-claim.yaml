@@ -5,9 +5,11 @@ metadata:
   name: data
 
 spec:
+  accessModes:
+    - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
-  accessModes:
-    - ReadWriteMany
   storageClassName: beryllium-iscsi
+  volumeMode: Filesystem
+  volumeName: pvc-96cf017b-18b6-4e2c-a62f-a700d5e85736

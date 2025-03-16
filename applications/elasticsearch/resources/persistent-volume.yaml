@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: PersistentVolume
+
+metadata:
+  name: pvc-96cf017b-18b6-4e2c-a62f-a700d5e85736
+
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: data
+    namespace: elasticsearch
+  csi:
+    driver: csi.san.synology.com
+    fsType: btrfs
+    volumeAttributes:
+      baseDir: ""
+      dsm: 172.16.2.17
+      formatOptions: --nodiscard
+      mountPermissions: ""
+      protocol: iscsi
+      source: ""
+      storage.kubernetes.io/csiProvisionerIdentity: 1740323674035-8081-csi.san.synology.com
+    volumeHandle: 8f555ecb-ec0d-4b6e-a469-107fc6ccbf57
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: beryllium-iscsi
+  volumeMode: Filesystem

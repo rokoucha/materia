@@ -15,6 +15,7 @@ resources:
   - ./resources/mastodon-secrets.yaml
   - ./resources/namespace.yaml
   - ./resources/pvc-redis.yaml
+  - ./resources/pv-redis.yaml
   - ./resources/service-redis.yaml
   - ./resources/service-streaming.yaml
   - ./resources/service-web.yaml

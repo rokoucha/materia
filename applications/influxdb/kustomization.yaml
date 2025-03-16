@@ -7,4 +7,5 @@ resources:
   - ./resources/deployment.yaml
   - ./resources/namespace.yaml
   - ./resources/persistent-volume-claim.yaml
+  - ./resources/persistent-volume.yaml
   - ./resources/service.yaml

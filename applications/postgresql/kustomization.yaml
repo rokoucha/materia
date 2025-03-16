@@ -7,5 +7,6 @@ resources:
   - ./resources/deployment.yaml
   - ./resources/namespace.yaml
   - ./resources/persistent-volume-claim.yaml
+  - ./resources/persistent-volume.yaml
   - ./resources/postgresql-password.yaml
   - ./resources/service.yaml

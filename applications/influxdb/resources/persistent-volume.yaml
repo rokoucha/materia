@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: PersistentVolume
+
+metadata:
+  name: pvc-9c6e10ab-0422-490d-ad99-94064fdc7bfb
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: data
+    namespace: influxdb
+  csi:
+    driver: csi.san.synology.com
+    fsType: btrfs
+    volumeAttributes:
+      baseDir: ""
+      dsm: 172.16.2.17
+      formatOptions: --nodiscard
+      mountPermissions: ""
+      protocol: iscsi
+      source: ""
+      storage.kubernetes.io/csiProvisionerIdentity: 1740323674035-8081-csi.san.synology.com
+    volumeHandle: d26e0e90-57e9-40b7-8b3e-8646af1435d7
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: beryllium-iscsi
+  volumeMode: Filesystem
