@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: elasticsearch-exporter
-          image: quay.io/prometheuscommunity/elasticsearch-exporter:v1.8.0
+          image: quay.io/prometheuscommunity/elasticsearch-exporter:v1.9.0
           args:
             - --es.uri=http://service.elasticsearch.svc.materia-cluster.ggrel.net:9200
           ports:
