@@ -5,6 +5,8 @@ metadata:
 spec:
   hosts:
     - role: controller+worker
+      installFlags:
+        - --no-taints
       ssh:
         address: lithium.dns.ggrel.net
         user: core
