@@ -172,7 +172,7 @@ spec:
             - job_name: litestream
               static_configs:
                 - targets:
-                    - boron.dns.ggrel.net:9090
+                    - lithium.dns.ggrel.net:9090
             - job_name: otelcol
               static_configs:
                 - targets: [localhost:8888]
