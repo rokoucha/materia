@@ -19,4 +19,4 @@ patches:
 
 images:
   - name: haproxytech/kubernetes-ingress
-    newTag: 3.1.4
+    newTag: 3.1.5
