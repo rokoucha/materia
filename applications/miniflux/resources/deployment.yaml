@@ -15,7 +15,7 @@ spec:
         app: default
     spec:
       containers:
-        - image: docker.io/miniflux/miniflux:2.2.7
+        - image: docker.io/miniflux/miniflux:2.2.8
           name: miniflux
           ports:
             - name: http
