@@ -288,14 +288,13 @@ spec:
     service:
       telemetry:
         metrics:
-          address: "[::]:8888"
-          level: detailed
           readers:
             - pull:
                 exporter:
                   prometheus:
                     host: "[::]"
                     port: 8888
+
       pipelines:
         metrics:
           receivers: [otlp, prometheus]
