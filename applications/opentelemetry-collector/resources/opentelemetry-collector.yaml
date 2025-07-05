@@ -208,7 +208,7 @@ spec:
                 - targets:
                     - service.prometheus.svc.materia-cluster.ggrel.net:9090
             - job_name: switchbot-meter
-              scrape_interval: 1m
+              scrape_interval: 2m
               metrics_path: /probe
               static_configs:
                 - targets:
