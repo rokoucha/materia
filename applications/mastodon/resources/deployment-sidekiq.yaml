@@ -15,7 +15,7 @@ spec:
         app: sidekiq
     spec:
       containers:
-        - image: ghcr.io/mastodon/mastodon:v4.4.0
+        - image: ghcr.io/mastodon/mastodon:v4.4.1
           name: mastodon-sidekiq
           command: ["bundle", "exec", "sidekiq"]
           envFrom:
