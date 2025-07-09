@@ -7,11 +7,11 @@ resources:
   - ./resources/cronjob-media-remove.yaml
   - ./resources/cronjob-previewcards-remove.yaml
   - ./resources/deployment-redis.yaml
-  #- ./resources/deployment-sidekiq.yaml
-  #- ./resources/deployment-streaming.yaml
-  #- ./resources/deployment-web.yaml
+  - ./resources/deployment-sidekiq.yaml
+  - ./resources/deployment-streaming.yaml
+  - ./resources/deployment-web.yaml
   - ./resources/ingress.yaml
-  - ./resources/job-migration.yaml
+  #- ./resources/job-migration.yaml
   - ./resources/mastodon-secrets.yaml
   - ./resources/namespace.yaml
   - ./resources/pvc-redis.yaml
