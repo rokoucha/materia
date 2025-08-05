@@ -11,7 +11,7 @@ spec:
       template:
         spec:
           containers:
-            - image: ghcr.io/mastodon/mastodon:v4.4.2
+            - image: ghcr.io/mastodon/mastodon:v4.4.3
               name: mastodon-previewcards-remove
               command:
                 [
