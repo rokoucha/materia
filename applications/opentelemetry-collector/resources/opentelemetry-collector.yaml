@@ -173,13 +173,6 @@ spec:
               static_configs:
                 - targets:
                     - lithium.dns.ggrel.net:9090
-            - job_name: otelcol
-              static_configs:
-                - targets: [localhost:8888]
-              metric_relabel_configs:
-                - source_labels: [__name__]
-                  regex: ".*grpc_io.*"
-                  action: drop
             - job_name: snmp
               static_configs:
                 - targets:
@@ -289,11 +282,11 @@ spec:
       telemetry:
         metrics:
           readers:
-            - pull:
+            - periodic:
                 exporter:
-                  prometheus:
-                    host: "[::]"
-                    port: 8888
+                  otlp:
+                    protocol: http/protobuf
+                    endpoint: http://localhost:4318
 
       pipelines:
         metrics:
