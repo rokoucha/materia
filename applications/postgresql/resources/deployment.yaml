@@ -19,7 +19,7 @@ spec:
       securityContext:
         fsGroup: 999
       containers:
-        - image: docker.io/library/postgres:16.9
+        - image: docker.io/library/postgres:17.6
           name: postgresql
           ports:
             - containerPort: 5432
