@@ -3,6 +3,7 @@ cluster:
 hubble:
   peerService:
     clusterDomain: materia-cluster.ggrel.net
+  preferIpv6: true
   relay:
     enabled: true
   ui:
@@ -30,8 +31,6 @@ k8sServiceHost: materia-cluster.ggrel.net
 k8sServicePort: 6443
 kubeProxyReplacement: true
 operator:
-  prometheus:
-    enabled: true
   replicas: 1
 prometheus:
   enabled: true
@@ -43,3 +42,4 @@ serviceAccounts:
   operator:
     name: cilium-operator
 tunnelProtocol: vxlan
+upgradeCompatibility: "1.6"
