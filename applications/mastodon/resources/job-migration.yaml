@@ -14,9 +14,9 @@ spec:
         - image: ghcr.io/mastodon/mastodon:v4.5.1
           name: mastodon-migration
           command: ["bundle", "exec", "rails", "db:migrate"]
-          # env:
-          #   - name: SKIP_POST_DEPLOYMENT_MIGRATIONS
-          #     value: "true"
+          env:
+            - name: SKIP_POST_DEPLOYMENT_MIGRATIONS
+              value: "true"
           envFrom:
             - configMapRef:
                 name: config
