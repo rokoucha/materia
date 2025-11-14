@@ -5,9 +5,9 @@
     ":dependencyDashboard"
   ],
   "kubernetes": {
-    "fileMatch": [
-      "applications/.+\\.yaml$",
-      "system/.+\\.yaml$"
+    "managerFilePatterns": [
+      "/applications/.+\\.yaml$/",
+      "/system/.+\\.yaml$/"
     ]
   },
   "customManagers": [
@@ -15,7 +15,9 @@
       "customType": "regex",
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "k0sproject/k0s",
-      "fileMatch": "k0sctl.yaml",
+      "managerFilePatterns": [
+        "/k0sctl.yaml/"
+      ],
       "matchStrings": [
         "version: (?<currentValue>.*)"
       ]
@@ -23,7 +25,9 @@
     {
       "customType": "regex",
       "datasourceTemplate": "github-releases",
-      "fileMatch": "kustomization.yaml",
+      "managerFilePatterns": [
+        "/kustomization.yaml/"
+      ],
       "matchStrings": [
         "https://github.com/(?<depName>.*/.*?)/releases/download/(?<currentValue>.*?)/"
       ]
@@ -31,7 +35,9 @@
     {
       "customType": "regex",
       "datasourceTemplate": "github-tags",
-      "fileMatch": "kustomization.yaml",
+      "managerFilePatterns": [
+        "/kustomization.yaml/"
+      ],
       "matchStrings": [
         "https://raw.githubusercontent.com/(?<depName>[^/]*/[^/]*)/(?<currentValue>.*?)/"
       ]
