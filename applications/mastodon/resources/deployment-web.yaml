@@ -15,7 +15,7 @@ spec:
         app: web
     spec:
       containers:
-        - image: ghcr.io/mastodon/mastodon:v4.4.8
+        - image: ghcr.io/mastodon/mastodon:v4.5.1
           name: mastodon-web
           ports:
             - name: http
