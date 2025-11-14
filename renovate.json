@@ -42,5 +42,17 @@
         "https://raw.githubusercontent.com/(?<depName>[^/]*/[^/]*)/(?<currentValue>.*?)/"
       ]
     }
+  ],
+  "packageRules": [
+    {
+      "groupName": "Mastodon",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/mastodon/mastodon",
+        "ghcr.io/mastodon/mastodon-streaming"
+      ]
+    }
   ]
 }
