@@ -215,6 +215,10 @@ spec:
                   target_label: instance
                 - target_label: __address__
                   replacement: service.switchbot-meter-exporter.svc.materia-cluster.ggrel.net:8888
+            - job_name: external-dns
+              static_configs:
+                - targets:
+                    - service.external-dns.svc.materia-cluster.ggrel.net:7979
       redis/argocd:
         endpoint: argocd-redis.argocd.svc.materia-cluster.ggrel.net:6379
         password: ${env:ARGOCD_REDIS_PASSWORD}
