@@ -4,6 +4,7 @@ kind: Kustomization
 helmCharts:
   - name: external-dns
     releaseName: external-dns
+    namespace: external-dns
     version: "1.19.0"
     repo: https://kubernetes-sigs.github.io/external-dns/
     includeCRDs: true
@@ -11,3 +12,7 @@ helmCharts:
 
 resources:
   - ./resources/cloudflare-api-key.yaml
+  - ./resources/namespace.yaml
+
+patches:
+  - path: ./patches/cluster-role-binding.yaml

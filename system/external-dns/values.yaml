@@ -1,5 +1,8 @@
-provider:
-  name: cloudflare
+domainFilters:
+  - ggrel.net
+  - noa.pp.ua
+  - rokoucha.net
+  - sayn-wittgenste.in
 
 env:
   - name: CF_API_TOKEN
@@ -9,9 +12,10 @@ env:
         key: apiKey
 
 extraArgs:
-  - --domain-filter=ggrel.net
-  - --domain-filter=noa.pp.ua
-  - --domain-filter=rokoucha.net
-  - --domain-filter=sayn-wittgenste.in
   - --default-targets=materia.ggrel.net
   - --cloudflare-record-comment="provisioned by external-dns"
+
+policy: sync
+
+provider:
+  name: cloudflare
