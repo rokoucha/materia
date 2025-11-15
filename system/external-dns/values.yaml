@@ -1,0 +1,17 @@
+provider:
+  name: cloudflare
+
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-key
+        key: apiKey
+
+extraArgs:
+  - --domain-filter=ggrel.net
+  - --domain-filter=noa.pp.ua
+  - --domain-filter=rokoucha.net
+  - --domain-filter=sayn-wittgenste.in
+  - --default-targets=materia.ggrel.net
+  - --cloudflare-record-comment="provisioned by external-dns"

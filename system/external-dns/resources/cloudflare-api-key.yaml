@@ -1,0 +1,9 @@
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+
+metadata:
+  name: cloudflare-api-key
+  namespace: external-dns
+
+spec:
+  itemPath: vaults/materia/items/external-dns-secrets
