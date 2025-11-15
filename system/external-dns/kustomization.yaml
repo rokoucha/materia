@@ -16,3 +16,4 @@ resources:
 
 patches:
   - path: ./patches/cluster-role-binding.yaml
+  - path: ./patches/service.yaml
