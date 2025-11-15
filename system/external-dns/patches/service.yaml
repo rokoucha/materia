@@ -3,9 +3,11 @@ kind: Service
 
 metadata:
   name: external-dns
+  namespace: external-dns
 
 spec:
   selector:
+    app.kubernetes.io/instance: external-dns
     app.kubernetes.io/name: external-dns
   type: ClusterIP
   ipFamilies:
