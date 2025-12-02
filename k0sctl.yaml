@@ -19,7 +19,7 @@ spec:
         port: 22
       #privateAddress: 2400:2410:3800:2502:da9e:f3ff:fe9d:854e
   k0s:
-    version: v1.34.1+k0s.0
+    version: v1.34.2+k0s.0
     versionChannel: stable
     dynamicConfig: false
     config:
