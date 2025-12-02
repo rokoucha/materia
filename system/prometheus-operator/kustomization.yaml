@@ -4,4 +4,5 @@ kind: Kustomization
 namespace: prometheus-operator
 
 resources:
+  - ./resources/namespace.yaml
   - https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.87.0/bundle.yaml
