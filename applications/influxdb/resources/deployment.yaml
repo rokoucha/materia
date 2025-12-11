@@ -15,7 +15,7 @@ spec:
         app: default
     spec:
       containers:
-        - image: docker.io/library/influxdb:2.7.12-alpine
+        - image: docker.io/library/influxdb:2.8.0-alpine
           name: influxdb
           ports:
             - name: http
