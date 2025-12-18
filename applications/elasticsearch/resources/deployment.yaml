@@ -19,7 +19,7 @@ spec:
       securityContext:
         fsGroup: 1000
       containers:
-        - image: docker.elastic.co/elasticsearch/elasticsearch:9.2.2
+        - image: docker.elastic.co/elasticsearch/elasticsearch:9.2.3
           name: elasticsearch
           ports:
             - name: http
