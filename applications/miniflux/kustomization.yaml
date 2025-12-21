@@ -6,8 +6,10 @@ namespace: miniflux
 resources:
   - ./resources/deployment.yaml
   - ./resources/ingress.yaml
+  - ./resources/materia-postgresql-password.yaml
   - ./resources/miniflux-secrets.yaml
   - ./resources/namespace.yaml
+  - ./resources/postgresql.yaml
   - ./resources/service.yaml
   - ./resources/tls.yaml
 
