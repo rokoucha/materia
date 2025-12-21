@@ -25,6 +25,12 @@ spec:
                 name: config
             - secretRef:
                 name: miniflux-secrets
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-app
+                  key: uri
           livenessProbe:
             httpGet:
               path: /healthcheck
