@@ -1,0 +1,29 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+
+metadata:
+  name: postgresql
+
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.1-minimal-trixie
+  instances: 1
+  bootstrap:
+    initdb:
+      database: authentik
+      import:
+        type: microservice
+        databases:
+          - authentik
+        source:
+          externalCluster: materia
+  storage:
+    size: 5Gi
+  externalClusters:
+    - name: materia
+      connectionParameters:
+        host: service.postgresql.svc.materia-cluster.ggrel.net
+        user: postgres
+        dbname: authentik
+      password:
+        name: materia-postgresql-password
+        key: password

@@ -13,7 +13,9 @@ helmCharts:
 
 resources:
   - ./resources/ggrel-net-tls.yaml
+  - ./resources/materia-postgresql-password.yaml
   - ./resources/namespace.yaml
+  - ./resources/postgresql.yaml
   - ./resources/secret-authentik-redis.yaml
   - ./resources/secret-authentik.yaml
 
