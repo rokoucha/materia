@@ -81,6 +81,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: otelcol-targetallocator
+    namespace: mastodon
 roleRef:
   kind: ClusterRole
   name: opentelemetry-targetallocator-custom-role
