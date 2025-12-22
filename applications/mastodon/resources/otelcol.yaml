@@ -10,6 +10,7 @@ spec:
     enabled: true
     prometheusCR:
       enabled: true
+      serviceAccount: opentelemetry-targetallocator-sa
   config:
     receivers:
       otlp:
@@ -45,3 +46,53 @@ spec:
           receivers: [otlp]
           processors: [batch]
           exporters: [debug]
+
+---
+apiVersion: v1
+kind: ServiceAccount
+
+metadata:
+  name: opentelemetry-targetallocator-sa
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+
+metadata:
+  name: opentelemetry-targetallocator-role
+
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - nodes/metrics
+      - services
+      - endpoints
+      - pods
+      - configmaps
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["discovery.k8s.io"]
+    resources:
+      - endpointslices
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources:
+      - ingresses
+    verbs: ["get", "list", "watch"]
+  - nonResourceURLs: ["/metrics"]
+    verbs: ["get"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+
+metadata:
+  name: opentelemetry-targetallocator-rb
+
+subjects:
+  - kind: ServiceAccount
+    name: opentelemetry-targetallocator-sa
+roleRef:
+  kind: ClusterRole
+  name: opentelemetry-targetallocator-role
+  apiGroup: rbac.authorization.k8s.io
