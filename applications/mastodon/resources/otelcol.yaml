@@ -51,7 +51,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 
 metadata:
-  name: opentelemetry-targetallocator-custom-role
+  name: opentelemetry-targetallocator-role
 
 rules:
   - apiGroups: [""]
@@ -76,7 +76,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 
 metadata:
-  name: opentelemetry-targetallocator-custom-rb
+  name: opentelemetry-targetallocator-rb
 
 subjects:
   - kind: ServiceAccount
@@ -84,5 +84,5 @@ subjects:
     namespace: mastodon
 roleRef:
   kind: ClusterRole
-  name: opentelemetry-targetallocator-custom-role
+  name: opentelemetry-targetallocator-role
   apiGroup: rbac.authorization.k8s.io
