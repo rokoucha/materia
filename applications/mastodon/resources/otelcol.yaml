@@ -8,9 +8,9 @@ spec:
   mode: statefulset
   targetAllocator:
     enabled: true
+    serviceAccount: opentelemetry-targetallocator-sa
     prometheusCR:
       enabled: true
-      serviceAccount: opentelemetry-targetallocator-sa
   config:
     receivers:
       otlp:
