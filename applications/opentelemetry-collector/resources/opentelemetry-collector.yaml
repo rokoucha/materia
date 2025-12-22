@@ -192,10 +192,6 @@ spec:
               static_configs:
                 - targets:
                     - service.snmp-exporter.svc.materia-cluster.ggrel.net:9116
-            - job_name: postgres
-              static_configs:
-                - targets:
-                    - service.postgres-exporter.svc.materia-cluster.ggrel.net:9187
             - job_name: prometheus
               static_configs:
                 - targets:
