@@ -10,20 +10,5 @@ spec:
   bootstrap:
     initdb:
       database: mastodon
-      import:
-        type: microservice
-        databases:
-          - mastodon
-        source:
-          externalCluster: materia
   storage:
     size: 10Gi
-  externalClusters:
-    - name: materia
-      connectionParameters:
-        host: service.postgresql.svc.materia-cluster.ggrel.net
-        user: postgres
-        dbname: mastodon
-      password:
-        name: materia-postgresql-password
-        key: password
