@@ -7,6 +7,10 @@ metadata:
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1-minimal-trixie
   instances: 1
+  postgresql:
+    parameters:
+      pg_stat_statements.max: "10000"
+      pg_stat_statements.track: all
   bootstrap:
     initdb:
       database: mastodon
