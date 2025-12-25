@@ -5,12 +5,6 @@ metadata:
   name: otelcol
 
 spec:
-  mode: statefulset
-  targetAllocator:
-    enabled: true
-    prometheusCR:
-      enabled: true
-      podMonitorSelector: {}
   config:
     receivers:
       otlp:
@@ -28,15 +22,27 @@ spec:
     exporters:
       debug:
         verbosity: normal
+      otlp:
+        endpoint: otelcol-gateway-collector.opentelemetry-collector.svc.materia-cluster.ggrel.net:4317
 
     service:
       pipelines:
         metrics:
           receivers: [otlp, prometheus]
-          exporters: [debug]
+          exporters: [otlp]
       telemetry:
         resource:
           service.name: mastsodon/otelcol
+  mode: statefulset
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ipFamilyPolicy: RequireDualStack
+  targetAllocator:
+    enabled: true
+    prometheusCR:
+      enabled: true
+      podMonitorSelector: {}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
