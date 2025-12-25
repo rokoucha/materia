@@ -3,14 +3,15 @@ kind: StorageClass
 
 metadata:
   annotations:
-    storageclass.kubernetes.io/is-default-class: "true"
+    storageclass.kubernetes.io/is-default-class: "false"
   name: beryllium-iscsi
 
 provisioner: csi.san.synology.com
 parameters:
-  fsType: btrfs
   dsm: "172.16.2.17"
   location: /volume1
+  fsType: btrfs
+  protocol: iscsi
   formatOptions: --nodiscard
 reclaimPolicy: Delete
 allowVolumeExpansion: true

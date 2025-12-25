@@ -1,0 +1,17 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+  name: beryllium-nfs
+
+provisioner: csi.san.synology.com
+parameters:
+  dsm: "172.16.2.17"
+  location: /volume1
+  protocol: nfs
+mountOptions:
+  - nfsvers=4.1
+reclaimPolicy: Delete
+allowVolumeExpansion: true
