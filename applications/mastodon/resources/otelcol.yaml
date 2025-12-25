@@ -33,15 +33,15 @@ spec:
             action: upsert
 
     exporters:
-      otlphttp/prometheus:
-        metrics_endpoint: http://prometheus-operated.prometheus.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
+      debug:
+        verbosity: basic
 
     service:
       pipelines:
         metrics:
           receivers: [otlp, prometheus]
           processors: [resource]
-          exporters: [otlphttp/prometheus]
+          exporters: [debug]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
