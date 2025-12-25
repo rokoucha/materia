@@ -31,7 +31,7 @@ spec:
             action: upsert
 
     exporters:
-      mackerelotlp:
+      mackerelotlp: {}
       otlphttp/prometheus:
         metrics_endpoint: http://prometheus-operated.prometheus.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
 
