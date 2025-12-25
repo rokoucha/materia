@@ -34,7 +34,7 @@ spec:
 
     exporters:
       debug:
-        verbosity: basic
+        verbosity: normal
 
     service:
       pipelines:
