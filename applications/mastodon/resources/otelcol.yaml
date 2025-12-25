@@ -38,18 +38,10 @@ spec:
 
     service:
       pipelines:
-        traces:
-          receivers: [otlp]
-          processors: [resource]
-          exporters: []
         metrics:
           receivers: [otlp, prometheus]
           processors: [resource]
           exporters: [otlphttp/prometheus]
-        logs:
-          receivers: [otlp]
-          processors: [resource]
-          exporters: []
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
