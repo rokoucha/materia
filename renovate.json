@@ -53,6 +53,15 @@
         "ghcr.io/mastodon/mastodon",
         "ghcr.io/mastodon/mastodon-streaming"
       ]
+    },
+    {
+      "groupName": "OpenTelemetry Collector Materia Distribution",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/rokoucha/otelcol/**"
+      ]
     }
   ]
 }
