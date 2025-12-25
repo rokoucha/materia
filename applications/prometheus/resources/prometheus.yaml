@@ -10,7 +10,7 @@ spec:
   storage:
     volumeClaimTemplate:
       spec:
-        storageClassName: beryllium-nfs
+        storageClassName: beryllium-iscsi
         resources:
           requests:
             storage: 30Gi
