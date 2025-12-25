@@ -11,4 +11,5 @@ spec:
     initdb:
       database: miniflux
   storage:
+    storageClass: beryllium-iscsi
     size: 5Gi

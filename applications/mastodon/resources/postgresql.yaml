@@ -15,4 +15,5 @@ spec:
     initdb:
       database: mastodon
   storage:
+    storageClass: beryllium-iscsi
     size: 10Gi
