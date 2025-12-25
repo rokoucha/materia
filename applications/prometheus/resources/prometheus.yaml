@@ -5,6 +5,7 @@ metadata:
   name: prometheus
 
 spec:
+  image: quay.io/prometheus/prometheus:v3.8.1
   enableOTLPReceiver: true
   scrapeInterval: 15s
   storage:
