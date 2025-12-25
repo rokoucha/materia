@@ -34,6 +34,7 @@ spec:
 
     exporters:
       otlphttp/prometheus:
+        traces_endpoint: ""
         metrics_endpoint: http://prometheus-operated.prometheus.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
 
     service:
