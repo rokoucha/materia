@@ -14,5 +14,9 @@ spec:
         resources:
           requests:
             storage: 30Gi
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
   retention: 30d
   evaluationInterval: 30s
