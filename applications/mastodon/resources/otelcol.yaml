@@ -9,7 +9,6 @@ spec:
     receivers:
       otlp:
         protocols:
-          grpc: {}
           http: {}
       prometheus:
         config:
@@ -18,6 +17,10 @@ spec:
               scrape_interval: 10s
               static_configs:
                 - targets: ["0.0.0.0:8888"]
+
+    processors:
+      probabilistic_sampler:
+        sampling_percentage: 1
 
     exporters:
       debug:
@@ -29,6 +32,10 @@ spec:
 
     service:
       pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [probabilistic_sampler]
+          exporters: [otlp]
         metrics:
           receivers: [otlp, prometheus]
           exporters: [otlp]
