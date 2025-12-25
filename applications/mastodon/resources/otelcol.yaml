@@ -47,7 +47,7 @@ spec:
       telemetry:
         resource:
           service.name: mastsodon/otelcol
-  image: ghcr.io/rokoucha/otelcol/materia-mastodon:sha-c96b277
+  image: ghcr.io/rokoucha/otelcol/materia-mastodon:sha-aa79f59
   mode: statefulset
   ipFamilies:
     - IPv4
