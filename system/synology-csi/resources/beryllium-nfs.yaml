@@ -8,7 +8,7 @@ metadata:
 
 provisioner: csi.san.synology.com
 parameters:
-  dsm: "172.16.2.17"
+  dsm: 172.16.2.17
   location: /volume1
   protocol: nfs
 mountOptions:
