@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+
+metadata:
+  name: prometheus
+
+spec:
+  enableOTLPReceiver: true
+  scrapeInterval: 15s
+  storage:
+    volumeClaimTemplate:
+      spec:
+        resources:
+          requests:
+            storage: 30Gi
+  retention: 30d
+  evaluationInterval: 30s
