@@ -9,8 +9,8 @@ spec:
     receivers:
       otlp:
         protocols:
-          grpc:
-          http:
+          grpc: {}
+          http: {}
       prometheus:
         config:
           scrape_configs:
