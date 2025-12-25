@@ -40,15 +40,15 @@ spec:
       pipelines:
         traces:
           receivers: [otlp]
-          processors: [batch]
+          processors: [resource]
           exporters: [otlphttp/prometheus]
         metrics:
           receivers: [otlp, prometheus]
-          processors: []
+          processors: [resource]
           exporters: [otlphttp/prometheus]
         logs:
           receivers: [otlp]
-          processors: [batch]
+          processors: [resource]
           exporters: [otlphttp/prometheus]
 
 ---
