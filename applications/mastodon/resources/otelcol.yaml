@@ -24,6 +24,8 @@ spec:
         verbosity: normal
       otlp:
         endpoint: otelcol-gateway-collector.opentelemetry-collector.svc.materia-cluster.ggrel.net:4317
+        tls:
+          insecure: true
 
     service:
       pipelines:
