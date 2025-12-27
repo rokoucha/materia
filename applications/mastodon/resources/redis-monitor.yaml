@@ -12,6 +12,3 @@ spec:
     - port: redis-exporter
       interval: 30s
       scrapeTimeout: 10s
-  namespaceSelector:
-    matchNames:
-      - monitoring
