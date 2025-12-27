@@ -55,9 +55,60 @@ spec:
   ipFamilyPolicy: RequireDualStack
   targetAllocator:
     enabled: true
+    serviceAccount: otelcol-targetallocator
     prometheusCR:
       enabled: true
       allowNamespaces:
         - mastodon
       podMonitorSelector: {}
       serviceMonitorSelector: {}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+
+metadata:
+  name: otelcol-targetallocator-role
+
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - services
+      - endpoints
+      - configmaps
+      - secrets
+      - namespaces
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["statefulsets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["discovery.k8s.io"]
+    resources: ["endpointslices"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources:
+      - servicemonitors
+      - podmonitors
+      - scrapeconfigs
+      - probes
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+
+metadata:
+  name: otelcol-targetallocator-rb
+
+subjects:
+  - kind: ServiceAccount
+    name: otelcol-targetallocator
+    namespace: mastodon
+roleRef:
+  kind: Role
+  name: otelcol-targetallocator-role
+  apiGroup: rbac.authorization.k8s.io
