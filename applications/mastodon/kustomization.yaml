@@ -12,6 +12,7 @@ resources:
   - ./resources/ingress.yaml
   #- ./resources/job-migration.yaml
   - ./resources/mastodon-secrets.yaml
+  - ./resources/mastodon-streaming-monitor.yaml
   - ./resources/namespace.yaml
   - ./resources/otelcol.yaml
   - ./resources/postgresql-monitor.yaml

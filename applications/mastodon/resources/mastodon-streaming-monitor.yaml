@@ -1,0 +1,12 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+
+metadata:
+  name: mastodon-streaming-monitor
+
+spec:
+  selector:
+    matchLabels:
+      app: streaming
+  podMetricsEndpoints:
+    - port: streaming
