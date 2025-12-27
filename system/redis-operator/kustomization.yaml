@@ -14,3 +14,4 @@ helmCharts:
 
 resources:
   - ./resources/namespace.yaml
+  - ./resources/redis-operator-monitor.yaml
