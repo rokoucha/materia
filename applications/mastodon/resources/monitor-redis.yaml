@@ -8,6 +8,7 @@ spec:
   selector:
     matchLabels:
       redis_setup_type: standalone
+  jobLabel: mastodon/redis
   endpoints:
     - port: redis-exporter
       interval: 30s
