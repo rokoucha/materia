@@ -59,10 +59,10 @@ spec:
       enabled: true
       podMonitorSelector:
         matchLabels:
-          kubernetes.io/metadata.namespace: mastodon
+          namespace: mastodon
       serviceMonitorSelector:
         matchLabels:
-          kubernetes.io/metadata.namespace: mastodon
+          namespace: mastodon
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
