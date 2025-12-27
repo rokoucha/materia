@@ -20,8 +20,6 @@ spec:
           ports:
             - name: streaming
               containerPort: 4000
-            - name: metrics
-              containerPort: 9394
           command: ["node", "./streaming"]
           env:
             - name: DB_HOST
