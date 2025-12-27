@@ -17,6 +17,9 @@ spec:
       containers:
         - image: ghcr.io/mastodon/mastodon:v4.5.3
           name: mastodon-sidekiq
+          ports:
+            - name: metrics
+              containerPort: 9394
           command: ["bundle", "exec", "sidekiq"]
           env:
             - name: DB_HOST
