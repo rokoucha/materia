@@ -7,6 +7,9 @@ metadata:
 spec:
   kubernetesConfig:
     image: quay.io/opstree/redis:v8.4.0
+  redisExporter:
+    enabled: true
+    image: quay.io/opstree/redis-exporter:v1.80.1
   podSecurityContext:
     runAsUser: 1000
     fsGroup: 1000
