@@ -1,4 +1,4 @@
-server:
+global:
   env:
     - name: AUTHENTIK_POSTGRESQL__HOST
       valueFrom:
@@ -20,6 +20,8 @@ server:
         secretKeyRef:
           name: postgresql-app
           key: dbname
+
+server:
   ingress:
     enabled: true
     hosts:
