@@ -28,12 +28,3 @@ server:
       - secretName: ggrel-net-tls
         hosts:
           - auth.ggrel.net
-
-redis:
-  auth:
-    enabled: true
-    password: dummy
-  enabled: true
-  master:
-    persistence:
-      enabled: false
