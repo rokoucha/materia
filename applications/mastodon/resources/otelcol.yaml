@@ -57,8 +57,12 @@ spec:
     enabled: true
     prometheusCR:
       enabled: true
-      podMonitorSelector: {}
-      serviceMonitorSelector: {}
+      podMonitorSelector:
+        matchLabels:
+          kubernetes.io/metadata.namespace: mastodon
+      serviceMonitorSelector:
+        matchLabels:
+          kubernetes.io/metadata.namespace: mastodon
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
