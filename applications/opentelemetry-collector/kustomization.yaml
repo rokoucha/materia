@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: opentelemetry-collector
 
 resources:
-  - ./resources/argocd-redis-password.yaml
   - ./resources/crb.yaml
   - ./resources/mackerel-apikey.yaml
   - ./resources/namespace.yaml

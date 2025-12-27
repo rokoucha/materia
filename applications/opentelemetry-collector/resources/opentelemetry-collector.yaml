@@ -215,11 +215,6 @@ spec:
               static_configs:
                 - targets:
                     - external-dns.external-dns.svc.materia-cluster.ggrel.net:7979
-      redis/argocd:
-        endpoint: argocd-redis.argocd.svc.materia-cluster.ggrel.net:6379
-        password: ${env:ARGOCD_REDIS_PASSWORD}
-      redis/mastodon:
-        endpoint: redis.mastodon.svc.materia-cluster.ggrel.net:6379
 
     processors:
       batch:
@@ -241,22 +236,6 @@ spec:
         attributes:
           - key: service.name
             value: nginx
-            action: insert
-      resource/redis/argocd:
-        attributes:
-          - key: service.name
-            value: redis
-            action: insert
-          - key: service.namespace
-            value: argocd
-            action: insert
-      resource/redis/mastodon:
-        attributes:
-          - key: service.name
-            value: redis
-            action: insert
-          - key: service.namespace
-            value: mastodon
             action: insert
 
     exporters:
@@ -301,14 +280,6 @@ spec:
           receivers: [nginx]
           processors: [resource/nginx, batch]
           exporters: [prometheusremotewrite]
-        metrics/redis/argocd:
-          receivers: [redis/argocd]
-          processors: [resource/redis/argocd, batch]
-          exporters: [prometheusremotewrite]
-        metrics/redis/mastodon:
-          receivers: [redis/mastodon]
-          processors: [resource/redis/mastodon, batch]
-          exporters: [prometheusremotewrite]
         metrics/mackerel:
           receivers: [otlp, prometheus]
           processors: [batch/mackerel]
@@ -321,22 +292,12 @@ spec:
           receivers: [nginx]
           processors: [resource/nginx, batch/mackerel]
           exporters: [otlp/mackerel]
-        metrics/mackerel/redis/argocd:
-          receivers: [redis/argocd]
-          processors: [resource/redis/argocd, batch/mackerel]
-          exporters: [otlp/mackerel]
-        metrics/mackerel/redis/mastodon:
-          receivers: [redis/mastodon]
-          processors: [resource/redis/mastodon, batch/mackerel]
-          exporters: [otlp/mackerel]
         traces/vaxila:
           receivers: [otlp]
           processors: [batch/vaxila]
           exporters: [otlphttp/vaxila]
   managementState: managed
   envFrom:
-    - secretRef:
-        name: argocd-redis-password
     - secretRef:
         name: mackerel-apikey
     - secretRef:
