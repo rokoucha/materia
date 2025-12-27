@@ -58,6 +58,7 @@ spec:
     prometheusCR:
       enabled: true
       podMonitorSelector: {}
+      serviceMonitorSelector: {}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
