@@ -19,6 +19,7 @@ resources:
   - ./resources/postgresql.yaml
   - ./resources/pvc-redis.yaml
   - ./resources/pv-redis.yaml
+  - ./resources/redis-monitor.yaml
   - ./resources/redis.yaml
   - ./resources/service-redis.yaml
   - ./resources/service-streaming.yaml
