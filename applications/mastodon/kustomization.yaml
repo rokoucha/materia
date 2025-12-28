@@ -9,6 +9,7 @@ resources:
   - ./resources/deployment-sidekiq.yaml
   - ./resources/deployment-streaming.yaml
   - ./resources/deployment-web.yaml
+  - ./resources/elasticsearch.yaml
   - ./resources/ingress.yaml
   #- ./resources/job-migration.yaml
   - ./resources/mastodon-secrets.yaml
