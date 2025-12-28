@@ -120,10 +120,6 @@ spec:
               static_configs:
                 - targets:
                     - cert-manager.cert-manager.svc.materia-cluster.ggrel.net:9402
-            - job_name: elasticsearch
-              static_configs:
-                - targets:
-                    - service.elasticsearch-exporter.svc.materia-cluster.ggrel.net:9114
             - job_name: haproxy-metrics
               static_configs:
                 - targets:
