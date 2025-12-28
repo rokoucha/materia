@@ -41,6 +41,16 @@
       "matchStrings": [
         "https://raw.githubusercontent.com/(?<depName>[^/]*/[^/]*)/(?<currentValue>.*?)/"
       ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "docker",
+      "managerFilePatterns": [
+        "/.*\\.yaml/"
+      ],
+      "matchStrings": [
+        "image:\\s+(?<depName>docker\\.elastic\\.co/elasticsearch/elasticsearch)\\s+version:\\s+(?<currentValue>[^\\s]+)"
+      ]
     }
   ],
   "packageRules": [
