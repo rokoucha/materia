@@ -49,7 +49,7 @@
         "/.*\\.yaml/"
       ],
       "matchStrings": [
-        "#\\s?renovate: image=(?<depName>.*?)\\s+version:\\s+\"?(?<currentValue>[^\"]+)\"?"
+        "#\\s?renovate: image=(?<depName>.*?)\\s+version:\\s?[\"']?(?<currentValue>[\\w+\\.\\-]*)[\"']?"
       ]
     }
   ],
