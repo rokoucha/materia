@@ -49,7 +49,7 @@
         "/.*\\.yaml/"
       ],
       "matchStrings": [
-        "image:\\s+(?<depName>docker\\.elastic\\.co/elasticsearch/elasticsearch)\\s+version:\\s+(?<currentValue>[^\\s]+)"
+        "#\\s?renovate: image=(?<depName>.*?)\\s+version:\\s+\"?(?<currentValue>[^\"]+)\"?"
       ]
     }
   ],
