@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 
 metadata:
-  name: mastodon-migration
+  name: mastodon-deploy-search
 
 spec:
   backoffLimit: 3
