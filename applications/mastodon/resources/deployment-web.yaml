@@ -54,6 +54,11 @@ spec:
                 secretKeyRef:
                   name: postgresql-app
                   key: password
+            - name: ES_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-es-elastic-user
+                  key: elastic
           envFrom:
             - configMapRef:
                 name: config
