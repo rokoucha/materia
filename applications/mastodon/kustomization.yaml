@@ -14,6 +14,7 @@ resources:
   #- ./resources/job-deploy-search.yaml
   #- ./resources/job-migration.yaml
   - ./resources/mastodon-secrets.yaml
+  - ./resources/monitor-elasticsearch.yaml
   - ./resources/monitor-postgresql.yaml
   - ./resources/monitor-redis.yaml
   - ./resources/monitor-streaming.yaml
