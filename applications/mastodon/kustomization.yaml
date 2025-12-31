@@ -19,7 +19,6 @@ resources:
   - ./resources/monitor-redis.yaml
   - ./resources/monitor-streaming.yaml
   - ./resources/namespace.yaml
-  - ./resources/otelcol.yaml
   - ./resources/postgresql.yaml
   - ./resources/redis.yaml
   - ./resources/service-streaming.yaml
