@@ -8,7 +8,6 @@ resources:
   - ./resources/namespace.yaml
   - ./resources/persistent-volume-claim.yaml
   - ./resources/persistent-volume.yaml
-  - ./resources/prometheus.yaml
   - ./resources/service.yaml
 
 configMapGenerator:
