@@ -8,15 +8,27 @@ rules:
   - apiGroups:
       - ""
     resources:
+      - "nodes"
+      - "nodes/metrics"
+      - "services"
+      - "endpoints"
       - "pods"
     verbs:
+      - "get"
+      - "list"
+      - "watch"
+  - apiGroups:
+      - "monitoring.coreos.com"
+    resources:
+      - "servicemonitors"
+      - "podmonitors"
+    verbs:
+      - "get"
       - "list"
       - "watch"
   - apiGroups:
       - ""
     resources:
-      - "endpoints"
-      - "services"
+      - "namespaces"
     verbs:
-      - "list"
-      - "watch"
+      - "get"
