@@ -9,6 +9,5 @@ resources:
   - ./resources/namespace.yaml
   - ./resources/nodeport.yaml
   - ./resources/opentelemetry-collector.yaml
-  - ./resources/otelcol-gateway.yaml
   - ./resources/rbac.yaml
   - ./resources/vaxila-apikey.yaml
