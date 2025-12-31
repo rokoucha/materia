@@ -2,4 +2,4 @@ apiVersion: v1
 kind: ServiceAccount
 
 metadata:
-  name: otelcol-gateway-sa
+  name: otelcol-gateway-ta-sa
