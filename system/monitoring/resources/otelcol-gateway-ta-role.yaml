@@ -1,0 +1,22 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+
+metadata:
+  name: otelcol-gateway-ta-role
+
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - "pods"
+    verbs:
+      - "list"
+      - "watch"
+  - apiGroups:
+      - ""
+    resources:
+      - "endpoints"
+      - "services"
+    verbs:
+      - "list"
+      - "watch"

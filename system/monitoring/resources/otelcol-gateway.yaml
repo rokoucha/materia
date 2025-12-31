@@ -1,0 +1,66 @@
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+
+metadata:
+  name: otelcol-gateway
+
+spec:
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc: {}
+          http: {}
+      prometheus:
+        config:
+          scrape_configs:
+            - job_name: otel-collector
+              scrape_interval: 10s
+              static_configs:
+                - targets: ["0.0.0.0:8888"]
+
+    processors:
+      batch: {}
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 1000
+        spike_limit_mib: 256
+      resource:
+        attributes:
+          - key: k8s.cluster.name
+            value: materia-cluster
+            action: insert
+
+    exporters:
+      mackerelotlp: {}
+      otlphttp/prometheus:
+        metrics_endpoint: http://prometheus-operated.monitoring.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
+
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch, memory_limiter, resource]
+          exporters: [mackerelotlp]
+        metrics:
+          receivers: [otlp, prometheus]
+          processors: [batch, memory_limiter, resource]
+          exporters: [mackerelotlp, otlphttp/prometheus]
+  envFrom:
+    - secretRef:
+        name: mackerel-apikey
+  image: ghcr.io/rokoucha/otelcol/materia-gateway:sha-bad26a8
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ipFamilyPolicy: RequireDualStack
+  mode: statefulset
+  serviceAccount: otelcol-gateway-sa
+  targetAllocator:
+    allocationStrategy: consistent-hashing
+    enabled: true
+    prometheusCR:
+      enabled: true
+      podMonitorSelector: {}
+      serviceMonitorSelector: {}
+    serviceAccount: otelcol-gateway-ta-sa

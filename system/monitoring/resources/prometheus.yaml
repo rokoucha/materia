@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+
+metadata:
+  name: prometheus
+
+spec:
+  image: quay.io/prometheus/prometheus:v3.8.1
+  enableOTLPReceiver: true
+  scrapeInterval: 15s
+  storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: beryllium-iscsi
+        resources:
+          requests:
+            storage: 30Gi
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  retention: 30d
+  evaluationInterval: 30s

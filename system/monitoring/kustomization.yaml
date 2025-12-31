@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: monitoring
+
+resources:
+  - ./resources/mackerel-apikey.yaml
+  - ./resources/namespace.yaml
+  - ./resources/otelcol-gateway-role.yaml
+  - ./resources/otelcol-gateway-rolebinding.yaml
+  - ./resources/otelcol-gateway-sa.yaml
+  - ./resources/otelcol-gateway-ta-role.yaml
+  - ./resources/otelcol-gateway-ta-rolebinding.yaml
+  - ./resources/otelcol-gateway-ta-sa.yaml
+  - ./resources/otelcol-gateway.yaml
+  - ./resources/prometheus.yaml
