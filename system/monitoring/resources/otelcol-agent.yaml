@@ -17,7 +17,7 @@ spec:
           - type: container
             id: container-parser
       hostmetrics:
-        root_path: /hostfs
+        root_path: /host
         scrapers:
           cpu: {}
           memory: {}
@@ -76,10 +76,3 @@ spec:
   mode: daemonset
   replicas: 1
   serviceAccount: otelcol-agent-sa
-  volumes:
-    - name: varlogpods
-      hostPath:
-        path: /var/log/pods
-    - name: hostfs
-      hostPath:
-        path: /
