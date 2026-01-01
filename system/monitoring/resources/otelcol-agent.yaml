@@ -75,4 +75,7 @@ spec:
   image: ghcr.io/rokoucha/otelcol/materia-agent:sha-d814bee
   mode: daemonset
   replicas: 1
+  securityContext:
+    privileged: true
+    runAsUser: 0
   serviceAccount: otelcol-agent-sa
