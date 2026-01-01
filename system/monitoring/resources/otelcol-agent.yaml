@@ -39,7 +39,10 @@ spec:
       k8sattributes:
         passthrough: true
       resourcedetection:
-        detectors: [system, env, k8s]
+        detectors:
+          - system
+          - env
+          - k8snode
         timeout: 5s
         override: false
 
@@ -72,6 +75,11 @@ spec:
             - resourcedetection
           exporters:
             - otlp
+  env:
+    - name: K8S_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
   image: ghcr.io/rokoucha/otelcol/materia-agent:sha-d814bee
   mode: daemonset
   replicas: 1
