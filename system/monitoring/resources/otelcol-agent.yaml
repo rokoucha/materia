@@ -74,15 +74,8 @@ spec:
             - otlp
   image: ghcr.io/rokoucha/otelcol/materia-agent:sha-d814bee
   mode: daemonset
+  presets:
+    hostMetrics:
+      enabled: true
   replicas: 1
   serviceAccount: otelcol-agent-sa
-  securityContext:
-    privileged: true
-    runAsUser: 0
-  volumes:
-    - name: hostfs
-      hostPath:
-        path: /
-    - name: varlogpods
-      hostPath:
-        path: /var/log/pods
