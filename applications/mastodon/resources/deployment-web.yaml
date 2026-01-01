@@ -59,6 +59,13 @@ spec:
                 secretKeyRef:
                   name: elasticsearch-es-elastic-user
                   key: elastic
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: k8s.pod.ip=${MY_POD_IP}
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
           envFrom:
             - configMapRef:
                 name: config
