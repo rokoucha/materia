@@ -17,7 +17,7 @@ spec:
           - type: container
             id: container-parser
       hostmetrics:
-        root_path: /host
+        root_path: /hostfs
         scrapers:
           cpu: {}
           memory: {}
