@@ -85,8 +85,6 @@ spec:
     - name: hostfs
       hostPath:
         path: /
-        readOnly: true
     - name: varlogpods
       hostPath:
         path: /var/log/pods
-        readOnly: true
