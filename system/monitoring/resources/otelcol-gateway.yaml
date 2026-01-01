@@ -11,7 +11,8 @@ spec:
         protocols:
           grpc: {}
           http: {}
-      prometheus:
+      prometheus: {}
+      prometheus/self:
         config:
           scrape_configs:
             - job_name: opentelemetry-collector
@@ -77,6 +78,7 @@ spec:
           receivers:
             - otlp
             - prometheus
+            - prometheus/self
           processors:
             - memory_limiter
             - batch
