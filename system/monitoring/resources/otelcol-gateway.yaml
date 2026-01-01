@@ -56,7 +56,7 @@ spec:
 
     exporters:
       debug:
-        verbosity: normal
+        verbosity: basic
       mackerelotlp: {}
       otlphttp/prometheus:
         metrics_endpoint: http://prometheus-operated.monitoring.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
