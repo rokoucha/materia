@@ -13,7 +13,7 @@ spec:
           http: {}
       prometheus:
         config:
-          scrape_configs:
+          scrape_configs: []
       prometheus/self:
         config:
           scrape_configs:
