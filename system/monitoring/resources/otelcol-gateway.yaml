@@ -55,13 +55,15 @@ spec:
             action: upsert
 
     exporters:
+      debug:
+        verbosity: normal
       mackerelotlp: {}
       otlphttp/prometheus:
         metrics_endpoint: http://prometheus-operated.monitoring.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
 
     service:
       pipelines:
-        traces:
+        logs:
           receivers:
             - otlp
           processors:
@@ -70,7 +72,7 @@ spec:
             - k8sattributes
             - resource/cluster_name
           exporters:
-            - mackerelotlp
+            - debug
         metrics:
           receivers:
             - otlp
@@ -83,6 +85,16 @@ spec:
           exporters:
             - mackerelotlp
             - otlphttp/prometheus
+        traces:
+          receivers:
+            - otlp
+          processors:
+            - memory_limiter
+            - batch
+            - k8sattributes
+            - resource/cluster_name
+          exporters:
+            - mackerelotlp
   envFrom:
     - secretRef:
         name: mackerel-apikey
