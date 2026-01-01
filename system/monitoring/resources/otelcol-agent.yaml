@@ -84,6 +84,11 @@ spec:
                     host: ${env:MY_POD_IP}
                     port: 8888
   env:
+    - name: K8S_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
     - name: MY_POD_IP
       valueFrom:
         fieldRef:
