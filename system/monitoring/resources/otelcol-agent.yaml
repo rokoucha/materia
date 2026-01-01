@@ -1,0 +1,84 @@
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+
+metadata:
+  name: otelcol-agent
+
+spec:
+  config:
+    receivers:
+      filelog:
+        include:
+          - /var/log/pods/*/*/*.log
+        start_at: end
+        include_file_path: true
+        include_file_name: false
+        operators:
+          - type: container
+            id: container-parser
+      hostmetrics:
+        root_path: /hostfs
+        scrapers:
+          cpu: {}
+          memory: {}
+          disk: {}
+      prometheus:
+        config:
+          scrape_configs:
+            - job_name: opentelemetry-collector
+              scrape_interval: 10s
+              static_configs:
+                - targets: ["0.0.0.0:8888"]
+
+    processors:
+      batch: {}
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 512
+        spike_limit_mib: 128
+      k8sattributes:
+        passthrough: true
+      resourcedetection:
+        detectors: [system, env, k8s]
+        timeout: 5s
+        override: false
+
+    exporters:
+      otlp:
+        endpoint: otelcol-gateway.monitoring.svc.materia-cluster.ggrel.net:4317
+        tls:
+          insecure: true
+
+    service:
+      pipelines:
+        metrics:
+          receivers:
+            - hostmetrics
+            - prometheus
+          processors:
+            - memory_limiter
+            - batch
+            - k8sattributes
+            - resourcedetection
+          exporters:
+            - otlp
+        logs:
+          receivers:
+            - filelog
+          processors:
+            - memory_limiter
+            - batch
+            - k8sattributes
+            - resourcedetection
+          exporters:
+            - otlp
+  mode: daemonset
+  replicas: 1
+  serviceAccount: otelcol-agent-sa
+  volumes:
+    - name: varlogpods
+      hostPath:
+        path: /var/log/pods
+    - name: hostfs
+      hostPath:
+        path: /

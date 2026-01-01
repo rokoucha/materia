@@ -6,6 +6,10 @@ namespace: monitoring
 resources:
   - ./resources/mackerel-apikey.yaml
   - ./resources/namespace.yaml
+  - ./resources/otelcol-agent-role.yaml
+  - ./resources/otelcol-agent-rolebinding.yaml
+  - ./resources/otelcol-agent-sa.yaml
+  - ./resources/otelcol-agent.yaml
   - ./resources/otelcol-gateway-role.yaml
   - ./resources/otelcol-gateway-rolebinding.yaml
   - ./resources/otelcol-gateway-sa.yaml
