@@ -70,10 +70,10 @@ spec:
           receivers:
             - otlp
           processors:
-            - k8sattributes
-            - resource/cluster_name
             - memory_limiter
             - batch
+            - k8sattributes
+            - resource/cluster_name
           exporters:
             - debug
         metrics:
@@ -82,10 +82,10 @@ spec:
             - prometheus
             - prometheus/self
           processors:
-            - k8sattributes
-            - resource/cluster_name
             - memory_limiter
             - batch
+            - k8sattributes
+            - resource/cluster_name
           exporters:
             - mackerelotlp
             - otlphttp/prometheus
@@ -93,10 +93,10 @@ spec:
           receivers:
             - otlp
           processors:
-            - k8sattributes
-            - resource/cluster_name
             - memory_limiter
             - batch
+            - k8sattributes
+            - resource/cluster_name
           exporters:
             - mackerelotlp
   envFrom:
