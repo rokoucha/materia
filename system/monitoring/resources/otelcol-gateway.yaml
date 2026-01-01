@@ -20,7 +20,7 @@ spec:
             - job_name: opentelemetry-collector
               scrape_interval: 10s
               static_configs:
-                - targets: ["0.0.0.0:8888"]
+                - targets: ["${env:MY_POD_IP}:8888"]
 
     processors:
       batch: {}
@@ -99,9 +99,23 @@ spec:
             - resource/cluster_name
           exporters:
             - mackerelotlp
+      telemetry:
+        metrics:
+          readers:
+            - pull:
+                exporter:
+                  prometheus:
+                    host: ${env:MY_POD_IP}
+                    port: 8888
   envFrom:
     - secretRef:
         name: mackerel-apikey
+  env:
+    - name: MY_POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
   image: ghcr.io/rokoucha/otelcol/materia-gateway:sha-d814bee
   ipFamilies:
     - IPv4
