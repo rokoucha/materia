@@ -20,7 +20,7 @@ spec:
             - job_name: opentelemetry-collector
               scrape_interval: 10s
               static_configs:
-                - targets: ["${env:MY_POD_IP}:8888"]
+                - targets: ["0.0.0.0:8888"]
 
     processors:
       batch: {}
@@ -51,6 +51,11 @@ spec:
                 name: k8s.pod.uid
           - sources:
               - from: connection
+      resource/append_otelcol_agent_pod_ip:
+        attributes:
+          - key: k8s.pod.ip
+            action: insert
+            value: ${env:MY_POD_IP}
       resource/cluster_name:
         attributes:
           - key: k8s.cluster.name
@@ -64,6 +69,13 @@ spec:
       otlphttp/prometheus:
         metrics_endpoint: http://prometheus-operated.monitoring.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
 
+    connectors:
+      routing/metrics:
+        table:
+          - condition: "true"
+            pipelines:
+              - metrics
+
     service:
       pipelines:
         logs:
@@ -76,11 +88,18 @@ spec:
             - resource/cluster_name
           exporters:
             - debug
+        metrics/self:
+          receivers:
+            - prometheus/self
+          processors:
+            - resource/append_otelcol_agent_pod_ip
+          exporters:
+            - routing/metrics
         metrics:
           receivers:
+            - routing/metrics
             - otlp
             - prometheus
-            - prometheus/self
           processors:
             - memory_limiter
             - batch
@@ -99,14 +118,6 @@ spec:
             - resource/cluster_name
           exporters:
             - mackerelotlp
-      telemetry:
-        metrics:
-          readers:
-            - pull:
-                exporter:
-                  prometheus:
-                    host: ${env:MY_POD_IP}
-                    port: 8888
   envFrom:
     - secretRef:
         name: mackerel-apikey

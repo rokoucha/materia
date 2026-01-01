@@ -22,13 +22,13 @@ spec:
           cpu: {}
           memory: {}
           disk: {}
-      prometheus:
+      prometheus/self:
         config:
           scrape_configs:
             - job_name: opentelemetry-collector
               scrape_interval: 10s
               static_configs:
-                - targets: ["${env:MY_POD_IP}:8888"]
+                - targets: ["0.0.0.0:8888"]
 
     processors:
       batch: {}
@@ -45,6 +45,11 @@ spec:
           - k8snode
         timeout: 5s
         override: false
+      resource/append_otelcol_agent_pod_ip:
+        attributes:
+          - key: k8s.pod.ip
+            action: insert
+            value: ${env:MY_POD_IP}
 
     exporters:
       otlp:
@@ -52,12 +57,26 @@ spec:
         tls:
           insecure: true
 
+    connectors:
+      routing/metrics:
+        table:
+          - condition: "true"
+            pipelines:
+              - metrics
+
     service:
       pipelines:
+        metrics/self:
+          receivers:
+            - prometheus/self
+          processors:
+            - resource/append_otelcol_agent_pod_ip
+          exporters:
+            - routing/metrics
         metrics:
           receivers:
+            - routing/metrics
             - hostmetrics
-            - prometheus
           processors:
             - k8sattributes
             - resourcedetection
@@ -75,14 +94,6 @@ spec:
             - batch
           exporters:
             - otlp
-      telemetry:
-        metrics:
-          readers:
-            - pull:
-                exporter:
-                  prometheus:
-                    host: ${env:MY_POD_IP}
-                    port: 8888
   env:
     - name: K8S_NODE_NAME
       valueFrom:
