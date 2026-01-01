@@ -59,20 +59,20 @@ spec:
             - hostmetrics
             - prometheus
           processors:
-            - memory_limiter
-            - batch
             - k8sattributes
             - resourcedetection
+            - memory_limiter
+            - batch
           exporters:
             - otlp
         logs:
           receivers:
             - filelog
           processors:
-            - memory_limiter
-            - batch
             - k8sattributes
             - resourcedetection
+            - memory_limiter
+            - batch
           exporters:
             - otlp
   env:
