@@ -48,7 +48,7 @@ spec:
 
     exporters:
       otlp:
-        endpoint: otelcol-gateway.monitoring.svc.materia-cluster.ggrel.net:4317
+        endpoint: otelcol-gateway-collector-headless.monitoring.svc.materia-cluster.ggrel.net:4317
         tls:
           insecure: true
 
