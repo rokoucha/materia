@@ -11,6 +11,9 @@ spec:
         protocols:
           grpc: {}
           http: {}
+      prometheus:
+        config:
+          scrape_configs:
       prometheus/self:
         config:
           scrape_configs:
