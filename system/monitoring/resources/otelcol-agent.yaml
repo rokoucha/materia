@@ -72,6 +72,7 @@ spec:
             - resourcedetection
           exporters:
             - otlp
+  image: ghcr.io/rokoucha/otelcol/materia-agent:sha-d814bee
   mode: daemonset
   replicas: 1
   serviceAccount: otelcol-agent-sa
