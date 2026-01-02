@@ -32,29 +32,24 @@ spec:
         tls:
           insecure: true
 
-    connectors:
-      routing/metrics:
-        table:
-          - condition: "true"
-            pipelines:
-              - metrics
-
     service:
       pipelines:
-        metrics/self:
-          receivers:
-            - prometheus/self
-          processors:
-            - resource/append_otelcol_agent_pod_ip
-          exporters:
-            - routing/metrics
-        metrics:
+        logs:
           receivers:
             - routing/metrics
             - k8s_events
           processors:
             - memory_limiter
             - batch
+          exporters:
+            - otlp
+        metrics:
+          receivers:
+            - prometheus/self
+          processors:
+            - memory_limiter
+            - batch
+            - resource/append_otelcol_agent_pod_ip
           exporters:
             - otlp
   env:
