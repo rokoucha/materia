@@ -1,0 +1,12 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+
+metadata:
+  name: apcupsd-exporter
+
+spec:
+  selector:
+    matchLabels:
+      app: apcupsd-exporter
+  podMetricsEndpoints:
+    - port: telemetry

@@ -4,6 +4,5 @@ kind: Kustomization
 namespace: apcupsd-exporter
 
 resources:
-  - ./resources/deployment.yaml
-  - ./resources/namespace.yaml
-  - ./resources/service.yaml
+  - resources/apcupsd-exporter.yaml
+  - resources/monitor.yaml

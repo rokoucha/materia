@@ -1,18 +1,18 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 
 metadata:
-  name: deployment
+  name: apcupsd-exporter
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: default
+      app: apcupsd-exporter
   template:
     metadata:
       labels:
-        app: default
+        app: apcupsd-exporter
     spec:
       containers:
         - args:
@@ -25,4 +25,5 @@ spec:
           image: docker.io/sfudeus/apcupsd_exporter:master_1.19
           name: apcupsdexporter
           ports:
-            - containerPort: 9162
+            - name: telemetry
+              containerPort: 9162
