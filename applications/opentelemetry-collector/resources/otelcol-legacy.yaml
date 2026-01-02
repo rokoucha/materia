@@ -207,18 +207,37 @@ spec:
         tls:
           insecure: true
 
+    connectors:
+      routing/metrics:
+        table:
+          - condition: "true"
+            pipelines:
+              - metrics
+
     service:
       pipelines:
-        metrics:
+        metrics/self:
           receivers:
             - prometheus/self
+          processors:
+            - resource/append_otelcol_agent_pod_ip
+          exporters:
+            - routing/metrics
+        metrics:
+          receivers:
+            - routing/metrics
             - prometheus
           processors:
             - memory_limiter
             - batch
-            - resource/append_otelcol_agent_pod_ip
           exporters:
             - otlp
+  env:
+    - name: MY_POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
   image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.142.0
   mode: statefulset
   replicas: 1
