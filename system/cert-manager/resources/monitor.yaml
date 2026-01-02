@@ -3,6 +3,7 @@ kind: ServiceMonitor
 
 metadata:
   name: cert-manager
+  namespace: cert-manager
 
 spec:
   selector:
