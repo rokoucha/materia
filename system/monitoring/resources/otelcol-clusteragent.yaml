@@ -36,7 +36,6 @@ spec:
       pipelines:
         logs:
           receivers:
-            - routing/metrics
             - k8s_events
           processors:
             - memory_limiter
