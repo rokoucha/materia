@@ -1,0 +1,69 @@
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: clusteragent
+spec:
+  config:
+    receivers:
+      k8s_events: {}
+      prometheus/self:
+        config:
+          scrape_configs:
+            - job_name: opentelemetry-collector
+              scrape_interval: 10s
+              static_configs:
+                - targets: ["0.0.0.0:8888"]
+
+    processors:
+      batch: {}
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 512
+        spike_limit_mib: 128
+      resource/append_otelcol_agent_pod_ip:
+        attributes:
+          - key: k8s.pod.ip
+            action: insert
+            value: ${env:MY_POD_IP}
+
+    exporters:
+      otlp:
+        endpoint: otelcol-gateway-collector-headless.monitoring.svc.materia-cluster.ggrel.net:4317
+        tls:
+          insecure: true
+
+    connectors:
+      routing/metrics:
+        table:
+          - condition: "true"
+            pipelines:
+              - metrics
+
+    service:
+      pipelines:
+        metrics/self:
+          receivers:
+            - prometheus/self
+          processors:
+            - resource/append_otelcol_agent_pod_ip
+          exporters:
+            - routing/metrics
+        metrics:
+          receivers:
+            - routing/metrics
+            - k8s_events
+          processors:
+            - memory_limiter
+            - batch
+          exporters:
+            - otlp
+  env:
+    - name: MY_POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+  image: ghcr.io/rokoucha/otelcol/materia-clusteragent:sha-0acb4f1
+  mode: deployment
+  replicas: 1
+  serviceAccount: otelcol-clusteragent-sa
