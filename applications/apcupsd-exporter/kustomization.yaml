@@ -6,3 +6,4 @@ namespace: apcupsd-exporter
 resources:
   - resources/apcupsd-exporter.yaml
   - resources/monitor.yaml
+  - resources/service.yaml
