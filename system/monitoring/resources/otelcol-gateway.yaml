@@ -72,7 +72,8 @@ spec:
       mackerelotlp:
         sending_queue:
           batch:
-            max_size: 4_000_000
+            # grpc: received message after decompression larger than max 4194304
+            max_size: 4_194_304
       otlphttp/prometheus:
         metrics_endpoint: http://prometheus-operated.monitoring.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
 
