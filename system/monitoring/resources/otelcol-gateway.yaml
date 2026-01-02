@@ -134,7 +134,7 @@ spec:
         fieldRef:
           apiVersion: v1
           fieldPath: status.podIP
-  image: ghcr.io/rokoucha/otelcol/materia-gateway:sha-7fe7fe8
+  image: ghcr.io/rokoucha/otelcol/materia-gateway:sha-0acb4f1
   ipFamilies:
     - IPv4
     - IPv6
