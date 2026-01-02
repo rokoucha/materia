@@ -5,3 +5,4 @@ resources:
   - https://github.com/cert-manager/cert-manager/releases/download/v1.19.2/cert-manager.yaml
   - ./resources/cloudflare-api-token.yaml
   - ./resources/cluster-issuer.yaml
+  - ./resources/monitor.yaml
