@@ -12,6 +12,7 @@ helmCharts:
 
 resources:
   - ./resources/cloudflare-api-key.yaml
+  - ./resources/monitor.yaml
   - ./resources/namespace.yaml
 
 patches:
