@@ -5,9 +5,6 @@ namespace: opentelemetry-collector
 
 resources:
   - ./resources/crb.yaml
-  - ./resources/mackerel-apikey.yaml
   - ./resources/namespace.yaml
-  - ./resources/nodeport.yaml
   - ./resources/opentelemetry-collector.yaml
   - ./resources/rbac.yaml
-  - ./resources/vaxila-apikey.yaml

@@ -2,21 +2,18 @@ apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 
 metadata:
-  name: opentelemetry-collector
+  name: otelcol-legacy
 
 spec:
   config:
     receivers:
-      haproxy:
-        endpoint: http://haproxy-kubernetes-ingress.haproxy-controller.svc.materia-cluster.ggrel.net:1024/stats
-      nginx:
-        endpoint: http://service.nginx.svc.materia-cluster.ggrel.net:81
-      otlp:
-        protocols:
-          grpc:
-            endpoint: 0.0.0.0:4317
-          http:
-            endpoint: 0.0.0.0:4318
+      prometheus/self:
+        config:
+          scrape_configs:
+            - job_name: opentelemetry-collector
+              scrape_interval: 10s
+              static_configs:
+                - targets: ["0.0.0.0:8888"]
       prometheus:
         config:
           global:
@@ -193,93 +190,35 @@ spec:
                   replacement: service.switchbot-meter-exporter.svc.materia-cluster.ggrel.net:8888
 
     processors:
-      batch:
-        timeout: 5s
-      batch/mackerel:
-        send_batch_max_size: 7500
-        send_batch_size: 7500
-        timeout: 5s
-      batch/vaxila:
-        send_batch_max_size: 5000
-        send_batch_size: 5000
-        timeout: 1m
-      resource/haproxy:
+      batch: {}
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 1024
+        spike_limit_mib: 256
+      resource/append_otelcol_agent_pod_ip:
         attributes:
-          - key: service.name
-            value: haproxy
+          - key: k8s.pod.ip
             action: insert
-      resource/nginx:
-        attributes:
-          - key: service.name
-            value: nginx
-            action: insert
+            value: ${env:MY_POD_IP}
 
     exporters:
-      debug:
-        verbosity: detailed
-      otlp/mackerel:
-        endpoint: otlp.mackerelio.com:4317
-        compression: gzip
-        headers:
-          Mackerel-Api-Key: ${env:MACKEREL_APIKEY}
-      otlphttp/vaxila:
-        endpoint: https://otlp-vaxila.mackerelio.com
-        headers:
-          Accept: "*/*"
-          Mackerel-Api-Key: ${env:VAXILA_APIKEY}
-      prometheusremotewrite:
-        endpoint: http://service.prometheus.svc.materia-cluster.ggrel.net:9090/api/v1/write
-        add_metric_suffixes: false
-        resource_to_telemetry_conversion:
-          enabled: true
+      otlp:
+        endpoint: otelcol-gateway-collector-headless.monitoring.svc.materia-cluster.ggrel.net:4317
+        tls:
+          insecure: true
 
     service:
-      telemetry:
-        metrics:
-          readers:
-            - periodic:
-                exporter:
-                  otlp:
-                    protocol: http/protobuf
-                    endpoint: http://localhost:4318
-
       pipelines:
         metrics:
-          receivers: [otlp, prometheus]
-          processors: [batch]
-          exporters: [prometheusremotewrite]
-        metrics/haproxy:
-          receivers: [haproxy]
-          processors: [resource/haproxy, batch]
-          exporters: [prometheusremotewrite]
-        metrics/nginx:
-          receivers: [nginx]
-          processors: [resource/nginx, batch]
-          exporters: [prometheusremotewrite]
-        metrics/mackerel:
-          receivers: [otlp, prometheus]
-          processors: [batch/mackerel]
-          exporters: [otlp/mackerel]
-        metrics/mackerel/haproxy:
-          receivers: [haproxy]
-          processors: [resource/haproxy, batch/mackerel]
-          exporters: [otlp/mackerel]
-        metrics/mackerel/nginx:
-          receivers: [nginx]
-          processors: [resource/nginx, batch/mackerel]
-          exporters: [otlp/mackerel]
-        traces/vaxila:
-          receivers: [otlp]
-          processors: [batch/vaxila]
-          exporters: [otlphttp/vaxila]
-  managementState: managed
-  envFrom:
-    - secretRef:
-        name: mackerel-apikey
-    - secretRef:
-        name: vaxila-apikey
+          receivers:
+            - prometheus/self
+            - prometheus
+          processors:
+            - memory_limiter
+            - batch
+            - resource/append_otelcol_agent_pod_ip
+          exporters:
+            - otlp
   image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.142.0
-  ipFamilies:
-    - IPv4
-    - IPv6
-  ipFamilyPolicy: RequireDualStack
+  mode: statefulset
+  replicas: 1
