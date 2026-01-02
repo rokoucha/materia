@@ -116,18 +116,6 @@ spec:
               static_configs:
                 - targets:
                     - nitrogen.dns.ggrel.net:9115
-            - job_name: cert-manager
-              static_configs:
-                - targets:
-                    - cert-manager.cert-manager.svc.materia-cluster.ggrel.net:9402
-            - job_name: haproxy-metrics
-              static_configs:
-                - targets:
-                    - haproxy-kubernetes-ingress.haproxy-controller.svc.materia-cluster.ggrel.net:1024
-            - job_name: influxdb
-              static_configs:
-                - targets:
-                    - service.influxdb.svc.materia-cluster.ggrel.net:8086
             - job_name: intel-igpu
               static_configs:
                 - targets:
@@ -188,10 +176,6 @@ spec:
               static_configs:
                 - targets:
                     - service.snmp-exporter.svc.materia-cluster.ggrel.net:9116
-            - job_name: prometheus
-              static_configs:
-                - targets:
-                    - service.prometheus.svc.materia-cluster.ggrel.net:9090
             - job_name: switchbot-meter
               scrape_interval: 2m
               metrics_path: /probe
@@ -207,10 +191,6 @@ spec:
                   target_label: instance
                 - target_label: __address__
                   replacement: service.switchbot-meter-exporter.svc.materia-cluster.ggrel.net:8888
-            - job_name: external-dns
-              static_configs:
-                - targets:
-                    - external-dns.external-dns.svc.materia-cluster.ggrel.net:7979
 
     processors:
       batch:
