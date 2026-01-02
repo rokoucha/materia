@@ -10,7 +10,7 @@ spec:
     matchLabels:
       app: cert-manager
   endpoints:
-    - port: http-metrics
+    - port: tcp-prometheus-servicemonitor
 
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -40,4 +40,4 @@ spec:
     matchLabels:
       app: webhook
   endpoints:
-    - port: http-metrics
+    - port: metrics
