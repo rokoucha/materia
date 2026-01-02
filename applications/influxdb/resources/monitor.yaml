@@ -1,0 +1,12 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+
+metadata:
+  name: influxdb
+
+spec:
+  selector:
+    matchLabels:
+      app: influxdb
+  endpoints:
+    - port: influxdb

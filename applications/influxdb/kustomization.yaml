@@ -4,7 +4,8 @@ kind: Kustomization
 namespace: influxdb
 
 resources:
-  - ./resources/deployment.yaml
+  - ./resources/influxdb.yaml
+  - ./resources/monitor.yaml
   - ./resources/namespace.yaml
   - ./resources/persistent-volume-claim.yaml
   - ./resources/persistent-volume.yaml

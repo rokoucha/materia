@@ -1,18 +1,18 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 
 metadata:
-  name: deployment
+  name: influxdb
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: default
+      app: influxdb
   template:
     metadata:
       labels:
-        app: default
+        app: influxdb
     spec:
       containers:
         - image: docker.io/library/influxdb:2.8.0-alpine
