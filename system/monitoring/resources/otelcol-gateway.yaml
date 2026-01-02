@@ -69,7 +69,9 @@ spec:
     exporters:
       debug:
         verbosity: basic
-      mackerelotlp: {}
+      mackerelotlp:
+        batch:
+          max_size: 4_000_000
       otlphttp/prometheus:
         metrics_endpoint: http://prometheus-operated.monitoring.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
 
