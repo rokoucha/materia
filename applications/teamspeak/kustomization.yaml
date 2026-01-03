@@ -4,8 +4,9 @@ kind: Kustomization
 namespace: teamspeak
 
 resources:
-  - ./resources/deployment.yaml
   - ./resources/namespace.yaml
   - ./resources/persistent-volume-claim.yaml
   - ./resources/persistent-volume.yaml
   - ./resources/service.yaml
+  - ./resources/teamspeak.yaml
+  - ./resources/teamspeak-data.yaml

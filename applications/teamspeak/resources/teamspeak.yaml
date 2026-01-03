@@ -1,21 +1,21 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 
 metadata:
-  name: deployment
+  name: teamspeak
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: default
+      app: teamspeak
   template:
     metadata:
       labels:
-        app: default
+        app: teamspeak
     spec:
       containers:
-        - name: app
+        - name: teamspeak
           image: docker.io/library/teamspeak:3.13
           env:
             - name: TZ
@@ -31,13 +31,18 @@ spec:
             - name: filetransfer
               containerPort: 30033
           volumeMounts:
-            - name: data
+            - name: old
               mountPath: /var/ts3server
+            - name: new
+              mountPath: /mnt/ts3server
           livenessProbe:
             tcpSocket:
               port: serverquery
       volumes:
-        - name: data
+        - name: old
           persistentVolumeClaim:
             claimName: data
+        - name: new
+          persistentVolumeClaim:
+            claimName: teamspeak-data
       restartPolicy: Always
