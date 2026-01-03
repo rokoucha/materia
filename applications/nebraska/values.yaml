@@ -32,6 +32,7 @@ ingress:
   annotations:
     external-dns.alpha.kubernetes.io/hostname: nebraska.ggrel.net
     external-dns.alpha.kubernetes.io/managed: "true"
+    external-dns.alpha.kubernetes.io/target: materia.ggrel.net
   ingressClassName: haproxy
   hosts:
     - nebraska.ggrel.net
