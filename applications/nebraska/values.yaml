@@ -30,7 +30,7 @@ service:
 ingress:
   enabled: true
   annotations:
-    - external-dns.alpha.kubernetes.io/hostname: nebraska.ggrel.net
+    external-dns.alpha.kubernetes.io/hostname: nebraska.ggrel.net
   ingressClassName: haproxy
   hosts:
     - nebraska.ggrel.net
