@@ -31,18 +31,13 @@ spec:
             - name: filetransfer
               containerPort: 30033
           volumeMounts:
-            - name: old
+            - name: teamspeak-data
               mountPath: /var/ts3server
-            - name: new
-              mountPath: /mnt/ts3server
           livenessProbe:
             tcpSocket:
               port: serverquery
       volumes:
-        - name: old
-          persistentVolumeClaim:
-            claimName: data
-        - name: new
+        - name: teamspeak-data
           persistentVolumeClaim:
             claimName: teamspeak-data
       restartPolicy: Always
