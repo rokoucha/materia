@@ -19,5 +19,3 @@ policy: sync
 
 provider:
   name: cloudflare
-
-logLevel: debug
