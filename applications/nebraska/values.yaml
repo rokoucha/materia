@@ -4,7 +4,7 @@ config:
     oidc:
       existingSecret: nebraska-secrets
       issuerURL: https://auth.ggrel.net/application/o/nebraska/
-      managementURL: https://auth.ggrel.net/application/o/nebraska/.well-known/openid-configuration
+      managementURL: https://auth.ggrel.net/
       logoutURL: https://auth.ggrel.net/application/o/nebraska/end-session/
       adminRoles: Nebraska Admin
       viewerRoles: Nebraska Viewer
