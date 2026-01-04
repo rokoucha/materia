@@ -6,8 +6,3 @@ namespace: loki-operator
 resources:
   - https://github.com/grafana/loki/raw/refs/heads/main/operator/config/overlays/community/kustomization.yaml
   - resources/namespace.yaml
-
-images:
-  - name: controller
-    newName: grafana/loki-operator
-    newTag: 0.9.0
