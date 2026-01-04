@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: loki-operator-controller-manager
+
+spec:
+  selector:
+    matchLabels:
+      name: loki-operator-controller-manager
+  template:
+    spec:
+      volumes:
+        - name: webhook-cert
+          secret:
+            defaultMode: 420
+            secretName: loki-operator-webhook-server-cert

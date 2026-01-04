@@ -6,3 +6,6 @@ namespace: loki-operator
 resources:
   - https://github.com/grafana/loki//operator/config/overlays/community/?ref=operator/v0.9.0
   - ./resources/namespace.yaml
+
+patches:
+  - path: ./patches/fix-cert-name.yaml
