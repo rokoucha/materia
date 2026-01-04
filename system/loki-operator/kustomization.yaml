@@ -9,3 +9,8 @@ resources:
 
 patches:
   - path: ./patches/fix-cert-name.yaml
+
+images:
+  - name: quay.io/openshift-logging/loki-operator
+    newName: grafana/loki-operator
+    newTag: v0.9.0
