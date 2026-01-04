@@ -4,5 +4,5 @@ kind: Kustomization
 namespace: loki-operator
 
 resources:
-  - https://github.com/grafana/loki/raw/refs/heads/main/operator/config/overlays/community/kustomization.yaml
+  - https://github.com/grafana/loki/raw/refs/tags/operator/v0.9.0/operator/config/overlays/community/kustomization.yaml
   - resources/namespace.yaml
