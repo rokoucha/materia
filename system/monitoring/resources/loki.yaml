@@ -16,3 +16,4 @@ spec:
   storageClassName: beryllium-nfs
   tenants:
     mode: static
+    authentication: []
