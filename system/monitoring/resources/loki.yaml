@@ -17,3 +17,5 @@ spec:
   tenants:
     mode: static
     authentication: []
+    authorization:
+      roles: []
