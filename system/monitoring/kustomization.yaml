@@ -4,6 +4,8 @@ kind: Kustomization
 namespace: monitoring
 
 resources:
+  - ./resources/loki-storage-secret.yaml
+  - ./resources/loki.yaml
   - ./resources/mackerel-apikey.yaml
   - ./resources/namespace.yaml
   - ./resources/otelcol-agent-role.yaml
