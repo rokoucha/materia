@@ -14,3 +14,5 @@ spec:
       name: loki-storage-secret
       type: s3
   storageClassName: beryllium-nfs
+  tenants:
+    mode: static
