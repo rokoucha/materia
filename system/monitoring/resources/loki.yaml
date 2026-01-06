@@ -5,7 +5,7 @@ metadata:
   name: loki
 
 spec:
-  size: 1x.small
+  size: 1x.extra-small
   storage:
     schemas:
       - version: v13
