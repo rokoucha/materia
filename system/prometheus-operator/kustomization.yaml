@@ -5,4 +5,4 @@ namespace: prometheus-operator
 
 resources:
   - ./resources/namespace.yaml
-  - https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.87.1/bundle.yaml
+  - https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.88.0/bundle.yaml
