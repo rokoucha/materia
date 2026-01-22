@@ -21,6 +21,10 @@ global:
           name: postgresql-app
           key: dbname
 
+authentik:
+  existingSecret:
+    secretName: authentik
+
 server:
   ingress:
     enabled: true
