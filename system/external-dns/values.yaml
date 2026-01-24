@@ -16,9 +16,10 @@ extraArgs:
   - --default-targets=materia.ggrel.net
   - --force-default-targets
   - --txt-owner-id=materia
-  - --log-level=debug
 
 policy: sync
+
+logLevel: debug
 
 provider:
   name: cloudflare
