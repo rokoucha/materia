@@ -16,3 +16,4 @@ spec:
           args:
             - --configmap=haproxy-controller/haproxy-kubernetes-ingress
             - --quic-announce-port=443
+            - --publish-service=haproxy-controller/haproxy-kubernetes-ingress
