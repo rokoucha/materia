@@ -12,7 +12,6 @@ env:
         key: apiKey
 
 extraArgs:
-  - --cloudflare-record-comment="provisioned by external-dns"
   - --default-targets=materia.ggrel.net
   - --force-default-targets
   - --txt-owner-id=materia
