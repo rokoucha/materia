@@ -13,6 +13,7 @@ env:
 
 extraArgs:
   - --default-targets=materia.ggrel.net
+  - --force-default-targets
   - --cloudflare-record-comment="provisioned by external-dns"
 
 policy: sync
