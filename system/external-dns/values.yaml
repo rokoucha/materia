@@ -14,6 +14,7 @@ env:
 extraArgs:
   - --default-targets=materia.ggrel.net
   - --force-default-targets
+  - --ignore-ingress-tls-spec
   - --txt-owner-id=materia
 
 policy: sync
