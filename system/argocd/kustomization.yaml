@@ -11,7 +11,7 @@ resources:
   - ./resources/namespace.yaml
   - ./resources/project-applications.yaml
   - ./resources/project-system.yaml
-  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.2.6/manifests/install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.3.0/manifests/install.yaml
 
 patches:
   - path: ./patches/argocd-cm.yaml
