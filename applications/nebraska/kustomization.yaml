@@ -7,7 +7,7 @@ helmCharts:
   - name: nebraska
     releaseName: nebraska
     namespace: nebraska
-    version: 2.0.0
+    version: "2.0.0"
     repo: https://flatcar.github.io/nebraska
     valuesFile: ./values.yaml
 
