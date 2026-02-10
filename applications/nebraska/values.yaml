@@ -10,13 +10,6 @@ config:
       viewerRoles: Nebraska Viewer
       rolesPath: groups
 
-extraEnv:
-  - name: NEBRASKA_DB_URL
-    valueFrom:
-      secretKeyRef:
-        name: postgresql-app
-        key: uri
-
 service:
   type: ClusterIP
   port: 80
