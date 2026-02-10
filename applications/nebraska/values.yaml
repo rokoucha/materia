@@ -10,12 +10,6 @@ config:
       viewerRoles: Nebraska Viewer
       rolesPath: groups
 
-  database:
-    passwordExistingSecret:
-      enabled: true
-      name: postgresql-app
-      key: password
-
 extraEnv:
   - name: NEBRASKA_DB_URL
     valueFrom:

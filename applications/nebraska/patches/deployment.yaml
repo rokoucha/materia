@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: nebraska
+
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: nebraska
+      app.kubernetes.io/name: nebraska
+  template:
+    spec:
+      containers:
+        - name: nebraska
+          env:
+            - name: NEBRASKA_DB_URL
+              valueFrom:
+                secretKeyRef:
+                  key: uri
+                  name: postgresql-app

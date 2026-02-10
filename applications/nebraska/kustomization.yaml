@@ -17,3 +17,6 @@ resources:
   - ./resources/nebraska-secrets.yaml
   - ./resources/postgresql.yaml
   - ./resources/tls.yaml
+
+patches:
+  - path: ./patches/deployment.yaml
