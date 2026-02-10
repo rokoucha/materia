@@ -15,6 +15,7 @@ spec:
         - name: nebraska
           env:
             - name: NEBRASKA_DB_URL
+              value: null
               valueFrom:
                 secretKeyRef:
                   key: uri
