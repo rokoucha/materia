@@ -10,6 +10,12 @@ config:
       viewerRoles: Nebraska Viewer
       rolesPath: groups
 
+  database:
+    passwordExistingSecret:
+      enabled: true
+      name: postgresql-app
+      key: password
+
 service:
   type: ClusterIP
   port: 80
