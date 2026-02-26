@@ -5,7 +5,7 @@ helmCharts:
   - name: eck-operator
     releaseName: elastic-operator
     namespace: elastic-system
-    version: 3.3.0
+    version: 3.3.1
     repo: https://helm.elastic.co
     includeCRDs: true
 
