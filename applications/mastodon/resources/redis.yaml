@@ -9,7 +9,7 @@ spec:
     image: quay.io/opstree/redis:v8.4.2
   redisExporter:
     enabled: true
-    image: quay.io/opstree/redis-exporter:v1.80.2
+    image: quay.io/opstree/redis-exporter:v1.81.0
   podSecurityContext:
     runAsUser: 1000
     fsGroup: 1000
