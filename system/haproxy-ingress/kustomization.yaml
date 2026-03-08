@@ -13,6 +13,7 @@ helmCharts:
     valuesFile: ./values.yaml
 
 resources:
+  - ./resources/namespace.yaml
   - ./resources/ggrel-net-certificate.yaml
   - ./resources/materia-ggrel-net-certificate.yaml
   - ./resources/noa-pp-ua-certificate.yaml
