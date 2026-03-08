@@ -1,0 +1,58 @@
+controller:
+  image:
+    # renovate: image=ghcr.io/haproxytech/kubernetes-ingress
+    tag: 3.1.17
+
+  kind: Deployment
+  replicaCount: 1
+
+  defaultTLSSecret:
+    secretNamespace: haproxy-controller
+    secret: materia-ggrel-net-tls
+
+  config:
+    global-config-snippet: |
+      ssl-default-bind-ciphers ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384
+      ssl-default-bind-ciphersuites TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384
+      ssl-default-bind-curves secp521r1:secp384r1
+      ssl-default-bind-options prefer-client-ciphers no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
+
+      ssl-default-server-ciphers ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384
+      ssl-default-server-ciphersuites TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384
+      ssl-default-server-curves secp521r1:secp384r1
+      ssl-default-server-options no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
+
+      # curl https://ssl-config.mozilla.org/ffdhe2048.txt > /path/to/dhparam
+      #ssl-dh-param-file /path/to/dhparam
+    quic-alt-svc-max-age: "86400"
+
+  service:
+    nodePorts:
+      http: 80
+      https: 443
+      quic: 443
+
+    ports:
+      http: 80
+      https: 443
+      quic: 443
+
+    enablePorts:
+      http: true
+      https: true
+      quic: true
+      stat: false
+      admin: false
+
+    targetPorts:
+      http: http
+      https: https
+      quic: quic
+
+    ipFamilies:
+      - IPv4
+      - IPv6
+    ipFamilyPolicy: RequireDualStack
+
+  serviceMonitor:
+    enabled: true
