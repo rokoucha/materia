@@ -28,6 +28,7 @@ authentik:
 server:
   ingress:
     enabled: true
+    ingressClassName: haproxy
     hosts:
       - auth.ggrel.net
     tls:
