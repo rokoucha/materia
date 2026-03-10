@@ -6,6 +6,9 @@ controller:
   kind: Deployment
   replicaCount: 1
 
+  ingressClassResource:
+    default: true
+
   defaultTLSSecret:
     secretNamespace: haproxy-controller
     secret: materia-ggrel-net-tls
