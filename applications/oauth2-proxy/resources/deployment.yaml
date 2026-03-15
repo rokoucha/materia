@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: default
+  template:
+    metadata:
+      labels:
+        app: default
+    spec:
+      containers:
+        - image: quay.io/oauth2-proxy/oauth2-proxy:v7.4.0
+          name: oauth2-proxy
+          ports:
+            - name: http
+              containerPort: 54180
+          envFrom:
+            - configMapRef:
+                name: config
+            - secretRef:
+                name: oauth2-proxy-secrets
+          volumeMounts:
+            - name: htpasswd
+              mountPath: /.htpasswd
+              subPath: htpasswd
+              readOnly: true
+      volumes:
+        - name: htpasswd
+          secret:
+            secretName: oauth2-proxy-htpasswd
