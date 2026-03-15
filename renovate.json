@@ -71,7 +71,8 @@
       ],
       "matchPackageNames": [
         "ghcr.io/rokoucha/otelcol/**"
-      ]
+      ],
+      "versioning": "regex:^(?<major>\\d{8})\\.(?<minor>\\d{6})$"
     }
   ]
 }
