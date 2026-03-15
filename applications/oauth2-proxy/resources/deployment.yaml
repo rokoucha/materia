@@ -27,7 +27,7 @@ spec:
                 name: oauth2-proxy-secrets
           volumeMounts:
             - name: htpasswd
-              mountPath: /.htpasswd
+              mountPath: /etc/oauth2-proxy/.htpasswd
               subPath: htpasswd
               readOnly: true
       volumes:
