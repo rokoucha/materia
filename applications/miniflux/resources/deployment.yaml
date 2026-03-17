@@ -5,7 +5,6 @@ metadata:
   name: deployment
 
 spec:
-  progressDeadlineSeconds: 60
   replicas: 1
   selector:
     matchLabels:
@@ -16,12 +15,8 @@ spec:
         app: default
     spec:
       containers:
-        - image: docker.io/miniflux/miniflux:2.2.18
+        - image: docker.io/miniflux/miniflux:notify-test-does-not-exist
           name: miniflux
-          command:
-            - /bin/sh
-            - -c
-            - exit 1
           ports:
             - name: http
               containerPort: 8080
