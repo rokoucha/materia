@@ -125,7 +125,7 @@ data:
       send: [github-success]
 
   trigger.on-status-change: |
-    - when: app.status.operationState.phase in ['Error', 'Failed']
+    - when: app.status.operationState != nil and app.status.operationState.phase in ['Error', 'Failed']
       oncePer: app.status.operationState.syncResult.revision
       send: [discord-status]
 
