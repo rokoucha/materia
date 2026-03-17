@@ -5,6 +5,7 @@ metadata:
   name: deployment
 
 spec:
+  progressDeadlineSeconds: 60
   replicas: 1
   selector:
     matchLabels:
@@ -17,6 +18,10 @@ spec:
       containers:
         - image: docker.io/miniflux/miniflux:2.2.18
           name: miniflux
+          command:
+            - /bin/sh
+            - -c
+            - exit 1
           ports:
             - name: http
               containerPort: 8080
