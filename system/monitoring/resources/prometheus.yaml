@@ -7,6 +7,10 @@ metadata:
 spec:
   image: quay.io/prometheus/prometheus:v3.10.0
   enableOTLPReceiver: true
+  serviceMonitorSelector: {}
+  serviceMonitorNamespaceSelector: {}
+  podMonitorSelector: {}
+  podMonitorNamespaceSelector: {}
   scrapeInterval: 15s
   storage:
     volumeClaimTemplate:
