@@ -10,7 +10,6 @@ data:
 
   defaultTriggers: |
     - on-deployed
-    - on-status-change
     - on-health-degraded
     - on-health-unknown
 
@@ -18,7 +17,6 @@ data:
     - recipients:
         - discord
       triggers:
-        - on-status-change
         - on-health-degraded
         - on-health-unknown
 
@@ -32,26 +30,6 @@ data:
     headers:
       - name: Content-Type
         value: application/json
-
-  template.discord-status: |
-    webhook:
-      discord:
-        method: POST
-        body: |
-          {
-            "username": "Argo CD",
-            "embeds": [
-              {
-                {{if eq .app.status.operationState.phase "Succeeded"}}"color": 34628,{{end}}
-                {{if eq .app.status.operationState.phase "Running"}}"color": 16754432,{{end}}
-                {{if eq .app.status.operationState.phase "Error"}}"color": 14036256,{{end}}
-                {{if eq .app.status.operationState.phase "Failed"}}"color": 14036256,{{end}}
-                "title": "{{.app.metadata.name}}",
-                "description": "Application state is now **{{.app.status.operationState.phase}}**.",
-                "url": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}"
-              }
-            ]
-          }
 
   template.discord-health-degraded: |
     webhook:
@@ -123,11 +101,6 @@ data:
     - when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
       oncePer: app.status.operationState.syncResult.revision
       send: [github-success]
-
-  trigger.on-status-change: |
-    - when: app.status.operationState != nil and app.status.operationState.phase in ['Error', 'Failed']
-      oncePer: app.status.operationState.syncResult.revision
-      send: [discord-status]
 
   trigger.on-health-degraded: |
     - when: app.status.health.status == 'Degraded'
