@@ -131,10 +131,10 @@ data:
 
   trigger.on-health-degraded: |
     - when: app.status.health.status == 'Degraded'
-      oncePer: app.status.health.status
+      oncePer: app.status.sync.revision
       send: [discord-health-degraded]
 
   trigger.on-health-unknown: |
     - when: app.status.health.status == 'Unknown'
-      oncePer: app.status.health.status
+      oncePer: app.status.sync.revision
       send: [discord-health-unknown]
