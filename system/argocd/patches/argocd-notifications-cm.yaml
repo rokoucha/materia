@@ -5,6 +5,9 @@ metadata:
   name: argocd-notifications-cm
 
 data:
+  context: |
+    argocdUrl: https://argocd.materia.ggrel.net
+
   defaultTriggers: |
     - on-deployed
     - on-status-change
