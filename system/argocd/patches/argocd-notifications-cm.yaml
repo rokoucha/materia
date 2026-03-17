@@ -103,11 +103,11 @@ data:
       send: [github-success]
 
   trigger.on-health-degraded: |
-    - when: app.status.health.status == 'Degraded'
+    - when: app.status.health.status == 'Degraded' and app.status.sync.status == 'Synced'
       oncePer: app.status.sync.revision
       send: [discord-health-degraded]
 
   trigger.on-health-unknown: |
-    - when: app.status.health.status == 'Unknown'
+    - when: app.status.health.status == 'Unknown' and app.status.sync.status == 'Synced'
       oncePer: app.status.sync.revision
       send: [discord-health-unknown]
