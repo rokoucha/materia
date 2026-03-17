@@ -41,3 +41,35 @@ SSH_KNOWN_HOSTS=/dev/null k0sctl kubeconfig > ~/.kube/config
 ```sh
 kubectl kustomize --enable-helm ./bootstrap | kubectl apply -f -
 ```
+
+## Argo CD MCP
+
+This repository provisions a read-only local Argo CD account for MCP clients:
+
+- account: `mcp-bot`
+- role: `mcp-readonly`
+
+After Argo CD syncs `system/argocd`, generate an API token:
+
+```sh
+argocd login argocd.materia.ggrel.net
+argocd account generate-token --account mcp-bot
+```
+
+Use the generated token with your MCP client:
+
+```json
+{
+  "mcpServers": {
+    "argocd": {
+      "command": "npx",
+      "args": ["argocd-mcp@latest", "stdio"],
+      "env": {
+        "ARGOCD_BASE_URL": "https://argocd.materia.ggrel.net",
+        "ARGOCD_API_TOKEN": "paste-generated-token-here",
+        "MCP_READ_ONLY": "true"
+      }
+    }
+  }
+}
+```

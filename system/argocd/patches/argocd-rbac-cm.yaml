@@ -11,3 +11,10 @@ data:
   policy.csv: |
     g, authentik Admins, role:admin
     g, authentik Read-only, role:readonly
+    p, role:mcp-readonly, applications, get, */*, allow
+    p, role:mcp-readonly, applications, sync, */*, deny
+    p, role:mcp-readonly, applications, action/*, */*, deny
+    p, role:mcp-readonly, logs, get, */*, allow
+    p, role:mcp-readonly, projects, get, *, allow
+    p, role:mcp-readonly, repositories, get, *, allow
+    g, mcp-bot, role:mcp-readonly

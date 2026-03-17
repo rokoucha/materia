@@ -9,6 +9,7 @@ metadata:
 
 data:
   url: https://argocd.materia.ggrel.net
+  accounts.mcp-bot: apiKey
   dex.config: |
     connectors:
       - type: oidc
