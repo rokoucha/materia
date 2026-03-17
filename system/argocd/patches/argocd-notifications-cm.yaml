@@ -111,35 +111,6 @@ data:
             ]
           }
 
-  template.discord-health-recovered: |
-    webhook:
-      discord:
-        method: POST
-        body: |
-          {
-            "username": "Argo CD",
-            "embeds": [
-              {
-                "color": 34628,
-                "title": "{{.app.metadata.name}}",
-                "description": "Application health recovered to **{{.app.status.health.status}}**.",
-                "url": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
-                "fields": [
-                  {
-                    "name": "Health",
-                    "value": "{{.app.status.health.status}}",
-                    "inline": true
-                  },
-                  {
-                    "name": "Sync",
-                    "value": "{{.app.status.sync.status}}",
-                    "inline": true
-                  }
-                ]
-              }
-            ]
-          }
-
   template.github-success: |
     message: Application {{.app.metadata.name}} is now running new version of deployments manifests.
     github:
@@ -167,8 +138,3 @@ data:
     - when: app.status.health.status == 'Unknown'
       oncePer: app.status.health.status
       send: [discord-health-unknown]
-
-  trigger.on-health-recovered: |
-    - when: app.status.health.status == 'Healthy'
-      oncePer: app.status.sync.revision
-      send: [discord-health-recovered]
