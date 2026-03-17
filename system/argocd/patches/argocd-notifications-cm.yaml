@@ -8,6 +8,18 @@ data:
   defaultTriggers: |
     - on-deployed
     - on-status-change
+    - on-health-degraded
+    - on-health-unknown
+    - on-health-recovered
+
+  subscriptions: |
+    - recipients:
+        - discord
+      triggers:
+        - on-status-change
+        - on-health-degraded
+        - on-health-unknown
+        - on-health-recovered
 
   service.github: |
     appID: 980715
@@ -40,6 +52,93 @@ data:
             ]
           }
 
+  template.discord-health-degraded: |
+    webhook:
+      discord:
+        method: POST
+        body: |
+          {
+            "username": "Argo CD",
+            "embeds": [
+              {
+                "color": 14036256,
+                "title": "{{.app.metadata.name}}",
+                "description": "Application health is now **{{.app.status.health.status}}**.",
+                "url": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+                "fields": [
+                  {
+                    "name": "Health",
+                    "value": "{{.app.status.health.status}}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Sync",
+                    "value": "{{.app.status.sync.status}}",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
+          }
+
+  template.discord-health-unknown: |
+    webhook:
+      discord:
+        method: POST
+        body: |
+          {
+            "username": "Argo CD",
+            "embeds": [
+              {
+                "color": 16754432,
+                "title": "{{.app.metadata.name}}",
+                "description": "Application health is now **{{.app.status.health.status}}**.",
+                "url": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+                "fields": [
+                  {
+                    "name": "Health",
+                    "value": "{{.app.status.health.status}}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Sync",
+                    "value": "{{.app.status.sync.status}}",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
+          }
+
+  template.discord-health-recovered: |
+    webhook:
+      discord:
+        method: POST
+        body: |
+          {
+            "username": "Argo CD",
+            "embeds": [
+              {
+                "color": 34628,
+                "title": "{{.app.metadata.name}}",
+                "description": "Application health recovered to **{{.app.status.health.status}}**.",
+                "url": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+                "fields": [
+                  {
+                    "name": "Health",
+                    "value": "{{.app.status.health.status}}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Sync",
+                    "value": "{{.app.status.sync.status}}",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
+          }
+
   template.github-success: |
     message: Application {{.app.metadata.name}} is now running new version of deployments manifests.
     github:
@@ -57,3 +156,18 @@ data:
     - when: app.status.operationState.phase in ['Error', 'Failed']
       oncePer: app.status.operationState.syncResult.revision
       send: [discord-status]
+
+  trigger.on-health-degraded: |
+    - when: app.status.health.status == 'Degraded'
+      oncePer: app.status.health.status
+      send: [discord-health-degraded]
+
+  trigger.on-health-unknown: |
+    - when: app.status.health.status == 'Unknown'
+      oncePer: app.status.health.status
+      send: [discord-health-unknown]
+
+  trigger.on-health-recovered: |
+    - when: app.status.health.status == 'Healthy'
+      oncePer: app.status.health.status
+      send: [discord-health-recovered]
