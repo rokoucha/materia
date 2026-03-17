@@ -13,7 +13,6 @@ data:
     - on-status-change
     - on-health-degraded
     - on-health-unknown
-    - on-health-recovered
 
   subscriptions: |
     - recipients:
@@ -22,7 +21,6 @@ data:
         - on-status-change
         - on-health-degraded
         - on-health-unknown
-        - on-health-recovered
 
   service.github: |
     appID: 980715
