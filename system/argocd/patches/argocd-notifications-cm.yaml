@@ -12,8 +12,16 @@ data:
     - on-deployed
     - on-health-degraded
     - on-health-unknown
+    - on-sync-failed
+    - on-sync-running
 
   subscriptions: |
+    - recipients:
+        - github
+      triggers:
+        - on-deployed
+        - on-sync-failed
+        - on-sync-running
     - recipients:
         - discord
       triggers:
@@ -97,15 +105,41 @@ data:
         label: "CD/{{.app.metadata.name}}"
         targetURL: "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true"
 
+  template.github-failed: |
+    message: Application {{.app.metadata.name}} sync failed.
+    github:
+      status:
+        state: failure
+        label: "CD/{{.app.metadata.name}}"
+        targetURL: "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true"
+
+  template.github-running: |
+    message: Application {{.app.metadata.name}} is syncing.
+    github:
+      status:
+        state: pending
+        label: "CD/{{.app.metadata.name}}"
+        targetURL: "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true"
+
   trigger.on-deployed: |
-    - when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+    - when: app.status.operationState != nil and app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
       oncePer: app.status.operationState.syncResult.revision
       send: [github-success]
 
   trigger.on-health-degraded: |
     - when: app.status.health.status == 'Degraded' and app.status.sync.status == 'Synced'
       oncePer: app.status.sync.revision
-      send: [discord-health-degraded]
+      send: [discord-health-degraded, github-failed]
+
+  trigger.on-sync-failed: |
+    - when: app.status.operationState != nil and app.status.operationState.phase in ['Failed', 'Error']
+      oncePer: app.status.operationState.syncResult.revision
+      send: [github-failed]
+
+  trigger.on-sync-running: |
+    - when: app.status.operationState != nil and app.status.operationState.phase in ['Running']
+      oncePer: app.status.operationState.syncResult.revision
+      send: [github-running]
 
   trigger.on-health-unknown: |
     - when: app.status.health.status == 'Unknown' and app.status.sync.status == 'Synced'
