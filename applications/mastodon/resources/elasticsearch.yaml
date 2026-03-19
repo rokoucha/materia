@@ -6,7 +6,7 @@ metadata:
 
 spec:
   # renovate: image=docker.elastic.co/elasticsearch/elasticsearch
-  version: 9.3.1
+  version: 9.3.2
   http:
     tls:
       selfSignedCertificate:
