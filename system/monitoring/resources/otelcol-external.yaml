@@ -16,6 +16,13 @@ spec:
           http:
             auth:
               authenticator: bearertokenauth
+      prometheus/self:
+        config:
+          scrape_configs:
+            - job_name: opentelemetry-collector
+              scrape_interval: 10s
+              static_configs:
+                - targets: ["0.0.0.0:8888"]
 
     processors:
       memory_limiter:
@@ -28,6 +35,11 @@ spec:
           - key: telemetry.source
             value: external
             action: upsert
+      resource/append_pod_ip:
+        attributes:
+          - key: k8s.pod.ip
+            action: insert
+            value: ${env:MY_POD_IP}
 
     exporters:
       otlp:
@@ -35,12 +47,27 @@ spec:
         tls:
           insecure: true
 
+    connectors:
+      routing/metrics:
+        table:
+          - condition: "true"
+            pipelines:
+              - metrics
+
     service:
       extensions:
         - bearertokenauth
       pipelines:
+        metrics/self:
+          receivers:
+            - prometheus/self
+          processors:
+            - resource/append_pod_ip
+          exporters:
+            - routing/metrics
         metrics:
           receivers:
+            - routing/metrics
             - otlp
           processors:
             - memory_limiter
@@ -73,6 +100,11 @@ spec:
         secretKeyRef:
           name: otelcol-external-token
           key: OTEL_BEARER_TOKEN
+    - name: MY_POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
 
   image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.148.0
   ipFamilies:
