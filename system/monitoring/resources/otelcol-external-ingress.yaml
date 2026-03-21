@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: otelcol-external-ingress
+  annotations:
+    haproxy.org/ssl-redirect: "true"
+
+spec:
+  ingressClassName: haproxy
+  tls:
+    - secretName: otelcol-external-tls
+      hosts:
+        - otel.ggrel.net
+  rules:
+    - host: otel.ggrel.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: otelcol-external-collector
+                port:
+                  number: 4318

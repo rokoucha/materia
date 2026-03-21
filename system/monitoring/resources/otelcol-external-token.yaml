@@ -1,0 +1,8 @@
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+
+metadata:
+  name: otelcol-external-token
+
+spec:
+  itemPath: vaults/materia/items/otelcol-external-token

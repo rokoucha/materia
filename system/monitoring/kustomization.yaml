@@ -13,6 +13,10 @@ helmCharts:
 
 resources:
   - ./resources/mackerel-apikey.yaml
+  - ./resources/otelcol-external-ingress.yaml
+  - ./resources/otelcol-external-tls.yaml
+  - ./resources/otelcol-external-token.yaml
+  - ./resources/otelcol-external.yaml
   - ./resources/namespace.yaml
   - ./resources/otelcol-agent-role.yaml
   - ./resources/otelcol-agent-rolebinding.yaml

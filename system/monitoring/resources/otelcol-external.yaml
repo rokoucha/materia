@@ -1,0 +1,83 @@
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+
+metadata:
+  name: otelcol-external
+
+spec:
+  config:
+    extensions:
+      bearertokenauth:
+        token: ${env:OTEL_BEARER_TOKEN}
+
+    receivers:
+      otlp:
+        protocols:
+          http:
+            auth:
+              authenticator: bearertokenauth
+
+    processors:
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 256
+        spike_limit_mib: 64
+      batch: {}
+      resource/source:
+        attributes:
+          - key: telemetry.source
+            value: external
+            action: upsert
+
+    exporters:
+      otlp:
+        endpoint: otelcol-gateway-collector-headless.monitoring.svc.materia-cluster.ggrel.net:4317
+        tls:
+          insecure: true
+
+    service:
+      extensions:
+        - bearertokenauth
+      pipelines:
+        metrics:
+          receivers:
+            - otlp
+          processors:
+            - memory_limiter
+            - resource/source
+            - batch
+          exporters:
+            - otlp
+        traces:
+          receivers:
+            - otlp
+          processors:
+            - memory_limiter
+            - resource/source
+            - batch
+          exporters:
+            - otlp
+        logs:
+          receivers:
+            - otlp
+          processors:
+            - memory_limiter
+            - resource/source
+            - batch
+          exporters:
+            - otlp
+
+  env:
+    - name: OTEL_BEARER_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: otelcol-external-token
+          key: OTEL_BEARER_TOKEN
+
+  image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.148.0
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ipFamilyPolicy: RequireDualStack
+  mode: deployment
+  replicas: 1
