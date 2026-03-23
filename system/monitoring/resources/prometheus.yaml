@@ -7,6 +7,8 @@ metadata:
 spec:
   image: quay.io/prometheus/prometheus:v3.10.0
   enableOTLPReceiver: true
+  enableFeatures:
+    - otlp-deltatocumulative
   # ServiceMonitor / PodMonitor discovery is handled by the OpenTelemetry Operator.
   # Keep Prometheus from selecting any of them directly.
   serviceMonitorSelector:
