@@ -13,6 +13,7 @@ rules:
       - "services"
       - "endpoints"
       - "pods"
+      - "secrets"
     verbs:
       - "get"
       - "list"
