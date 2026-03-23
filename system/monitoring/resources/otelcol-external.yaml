@@ -42,6 +42,8 @@ spec:
             value: ${env:MY_POD_IP}
 
     exporters:
+      debug:
+        verbosity: basic
       otlp:
         endpoint: otelcol-gateway-collector-headless.monitoring.svc.materia-cluster.ggrel.net:4317
         tls:
@@ -55,6 +57,9 @@ spec:
               - metrics
 
     service:
+      telemetry:
+        logs:
+          level: debug
       extensions:
         - bearertokenauth
       pipelines:
@@ -74,6 +79,7 @@ spec:
             - resource/source
             - batch
           exporters:
+            - debug
             - otlp
         traces:
           receivers:
@@ -83,6 +89,7 @@ spec:
             - resource/source
             - batch
           exporters:
+            - debug
             - otlp
         logs:
           receivers:
@@ -92,6 +99,7 @@ spec:
             - resource/source
             - batch
           exporters:
+            - debug
             - otlp
 
   env:
