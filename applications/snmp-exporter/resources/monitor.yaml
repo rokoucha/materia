@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+
+metadata:
+  name: snmp-exporter
+
+spec:
+  selector:
+    matchLabels:
+      app: default
+  endpoints:
+    - port: metrics
+      relabelings:
+        - targetLabel: job
+          replacement: snmp_exporter

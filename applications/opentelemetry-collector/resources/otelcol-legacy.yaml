@@ -19,10 +19,6 @@ spec:
           global:
             scrape_interval: 15s
           scrape_configs:
-            - job_name: apcupsd-exporter
-              static_configs:
-                - targets:
-                    - service.apcupsd-exporter.svc.materia-cluster.ggrel.net:9162
             - job_name: blackbox/ping_bbix-4over6-v4
               scrape_interval: 1m
               metrics_path: /probe
@@ -136,10 +132,6 @@ spec:
                   target_label: instance
                 - target_label: __address__
                   replacement: service.snmp-exporter.svc.materia-cluster.ggrel.net:9116
-            - job_name: snmp_exporter
-              static_configs:
-                - targets:
-                    - service.snmp-exporter.svc.materia-cluster.ggrel.net:9116
             - job_name: switchbot-meter
               scrape_interval: 2m
               metrics_path: /probe

@@ -5,6 +5,7 @@ namespace: snmp-exporter
 
 resources:
   - ./resources/deployment.yaml
+  - ./resources/monitor.yaml
   - ./resources/namespace.yaml
   - ./resources/service.yaml
 
