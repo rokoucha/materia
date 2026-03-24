@@ -15,7 +15,7 @@ spec:
         app: streaming
     spec:
       containers:
-        - image: ghcr.io/mastodon/mastodon-streaming:v4.5.7
+        - image: ghcr.io/mastodon/mastodon-streaming:v4.5.8
           name: mastodon-streaming
           ports:
             - name: streaming
