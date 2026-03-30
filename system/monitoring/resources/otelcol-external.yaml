@@ -106,7 +106,7 @@ spec:
           apiVersion: v1
           fieldPath: status.podIP
 
-  image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.148.0
+  image: ghcr.io/rokoucha/otelcol/materia-external:20260330.230334
   ipFamilies:
     - IPv4
     - IPv6
