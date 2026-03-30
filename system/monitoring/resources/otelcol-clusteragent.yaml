@@ -1,7 +1,7 @@
 apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
-  name: clusteragent
+  name: otelcol-clusteragent
 spec:
   config:
     receivers:
