@@ -5,7 +5,7 @@ metadata:
   name: prometheus
 
 spec:
-  image: quay.io/prometheus/prometheus:v3.10.0
+  image: quay.io/prometheus/prometheus:v3.11.0
   enableOTLPReceiver: true
   enableFeatures:
     - otlp-deltatocumulative
