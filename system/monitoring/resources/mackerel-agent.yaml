@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: DaemonSet
+
+metadata:
+  name: mackerel-agent
+
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mackerel-agent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mackerel-agent
+    spec:
+      hostNetwork: true
+      hostPID: true
+      hostIPC: true
+      serviceAccountName: mackerel-agent-sa
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: mackerel-agent
+          image: mackerel/mackerel-agent:0.86.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              api_key="${apikey:-${MACKEREL_APIKEY:-}}"
+              if [ -z "${api_key}" ]; then
+                echo "missing mackerel api key in Secret mackerel-apikey" >&2
+                exit 1
+              fi
+
+              cat > /etc/mackerel-agent/mackerel-agent.conf <<EOF
+              apikey = "${api_key}"
+              root = "/var/lib/mackerel-agent"
+              cloud_platform = "none"
+              display_name = "${K8S_NODE_NAME}"
+              roles = ["materia:k8s-node"]
+              verbose = false
+              diagnostic = true
+
+              [host_status]
+              on_start = "working"
+              on_stop = "poweroff"
+              EOF
+
+              exec mackerel-agent -conf /etc/mackerel-agent/mackerel-agent.conf -root /var/lib/mackerel-agent
+          envFrom:
+            - secretRef:
+                name: mackerel-apikey
+          env:
+            - name: HOST_ETC
+              value: /rootfs/etc
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: rootfs
+              mountPath: /rootfs
+              readOnly: true
+            - name: dev-disk
+              mountPath: /dev/disk
+              readOnly: true
+            - name: sys
+              mountPath: /sys
+              readOnly: true
+            - name: agent-root
+              mountPath: /var/lib/mackerel-agent
+      volumes:
+        - name: rootfs
+          hostPath:
+            path: /
+        - name: dev-disk
+          hostPath:
+            path: /dev/disk
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: agent-root
+          hostPath:
+            path: /var/lib/mackerel-agent
+            type: DirectoryOrCreate

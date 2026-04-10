@@ -49,6 +49,16 @@ kubectl rollout status deploy/argocd-server -n argocd
 kubectl apply -f ./argocd/root-application.yaml
 ```
 
+## Monitoring on Talos
+
+This repository runs `mackerel-agent` separately from OpenTelemetry so each Talos node is also registered as a Mackerel host.
+
+The agent is deployed as a Kubernetes `DaemonSet` in [`system/monitoring/resources/mackerel-agent.yaml`](./system/monitoring/resources/mackerel-agent.yaml) and uses the `mackerel/mackerel-agent:0.86.1` image. It reuses the existing `mackerel-apikey` Secret that is already synchronized from 1Password.
+
+To monitor the host instead of the container, the pod mounts the host filesystem as `/rootfs`, `/dev/disk`, and `/sys`, and sets `HOST_ETC=/rootfs/etc`. The Mackerel host ID is persisted on each node via `hostPath` at `/var/lib/mackerel-agent`, so pod recreation and node reboots keep the same host registration.
+
+Talos `reset` or full node reprovisioning is treated as a new host registration. If that happens, retire the old host entry in Mackerel as part of the rebuild.
+
 ## Argo CD MCP
 
 This repository provisions a read-only local Argo CD account for MCP clients:
