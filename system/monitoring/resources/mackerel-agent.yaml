@@ -32,14 +32,12 @@ spec:
             - /bin/sh
             - -ec
             - |
-              api_key="${apikey:-${MACKEREL_APIKEY:-}}"
-              if [ -z "${api_key}" ]; then
+              if [ -z "${apikey:-}" ]; then
                 echo "missing mackerel api key in Secret mackerel-apikey" >&2
                 exit 1
               fi
 
               cat > /etc/mackerel-agent/mackerel-agent.conf <<EOF
-              apikey = "${api_key}"
               root = "/var/lib/mackerel-agent"
               cloud_platform = "none"
               display_name = "${K8S_NODE_NAME}"
@@ -52,7 +50,7 @@ spec:
               on_stop = "poweroff"
               EOF
 
-              exec mackerel-agent -conf /etc/mackerel-agent/mackerel-agent.conf -root /var/lib/mackerel-agent
+              exec mackerel-agent -apikey "${apikey}" -conf /etc/mackerel-agent/mackerel-agent.conf -root /var/lib/mackerel-agent
           envFrom:
             - secretRef:
                 name: mackerel-apikey
