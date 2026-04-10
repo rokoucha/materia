@@ -2,9 +2,7 @@ clusterName: materia-cluster
 talosVersion: v1.12.6
 kubernetesVersion: v1.35.3
 
-# 移行完了まで VIP の IP を直接使う
-# 移行後に materia-cluster.ggrel.net の A レコードを 172.16.2.20 に向ければ DNS 名でも到達可能になる
-endpoint: https://172.16.2.20:6443
+endpoint: https://materia-cluster.ggrel.net:6443
 
 allowSchedulingOnControlPlanes: true
 
