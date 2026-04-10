@@ -9,8 +9,9 @@ resources:
   - ./resources/argocd-secret.yaml
   - ./resources/ingress.yaml
   - ./resources/namespace.yaml
-  - ./resources/project-applications.yaml
-  - ./resources/project-system.yaml
+  - ./resources/projects/applications.yaml
+  - ./resources/projects/root.yaml
+  - ./resources/projects/system.yaml
   - https://raw.githubusercontent.com/argoproj/argo-cd/v3.3.6/manifests/install.yaml
 
 patches:

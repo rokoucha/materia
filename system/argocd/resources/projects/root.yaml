@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+
+metadata:
+  name: root
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  clusterResourceWhitelist:
+    - group: argoproj.io
+      kind: Application
+  destinations:
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+  orphanedResources:
+    warn: false
+  sourceRepos:
+    - https://github.com/rokoucha/materia.git
