@@ -3,6 +3,7 @@ kind: StorageClass
 
 metadata:
   annotations:
+    argocd.argoproj.io/sync-options: Replace=true
     storageclass.kubernetes.io/is-default-class: "true"
   name: beryllium-nfs
 
@@ -13,5 +14,5 @@ parameters:
   protocol: nfs
 mountOptions:
   - nfsvers=4.1
-reclaimPolicy: Delete
+reclaimPolicy: Retain
 allowVolumeExpansion: true

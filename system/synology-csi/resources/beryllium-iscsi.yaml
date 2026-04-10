@@ -3,6 +3,7 @@ kind: StorageClass
 
 metadata:
   annotations:
+    argocd.argoproj.io/sync-options: Replace=true
     storageclass.kubernetes.io/is-default-class: "false"
   name: beryllium-iscsi
 
@@ -12,5 +13,5 @@ parameters:
   location: /volume1
   fsType: btrfs
   formatOptions: "--nodiscard"
-reclaimPolicy: Delete
+reclaimPolicy: Retain
 allowVolumeExpansion: true

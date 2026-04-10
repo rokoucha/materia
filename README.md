@@ -80,3 +80,8 @@ Use the generated token with your MCP client:
   }
 }
 ```
+
+## Operations
+
+- Storage rebuild safety runbook:
+  [docs/cluster-rebuild-storage.md](/Users/rokoucha/.codex/worktrees/e6aa/materia/docs/cluster-rebuild-storage.md)

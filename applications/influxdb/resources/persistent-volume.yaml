@@ -26,6 +26,6 @@ spec:
       source: ""
       storage.kubernetes.io/csiProvisionerIdentity: 1740323674035-8081-csi.san.synology.com
     volumeHandle: d26e0e90-57e9-40b7-8b3e-8646af1435d7
-  persistentVolumeReclaimPolicy: Delete
+  persistentVolumeReclaimPolicy: Retain
   storageClassName: beryllium-iscsi
   volumeMode: Filesystem
