@@ -26,8 +26,8 @@ As of 2026-04-10, the live cluster contains these PVC-backed workloads:
    inherit the safer policy.
 3. Keep the static PV manifests for Grafana and InfluxDB aligned with the live
    cluster policy.
-4. Because `StorageClass.reclaimPolicy` is immutable, Argo CD must replace the
-   `StorageClass` objects when syncing the manifest change.
+4. Because `StorageClass.reclaimPolicy` is immutable, Argo CD must delete and
+   recreate the `StorageClass` objects when syncing the manifest change.
 
 ## Patch commands
 

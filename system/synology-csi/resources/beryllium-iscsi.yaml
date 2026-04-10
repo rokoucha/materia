@@ -3,7 +3,7 @@ kind: StorageClass
 
 metadata:
   annotations:
-    argocd.argoproj.io/sync-options: Replace=true
+    argocd.argoproj.io/sync-options: Force=true,Replace=true
     storageclass.kubernetes.io/is-default-class: "false"
   name: beryllium-iscsi
 
