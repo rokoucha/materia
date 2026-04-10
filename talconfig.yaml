@@ -1,0 +1,108 @@
+clusterName: materia-cluster
+talosVersion: v1.12.6
+kubernetesVersion: v1.35.3
+
+# 移行完了まで VIP の IP を直接使う
+# 移行後に materia-cluster.ggrel.net の A レコードを 172.16.2.20 に向ければ DNS 名でも到達可能になる
+endpoint: https://172.16.2.20:6443
+
+allowSchedulingOnControlPlanes: true
+
+domain: materia-cluster.ggrel.net
+
+additionalApiServerCertSans:
+  - materia-cluster.ggrel.net
+  - 172.16.2.20
+
+additionalMachineCertSans:
+  - materia-cluster.ggrel.net
+  - 172.16.2.20
+
+clusterPodNets:
+  - 10.244.0.0/16
+  - fd00::/108
+clusterSvcNets:
+  - 10.96.0.0/12
+  - fd01::/108
+
+cniConfig:
+  name: none
+
+controlPlane:
+  patches:
+    - |-
+      cluster:
+        proxy:
+          disabled: true
+        apiServer:
+          extraArgs:
+            service-node-port-range: "80-32767"
+        controllerManager:
+          extraArgs:
+            allocate-node-cidrs: "false"
+      machine:
+        install:
+          image: factory.talos.dev/metal-installer-secureboot/83019ee187d5735afc86f844db64d79f98513a90472e1b979c39767feef0aa4c:v1.12.6
+        systemDiskEncryption:
+          state:
+            provider: luks2
+            keys:
+              - slot: 0
+                tpm: {}
+          ephemeral:
+            provider: luks2
+            keys:
+              - slot: 0
+                tpm: {}
+
+nodes:
+  - hostname: hydrogen
+    ipAddress: 172.16.2.21
+    controlPlane: true
+    installDiskSelector:
+      type: nvme
+    networkInterfaces:
+      - deviceSelector:
+          physical: true
+        addresses:
+          - 172.16.2.21/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 172.16.2.1
+        dhcp: false
+        vip:
+          ip: 172.16.2.20
+
+  - hostname: lithium
+    ipAddress: 172.16.2.22
+    controlPlane: true
+    installDiskSelector:
+      type: nvme
+    networkInterfaces:
+      - deviceSelector:
+          physical: true
+        addresses:
+          - 172.16.2.22/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 172.16.2.1
+        dhcp: false
+        vip:
+          ip: 172.16.2.20
+
+  - hostname: phosphorus
+    ipAddress: 172.16.2.23
+    controlPlane: true
+    installDiskSelector:
+      type: nvme
+    networkInterfaces:
+      - deviceSelector:
+          physical: true
+        addresses:
+          - 172.16.2.23/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 172.16.2.1
+        dhcp: false
+        vip:
+          ip: 172.16.2.20
