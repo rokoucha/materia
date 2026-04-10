@@ -12,7 +12,7 @@ spec:
   destination:
     namespace: argocd
     server: https://kubernetes.default.svc
-  project: system
+  project: root
   source:
     path: argocd/applications
     repoURL: https://github.com/rokoucha/materia.git
