@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  name: nebraska
+
+spec:
+  destination:
+    namespace: nebraska
+    server: https://kubernetes.default.svc
+  ignoreDifferences:
+    - jsonPointers:
+        - /data/tls.crt
+        - /data/tls.key
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-at
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-version
+      kind: Secret
+      name: tls
+  project: applications
+  source:
+    path: applications/nebraska
+    repoURL: https://github.com/rokoucha/materia.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true

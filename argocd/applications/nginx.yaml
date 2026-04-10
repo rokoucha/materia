@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  name: nginx
+
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  ignoreDifferences:
+    - jsonPointers:
+        - /data/tls.crt
+        - /data/tls.key
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-at
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-version
+      kind: Secret
+      name: ggrel-net-tls
+    - jsonPointers:
+        - /data/tls.crt
+        - /data/tls.key
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-at
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-version
+      kind: Secret
+      name: noa-pp-ua-tls
+    - jsonPointers:
+        - /data/tls.crt
+        - /data/tls.key
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-at
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-version
+      kind: Secret
+      name: rokoucha-net-tls
+    - jsonPointers:
+        - /data/tls.crt
+        - /data/tls.key
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-at
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-version
+      kind: Secret
+      name: sayn-wittgenste-in-tls
+  project: applications
+  source:
+    path: applications/nginx
+    repoURL: https://github.com/rokoucha/materia.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

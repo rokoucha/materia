@@ -42,6 +42,13 @@ SSH_KNOWN_HOSTS=/dev/null k0sctl kubeconfig > ~/.kube/config
 kubectl kustomize --enable-helm ./bootstrap | kubectl apply -f -
 ```
 
+Once Argo CD is ready, register the single parent root application:
+
+```sh
+kubectl rollout status deploy/argocd-server -n argocd
+kubectl apply -f ./argocd/root-application.yaml
+```
+
 ## Argo CD MCP
 
 This repository provisions a read-only local Argo CD account for MCP clients:

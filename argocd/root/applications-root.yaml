@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  name: applications-root
+
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: system
+  source:
+    path: argocd/applications
+    repoURL: https://github.com/rokoucha/materia.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: argocd
+
+resources:
+  - ./1password-connect.yaml
+  - ./argocd.yaml
+  - ./cert-manager.yaml
+  - ./cilium.yaml
+  - ./cloudnative-pg.yaml
+  - ./elastic-operator.yaml
+  - ./external-dns.yaml
+  - ./haproxy-ingress.yaml
+  - ./monitoring.yaml
+  - ./opentelemetry-operator.yaml
+  - ./prometheus-operator.yaml
+  - ./redis-operator.yaml
+  - ./reflector.yaml
+  - ./synology-csi.yaml

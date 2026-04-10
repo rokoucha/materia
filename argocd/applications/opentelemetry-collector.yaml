@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  name: opentelemetry-collector
+
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  project: applications
+  source:
+    path: applications/opentelemetry-collector
+    repoURL: https://github.com/rokoucha/materia.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

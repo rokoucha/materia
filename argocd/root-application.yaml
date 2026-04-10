@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  name: materia-root
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: system
+  source:
+    path: argocd/root
+    repoURL: https://github.com/rokoucha/materia.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

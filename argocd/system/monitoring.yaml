@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  name: monitoring
+
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  ignoreDifferences:
+    - jsonPointers:
+        - /data/tls.crt
+        - /data/tls.key
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-at
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-version
+      kind: Secret
+      name: otelcol-external-tls
+  project: system
+  source:
+    path: system/monitoring
+    repoURL: https://github.com/rokoucha/materia.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
