@@ -3,4 +3,5 @@ kind: Kustomization
 
 resources:
   - ./resources/cloudnative-pg-monitor.yaml
-  - https://github.com/cloudnative-pg/cloudnative-pg/releases/download/v1.29.0/cnpg-1.28.1.yaml
+  # renovate: datasource=github-releases depName=cloudnative-pg/cloudnative-pg
+  - https://github.com/cloudnative-pg/cloudnative-pg/releases/download/v1.29.0/cnpg-1.29.0.yaml

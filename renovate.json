@@ -25,11 +25,23 @@
     {
       "customType": "regex",
       "datasourceTemplate": "github-releases",
+      "depNameTemplate": "cloudnative-pg/cloudnative-pg",
+      "managerFilePatterns": [
+        "/system\\/cloudnative-pg\\/kustomization\\.yaml$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=github-releases depName=cloudnative-pg/cloudnative-pg\\s+- https://github.com/cloudnative-pg/cloudnative-pg/releases/download/v(?<currentValue>.*?)/cnpg-.*?\\.yaml"
+      ],
+      "autoReplaceStringTemplate": "# renovate: datasource=github-releases depName=cloudnative-pg/cloudnative-pg\n  - https://github.com/cloudnative-pg/cloudnative-pg/releases/download/v{{{newValue}}}/cnpg-{{{newValue}}}.yaml"
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
       "managerFilePatterns": [
         "/kustomization.yaml/"
       ],
       "matchStrings": [
-        "https://github.com/(?<depName>.*/.*?)/releases/download/(?<currentValue>.*?)/"
+        "https://github.com/(?<depName>(?!cloudnative-pg/cloudnative-pg).+?/.+?)/releases/download/(?<currentValue>.*?)/"
       ]
     },
     {
