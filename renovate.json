@@ -41,7 +41,7 @@
         "/kustomization.yaml/"
       ],
       "matchStrings": [
-        "https://github.com/(?<depName>(?!cloudnative-pg/cloudnative-pg).+?/.+?)/releases/download/(?<currentValue>.*?)/"
+        "https://github.com/(?<depName>.*/.*?)/releases/download/(?<currentValue>.*?)/"
       ]
     },
     {
