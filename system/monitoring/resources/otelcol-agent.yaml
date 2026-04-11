@@ -121,7 +121,7 @@ spec:
         fieldRef:
           apiVersion: v1
           fieldPath: status.podIP
-  image: ghcr.io/rokoucha/otelcol/materia-agent:20260409.230326
+  image: ghcr.io/rokoucha/otelcol/materia-agent:20260411.025206
   mode: daemonset
   replicas: 1
   serviceAccount: otelcol-agent-sa
