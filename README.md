@@ -49,6 +49,64 @@ kubectl rollout status deploy/argocd-server -n argocd
 kubectl apply -f ./argocd/root-application.yaml
 ```
 
+## Talos secrets
+
+Talos secrets are managed outside git. The source of truth is a 1Password item, and this repository keeps only the declarative cluster config in [`talconfig.yaml`](./talconfig.yaml).
+
+### Bootstrap Talos machine secrets
+
+Generate Talos machine secrets once and store the YAML in 1Password as an attached file.
+
+```sh
+talhelper gensecret > /tmp/talos-machine-secrets.yaml
+op item create \
+  --vault materia \
+  --category Document \
+  --title "talos-machine-secrets" \
+  /tmp/talos-machine-secrets.yaml
+rm -f /tmp/talos-machine-secrets.yaml
+```
+
+The helper script reads the attached file reference:
+
+```sh
+op://materia/talos-machine-secrets/talsecret.yaml?attr=content
+```
+
+If you uploaded the file under a different filename, override the reference when running the helper:
+
+```sh
+OP_FILE_REFERENCE="op://materia/talos-machine-secrets/<your-file-name>?attr=content" ./scripts/talos-genconfig.sh
+```
+
+### Generate local Talos config
+
+Generate `talosconfig` and node configs into [`clusterconfig/`](./clusterconfig) from the current [`talconfig.yaml`](./talconfig.yaml) and the 1Password-backed machine secrets:
+
+```sh
+./scripts/talos-genconfig.sh
+```
+
+The script reads machine secrets from 1Password into a temporary file, runs `talhelper genconfig`, writes outputs into `./clusterconfig`, and removes the temporary file on exit.
+
+You can pass additional `talhelper genconfig` flags through to the script. For example:
+
+```sh
+./scripts/talos-genconfig.sh --offline-mode
+```
+
+### Recovery and rebuild workflow
+
+When rebuilding a node or regenerating configs after editing [`talconfig.yaml`](./talconfig.yaml), rerun:
+
+```sh
+./scripts/talos-genconfig.sh
+```
+
+The 1Password item is not updated when only [`talconfig.yaml`](./talconfig.yaml) changes. Update the attached `talsecret.yaml` file only when you intentionally rotate Talos machine secrets.
+
+Do not commit generated files in `clusterconfig/`, `talosconfig`, `kubeconfig`, or local secret files. These are derived artifacts and should stay local to the operator machine.
+
 ## Monitoring on Talos
 
 This repository runs `mackerel-agent` separately from OpenTelemetry so each Talos node is also registered as a Mackerel host.
