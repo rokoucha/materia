@@ -122,26 +122,26 @@ data:
         targetURL: "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true"
 
   trigger.on-deployed: |
-    - when: app.metadata.name not in ['materia-root', 'system-root', 'applications-root'] and app.status.operationState != nil and app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+    - when: app.spec.project != 'root' and app.status.operationState != nil and app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
       oncePer: app.status.operationState.syncResult.revision
       send: [github-success]
 
   trigger.on-health-degraded: |
-    - when: app.metadata.name not in ['materia-root', 'system-root', 'applications-root'] and app.status.health.status == 'Degraded' and app.status.sync.status == 'Synced'
+    - when: app.spec.project != 'root' and app.status.health.status == 'Degraded' and app.status.sync.status == 'Synced'
       oncePer: app.status.sync.revision
       send: [discord-health-degraded, github-failed]
 
   trigger.on-sync-failed: |
-    - when: app.metadata.name not in ['materia-root', 'system-root', 'applications-root'] and app.status.operationState != nil and app.status.operationState.phase in ['Failed', 'Error']
+    - when: app.spec.project != 'root' and app.status.operationState != nil and app.status.operationState.phase in ['Failed', 'Error']
       oncePer: app.status.operationState.syncResult.revision
       send: [github-failed]
 
   trigger.on-sync-running: |
-    - when: app.metadata.name not in ['materia-root', 'system-root', 'applications-root'] and app.status.operationState != nil and app.status.operationState.phase in ['Running']
+    - when: app.spec.project != 'root' and app.status.operationState != nil and app.status.operationState.phase in ['Running']
       oncePer: app.status.operationState.syncResult.revision
       send: [github-running]
 
   trigger.on-health-unknown: |
-    - when: app.metadata.name not in ['materia-root', 'system-root', 'applications-root'] and app.status.health.status == 'Unknown' and app.status.sync.status == 'Synced'
+    - when: app.spec.project != 'root' and app.status.health.status == 'Unknown' and app.status.sync.status == 'Synced'
       oncePer: app.status.sync.revision
       send: [discord-health-unknown]
