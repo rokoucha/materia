@@ -8,6 +8,7 @@ resources:
   - ./argocd.yaml
   - ./cert-manager.yaml
   - ./cilium.yaml
+  - ./cloudflare-ddns.yaml
   - ./cloudnative-pg.yaml
   - ./elastic-operator.yaml
   - ./external-dns.yaml

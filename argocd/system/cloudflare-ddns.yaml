@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+
+metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  name: cloudflare-ddns
+
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  project: system
+  source:
+    path: system/cloudflare-ddns
+    repoURL: https://github.com/rokoucha/materia.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
