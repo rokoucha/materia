@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+
+metadata:
+  name: pvc-686eee23-9be9-40cc-a564-978445ab0be3
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: postgresql-1
+    namespace: mastodon
+  csi:
+    driver: csi.san.synology.com
+    fsType: btrfs
+    volumeAttributes:
+      baseDir: ""
+      dsm: 172.16.2.17
+      formatOptions: --nodiscard
+      mountPermissions: ""
+      protocol: iscsi
+      source: ""
+    volumeHandle: fa2d537f-3545-4589-ae09-bc78109c4bdc
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: beryllium-iscsi
+  volumeMode: Filesystem

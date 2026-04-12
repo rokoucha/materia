@@ -35,4 +35,6 @@ resources:
   - ./resources/otelcol-gateway-ta-rolebinding.yaml
   - ./resources/otelcol-gateway-ta-sa.yaml
   - ./resources/otelcol-gateway.yaml
+  - ./resources/prometheus-persistent-volume.yaml
+  - ./resources/prometheus-persistent-volume-claim.yaml
   - ./resources/prometheus.yaml

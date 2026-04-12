@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: PersistentVolume
+
+metadata:
+  name: pvc-685aa8e2-7782-4f3c-b76e-cfe97d762426
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: postgresql-1
+    namespace: nebraska
+  csi:
+    driver: csi.san.synology.com
+    fsType: btrfs
+    volumeAttributes:
+      baseDir: ""
+      dsm: 172.16.2.17
+      formatOptions: --nodiscard
+      mountPermissions: ""
+      protocol: iscsi
+      source: ""
+    volumeHandle: 636c3370-66e1-452d-83ed-ac387cb2456e
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: beryllium-iscsi
+  volumeMode: Filesystem
