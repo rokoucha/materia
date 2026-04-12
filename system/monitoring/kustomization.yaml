@@ -38,3 +38,9 @@ resources:
   - ./resources/prometheus-persistent-volume.yaml
   - ./resources/prometheus-persistent-volume-claim.yaml
   - ./resources/prometheus.yaml
+
+patches:
+  - path: ./resources/namespace-pod-security-labels.yaml
+    target:
+      kind: Namespace
+      name: monitoring
