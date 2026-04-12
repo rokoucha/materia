@@ -4,9 +4,10 @@ kind: Kustomization
 namespace: cloudflare-ddns
 
 resources:
-  - ./resources/namespace.yaml
   - ./resources/cloudflare-ddns-apitoken.yaml
+  - ./resources/cloudflare-ddns-external.yaml
   - ./resources/cloudflare-ddns.yaml
+  - ./resources/namespace.yaml
 
 patches:
   - path: ./resources/namespace-pod-security-labels.yaml
