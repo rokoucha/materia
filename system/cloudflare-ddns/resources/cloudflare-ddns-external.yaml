@@ -19,6 +19,7 @@ spec:
           image: ghcr.io/rokoucha/cloudflare-ddns:20260411.151556
           imagePullPolicy: IfNotPresent
           args:
+            - -e
             - -w
             - 5m
             - -n
