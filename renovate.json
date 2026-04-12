@@ -58,7 +58,7 @@
       "datasourceTemplate": "github-releases",
       "managerFilePatterns": ["/.*\\.yaml/"],
       "matchStrings": [
-        "image:\\sfactory.talos.dev/?(factory.talos.dev/[^:]+):(?<currentValue>.*)"
+        "image:\\s?(factory.talos.dev/[^:]+):(?<currentValue>.*)"
       ],
       "depNameTemplate": "siderolabs/talos"
     }
