@@ -14,5 +14,7 @@ helmCharts:
 resources:
   - ./resources/ggrel-net-tls.yaml
   - ./resources/namespace.yaml
+  - ./resources/persistent-volume.yaml
+  - ./resources/persistent-volume-claim.yaml
   - ./resources/postgresql.yaml
   - ./resources/secret-authentik.yaml
