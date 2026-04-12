@@ -57,7 +57,9 @@
       "customType": "regex",
       "datasourceTemplate": "github-releases",
       "managerFilePatterns": ["/.*\\.yaml/"],
-      "matchStrings": ["image:\\s?([^:]+):(?<currentValue>.*)"],
+      "matchStrings": [
+        "image:\\sfactory.talos.dev/?(factory.talos.dev/[^:]+):(?<currentValue>.*)"
+      ],
       "depNameTemplate": "siderolabs/talos"
     }
   ],
