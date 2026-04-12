@@ -1,0 +1,8 @@
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+
+metadata:
+  name: cloudflare-ddns-apitoken
+
+spec:
+  itemPath: vaults/materia/items/cloudflare-ddns

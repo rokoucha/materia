@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: DaemonSet
+
+metadata:
+  name: mackerel-agent
+
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mackerel-agent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mackerel-agent
+    spec:
+      hostNetwork: true
+      hostPID: true
+      hostIPC: true
+      serviceAccountName: mackerel-agent-sa
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: mackerel-agent
+          image: mackerel/mackerel-agent:0.86.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cat > /etc/mackerel-agent/mackerel-agent.conf <<EOF
+              display_name = "${K8S_NODE_NAME}"
+              EOF
+
+              exec mackerel-agent -apikey "${apikey}" -conf /etc/mackerel-agent/mackerel-agent.conf -root /var/lib/mackerel-agent
+          env:
+            - name: apikey
+              valueFrom:
+                secretKeyRef:
+                  name: mackerel-apikey
+                  key: MACKEREL_APIKEY
+            - name: HOST_ETC
+              value: /rootfs/etc
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: rootfs
+              mountPath: /rootfs
+              readOnly: true
+            - name: dev-disk
+              mountPath: /dev/disk
+              readOnly: true
+            - name: sys
+              mountPath: /sys
+              readOnly: true
+            - name: agent-root
+              mountPath: /var/lib/mackerel-agent
+      volumes:
+        - name: rootfs
+          hostPath:
+            path: /
+        - name: dev-disk
+          hostPath:
+            path: /dev/disk
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: agent-root
+          hostPath:
+            path: /var/lib/mackerel-agent
+            type: DirectoryOrCreate

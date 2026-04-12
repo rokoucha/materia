@@ -9,3 +9,4 @@
 /bootstrap/1password.env
 /kubeconfig
 charts/
+talsecret.yaml
