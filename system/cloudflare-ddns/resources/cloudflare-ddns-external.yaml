@@ -13,12 +13,16 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: cloudflare-ddns-external
-spec:
-  containers:
-    - name: cloudflare-ddns
-      image: ghcr.io/rokoucha/cloudflare-ddns:20260412.191727
-      imagePullPolicy: IfNotPresent
-      args:
+    spec:
+      containers:
+        - name: cloudflare-ddns
+          image: ghcr.io/rokoucha/cloudflare-ddns:20260412.191727
+          imagePullPolicy: IfNotPresent
+          args:
+            - -e
+            - -w
+            - 5m
+            - -n
             - materia
             - ggrel.net
           env:
