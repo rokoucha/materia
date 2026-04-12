@@ -7,3 +7,9 @@ resources:
   - ./resources/namespace.yaml
   - ./resources/cloudflare-ddns-apitoken.yaml
   - ./resources/cloudflare-ddns.yaml
+
+patches:
+  - path: ./resources/namespace-pod-security-labels.yaml
+    target:
+      kind: Namespace
+      name: cloudflare-ddns
