@@ -3,6 +3,7 @@ kind: PersistentVolumeClaim
 
 metadata:
   name: teamspeak-data
+  namespace: teamspeak
 
 spec:
   accessModes:
