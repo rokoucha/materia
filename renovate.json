@@ -1,12 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":dependencyDashboard"
-  ],
+  "extends": ["config:recommended", ":dependencyDashboard"],
   "kubernetes": {
     "managerFilePatterns": [
       "/applications/.+\\.yaml$/",
+      "/argocd/.+\\.yaml$/",
+      "/bootstrap/.+\\.yaml$/",
       "/system/.+\\.yaml$/"
     ]
   },
@@ -15,12 +14,8 @@
       "customType": "regex",
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "k0sproject/k0s",
-      "managerFilePatterns": [
-        "/k0sctl.yaml/"
-      ],
-      "matchStrings": [
-        "version: (?<currentValue>.*)"
-      ]
+      "managerFilePatterns": ["/k0sctl.yaml/"],
+      "matchStrings": ["version: (?<currentValue>.*)"]
     },
     {
       "customType": "regex",
@@ -37,9 +32,7 @@
     {
       "customType": "regex",
       "datasourceTemplate": "github-releases",
-      "managerFilePatterns": [
-        "/kustomization.yaml/"
-      ],
+      "managerFilePatterns": ["/kustomization.yaml/"],
       "matchStrings": [
         "https://github.com/(?<depName>.*/.*?)/releases/download/(?<currentValue>.*?)/"
       ]
@@ -47,9 +40,7 @@
     {
       "customType": "regex",
       "datasourceTemplate": "github-tags",
-      "managerFilePatterns": [
-        "/kustomization.yaml/"
-      ],
+      "managerFilePatterns": ["/kustomization.yaml/"],
       "matchStrings": [
         "https://raw.githubusercontent.com/(?<depName>[^/]*/[^/]*)/(?<currentValue>.*?)/"
       ]
@@ -57,20 +48,23 @@
     {
       "customType": "regex",
       "datasourceTemplate": "docker",
-      "managerFilePatterns": [
-        "/.*\\.yaml/"
-      ],
+      "managerFilePatterns": ["/.*\\.yaml/"],
       "matchStrings": [
         "#\\s?renovate: image=(?<depName>.*?)\\s+(?:tag|version):\\s?[\"']?(?<currentValue>[\\w+\\.\\-]*)[\"']?"
       ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "managerFilePatterns": ["/.*\\.yaml/"],
+      "matchStrings": ["image:\\s?([^:]+):(?<currentValue>.*)"],
+      "depNameTemplate": "siderolabs/talos"
     }
   ],
   "packageRules": [
     {
       "groupName": "Mastodon",
-      "matchDatasources": [
-        "docker"
-      ],
+      "matchDatasources": ["docker"],
       "matchPackageNames": [
         "ghcr.io/mastodon/mastodon",
         "ghcr.io/mastodon/mastodon-streaming"
@@ -78,12 +72,8 @@
     },
     {
       "groupName": "OpenTelemetry Collector Materia Distribution",
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchPackageNames": [
-        "ghcr.io/rokoucha/otelcol/**"
-      ],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/rokoucha/otelcol/**"],
       "versioning": "regex:^(?<major>\\d{8})\\.(?<minor>\\d{6})$"
     }
   ]
