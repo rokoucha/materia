@@ -40,7 +40,7 @@ controlPlane:
             allocate-node-cidrs: "false"
       machine:
         install:
-          image: factory.talos.dev/metal-installer-secureboot/83019ee187d5735afc86f844db64d79f98513a90472e1b979c39767feef0aa4c:v1.12.6
+          image: factory.talos.dev/metal-installer-secureboot/6c4436014f0b7e48a5aafb5840d160d5943fe937011c56d0307a95d49f7517a2:v1.12.6
         systemDiskEncryption:
           state:
             provider: luks2
