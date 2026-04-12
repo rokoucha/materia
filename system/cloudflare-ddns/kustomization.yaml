@@ -8,9 +8,3 @@ resources:
   - ./resources/cloudflare-ddns-external.yaml
   - ./resources/cloudflare-ddns.yaml
   - ./resources/namespace.yaml
-
-patches:
-  - path: ./resources/namespace-pod-security-labels.yaml
-    target:
-      kind: Namespace
-      name: cloudflare-ddns

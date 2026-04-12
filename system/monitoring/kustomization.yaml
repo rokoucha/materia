@@ -12,13 +12,9 @@ helmCharts:
     valuesFile: ./values-kube-state-metrics.yaml
 
 resources:
-  - ./resources/mackerel-apikey.yaml
   - ./resources/mackerel-agent-sa.yaml
   - ./resources/mackerel-agent.yaml
-  - ./resources/otelcol-external-ingress.yaml
-  - ./resources/otelcol-external-tls.yaml
-  - ./resources/otelcol-external-token.yaml
-  - ./resources/otelcol-external.yaml
+  - ./resources/mackerel-apikey.yaml
   - ./resources/namespace.yaml
   - ./resources/otelcol-agent-role.yaml
   - ./resources/otelcol-agent-rolebinding.yaml
@@ -28,6 +24,10 @@ resources:
   - ./resources/otelcol-clusteragent-rolebinding.yaml
   - ./resources/otelcol-clusteragent-sa.yaml
   - ./resources/otelcol-clusteragent.yaml
+  - ./resources/otelcol-external-ingress.yaml
+  - ./resources/otelcol-external-tls.yaml
+  - ./resources/otelcol-external-token.yaml
+  - ./resources/otelcol-external.yaml
   - ./resources/otelcol-gateway-role.yaml
   - ./resources/otelcol-gateway-rolebinding.yaml
   - ./resources/otelcol-gateway-sa.yaml
@@ -35,12 +35,6 @@ resources:
   - ./resources/otelcol-gateway-ta-rolebinding.yaml
   - ./resources/otelcol-gateway-ta-sa.yaml
   - ./resources/otelcol-gateway.yaml
-  - ./resources/prometheus-persistent-volume.yaml
   - ./resources/prometheus-persistent-volume-claim.yaml
+  - ./resources/prometheus-persistent-volume.yaml
   - ./resources/prometheus.yaml
-
-patches:
-  - path: ./resources/namespace-pod-security-labels.yaml
-    target:
-      kind: Namespace
-      name: monitoring
