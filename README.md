@@ -5,6 +5,17 @@ Appellatur omnes res quae in res corporeas componi possunt
 ## 構成
 
 - Talos Linux
+  - customization:
+    - systemExtensions:
+      - officialExtensions:
+        - siderolabs/amd-ucode
+        - siderolabs/amdgpu
+        - siderolabs/btrfs
+        - siderolabs/i915
+        - siderolabs/intel-ucode
+        - siderolabs/iscsi-tools
+        - siderolabs/nfs-utils
+    - bootloader: sd-boot
 - Kubernetes
 - Cilium
 - Argo CD
