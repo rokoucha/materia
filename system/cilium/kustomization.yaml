@@ -9,5 +9,3 @@ helmCharts:
     repo: https://helm.cilium.io
     includeCRDs: true
     valuesFile: ./values.yaml
-# patches:
-#   - path: ./patches/hubble-peer-svc.yaml
