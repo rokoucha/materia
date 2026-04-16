@@ -12,7 +12,7 @@ resources:
   - ./resources/projects/applications.yaml
   - ./resources/projects/root.yaml
   - ./resources/projects/system.yaml
-  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.3.7/manifests/install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.3.6/manifests/install.yaml
 
 patches:
   - path: ./patches/argocd-cm.yaml
