@@ -64,4 +64,4 @@ serviceAccounts:
   operator:
     name: cilium-operator
 tunnelProtocol: vxlan
-upgradeCompatibility: "1.17"
+upgradeCompatibility: "1.18"
