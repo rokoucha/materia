@@ -5,7 +5,6 @@ namespace: argocd
 
 resources:
   - ./apcupsd-exporter.yaml
-  - ./authentik.yaml
   - ./grafana.yaml
   - ./influxdb.yaml
   - ./mastodon.yaml
