@@ -6,6 +6,7 @@ namespace: argocd
 resources:
   - ./1password-connect.yaml
   - ./argocd.yaml
+  - ./authentik.yaml
   - ./cert-manager.yaml
   - ./cilium.yaml
   - ./cloudflare-ddns.yaml

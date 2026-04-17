@@ -2,6 +2,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   name: authentik
@@ -17,9 +19,9 @@ spec:
         - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-version
       kind: Secret
       name: ggrel-net-tls
-  project: applications
+  project: system
   source:
-    path: applications/authentik
+    path: system/authentik
     repoURL: https://github.com/rokoucha/materia.git
     targetRevision: HEAD
   syncPolicy:
