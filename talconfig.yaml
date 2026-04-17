@@ -15,6 +15,9 @@ additionalApiServerCertSans:
 additionalMachineCertSans:
   - materia-cluster.ggrel.net
   - 172.16.2.20
+  - hydrogen.dns.ggrel.net
+  - lithium.dns.ggrel.net
+  - phosphorus.dns.ggrel.net
 
 clusterPodNets:
   - 10.244.0.0/16

@@ -1,12 +1,9 @@
 .env
 .env.*
-*.b64
-*.controller.bu
-*.ign
-*.worker.bu
 /1password-credentials.json
 /bootstrap/1password-credentials.json
 /bootstrap/1password.env
+/clusterconfig/
 /kubeconfig
 charts/
 talsecret.yaml

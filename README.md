@@ -34,16 +34,15 @@ Appellatur omnes res quae in res corporeas componi possunt
 ```sh
 ./scripts/talos-genconfig.sh
 talosctl apply-config --insecure \
+  --talosconfig clusterconfig/talosconfig \
   --nodes XXX.XXX.XXX.XXX \
   --file clusterconfig/materia-cluster-XXX.yaml
 talosctl bootstrap \
   --talosconfig clusterconfig/talosconfig \
-  --endpoints XXX.XXX.XXX.XXX \
   --nodes XXX.XXX.XXX.XXX
-talosctl kubeconfig \
-  --talosconfig clusterconfig/talosconfig \
-  --endpoints XXX.XXX.XXX.XXX \
-  --nodes XXX.XXX.XXX.XXX
+talosctl config merge clusterconfig/talosconfig.dns
+talosctl config context materia-cluster
+talosctl kubeconfig
 ```
 
 ## クラスター構築
