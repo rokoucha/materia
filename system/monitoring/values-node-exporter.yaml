@@ -23,9 +23,14 @@ extraArgs:
 prometheus:
   monitor:
     enabled: true
+    attachMetadata:
+      node: true
     relabelings:
       - targetLabel: job
         replacement: node-exporter
+      - sourceLabels:
+          - __meta_kubernetes_node_name
+        targetLabel: k8s_node_name
 
 resources:
   requests:
