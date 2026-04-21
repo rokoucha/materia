@@ -1,0 +1,35 @@
+fullnameOverride: node-exporter
+
+hostNetwork: true
+hostPID: true
+
+hostRootFsMount:
+  enabled: true
+
+hostSysFsMount:
+  mountPropagation: HostToContainer
+
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/master
+    operator: Exists
+    effect: NoSchedule
+
+extraArgs:
+  - --collector.hwmon
+
+prometheus:
+  monitor:
+    enabled: true
+    relabelings:
+      - targetLabel: job
+        replacement: node-exporter
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    memory: 128Mi
