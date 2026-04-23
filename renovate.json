@@ -35,7 +35,9 @@
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "kubernetes/kubernetes",
       "managerFilePatterns": ["/talconfig\\.yaml$/"],
-      "matchStrings": ["^kubernetesVersion:\\s(?<currentValue>v?[^\\s]+)$"]
+      "matchStrings": [
+        "(?:^|\\r\\n|\\r|\\n)kubernetesVersion:\\s(?<currentValue>v?[^\\s]+)(?:\\r\\n|\\r|\\n|$)"
+      ]
     },
     {
       "customType": "regex",
