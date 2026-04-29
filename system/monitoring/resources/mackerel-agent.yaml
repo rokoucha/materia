@@ -28,15 +28,6 @@ spec:
         - name: mackerel-agent
           image: mackerel/mackerel-agent:0.86.3
           imagePullPolicy: IfNotPresent
-          command:
-            - /bin/sh
-            - -ec
-            - |
-              cat > /etc/mackerel-agent/mackerel-agent.conf <<EOF
-              display_name = "${K8S_NODE_NAME}"
-              EOF
-
-              exec mackerel-agent -apikey "${apikey}" -conf /etc/mackerel-agent/mackerel-agent.conf -root /var/lib/mackerel-agent
           env:
             - name: apikey
               valueFrom:
@@ -45,11 +36,6 @@ spec:
                   key: MACKEREL_APIKEY
             - name: HOST_ETC
               value: /rootfs/etc
-            - name: K8S_NODE_NAME
-              valueFrom:
-                fieldRef:
-                  apiVersion: v1
-                  fieldPath: spec.nodeName
           securityContext:
             runAsUser: 0
           volumeMounts:
