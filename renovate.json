@@ -42,6 +42,15 @@
     {
       "customType": "regex",
       "datasourceTemplate": "github-releases",
+      "depNameTemplate": "siderolabs/talos",
+      "managerFilePatterns": ["/talconfig\\.yaml$/"],
+      "matchStrings": [
+        "(?:^|\\r\\n|\\r|\\n)talosVersion:\\s(?<currentValue>v?[^\\s]+)(?:\\r\\n|\\r|\\n|$)"
+      ]
+    },
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
       "managerFilePatterns": ["/kustomization.yaml/"],
       "matchStrings": [
         "https://github.com/(?<depName>.*/.*?)/releases/download/(?<currentValue>.*?)/"
@@ -66,7 +75,7 @@
     {
       "customType": "regex",
       "datasourceTemplate": "github-releases",
-      "managerFilePatterns": ["/.*\\.yaml/"],
+      "managerFilePatterns": ["/talconfig\\.yaml$/"],
       "matchStrings": [
         "image:\\s?(factory.talos.dev/[^:]+):(?<currentValue>.*)"
       ],
@@ -81,6 +90,11 @@
         "ghcr.io/mastodon/mastodon",
         "ghcr.io/mastodon/mastodon-streaming"
       ]
+    },
+    {
+      "groupName": "Talos",
+      "matchDatasources": ["github-releases"],
+      "matchPackageNames": ["siderolabs/talos"]
     },
     {
       "groupName": "OpenTelemetry Collector Materia Distribution",
