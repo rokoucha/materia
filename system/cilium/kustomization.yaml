@@ -4,6 +4,8 @@ kind: Kustomization
 resources:
   - ./resources/ciliumbgpadvertisements-crd.yaml
   - ./resources/ciliumbgpclusterconfigs-crd.yaml
+  - ./resources/ciliumbgpnodeconfigoverrides-crd.yaml
+  - ./resources/ciliumbgpnodeconfigs-crd.yaml
   - ./resources/ciliumbgppeerconfigs-crd.yaml
   - ./resources/materia-public-ipv4.yaml
   - ./resources/materia-public-ipv6.yaml
