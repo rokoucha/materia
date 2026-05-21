@@ -7,6 +7,7 @@ resources:
   - ./apcupsd-exporter.yaml
   - ./grafana.yaml
   - ./influxdb.yaml
+  - ./lb-test.yaml
   - ./mastodon.yaml
   - ./miniflux.yaml
   - ./nebraska.yaml

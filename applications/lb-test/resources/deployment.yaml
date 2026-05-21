@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: lb-test
+  namespace: lb-test
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lb-test
+  template:
+    metadata:
+      labels:
+        app: lb-test
+    spec:
+      nodeSelector:
+        chlorinate.rokoucha.com/bgp: srv-lan
+      containers:
+        - name: nginx
+          image: docker.io/library/nginx:1.31.0
+          ports:
+            - containerPort: 80

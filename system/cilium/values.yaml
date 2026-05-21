@@ -1,3 +1,5 @@
+bgpControlPlane:
+  enabled: true
 cluster:
   name: materia-cluster
 hubble:
