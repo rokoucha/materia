@@ -14,8 +14,13 @@ spec:
     - name: materia-instance
       localASN: 64513
       peers:
-        - name: router
+        - name: router-v4
           peerASN: 64512
           peerAddress: 172.16.2.1
           peerConfigRef:
-            name: router-peer-config
+            name: router-peer-config-v4
+        - name: router-v6
+          peerASN: 64512
+          peerAddress: 240b:10:3f6d:1402:2e0:b4ff:fe6c:8087
+          peerConfigRef:
+            name: router-peer-config-v6

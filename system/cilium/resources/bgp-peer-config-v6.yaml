@@ -2,13 +2,13 @@ apiVersion: cilium.io/v2alpha1
 kind: CiliumBGPPeerConfig
 
 metadata:
-  name: router-peer-config-v4
+  name: router-peer-config-v6
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 
 spec:
   families:
-    - afi: ipv4
+    - afi: ipv6
       safi: unicast
       advertisements:
         matchLabels:

@@ -11,6 +11,7 @@ resources:
   - ./resources/materia-public-ipv6.yaml
   - ./resources/bgp-cluster-config.yaml
   - ./resources/bgp-peer-config.yaml
+  - ./resources/bgp-peer-config-v6.yaml
   - ./resources/bgp-advertisement.yaml
 
 helmCharts:
