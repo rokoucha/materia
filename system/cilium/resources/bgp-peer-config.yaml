@@ -3,6 +3,8 @@ kind: CiliumBGPPeerConfig
 
 metadata:
   name: router-peer-config
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 
 spec:
   families:

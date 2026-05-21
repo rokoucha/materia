@@ -3,6 +3,8 @@ kind: CiliumBGPAdvertisement
 
 metadata:
   name: public-test-lb-advertisement
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   labels:
     advertise: "public-test"
 
