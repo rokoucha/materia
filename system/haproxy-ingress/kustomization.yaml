@@ -7,7 +7,7 @@ helmCharts:
   - name: kubernetes-ingress
     releaseName: haproxy-ingress
     namespace: haproxy-controller
-    version: 1.49.0
+    version: 1.52.0
     repo: https://haproxytech.github.io/helm-charts
     includeCRDs: true
     valuesFile: ./values.yaml
