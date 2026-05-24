@@ -19,6 +19,6 @@ spec:
         chlorinate.rokoucha.com/bgp: srv-lan
       containers:
         - name: nginx
-          image: docker.io/library/nginx:1.31.0
+          image: docker.io/library/nginx:1.31.1
           ports:
             - containerPort: 80
