@@ -18,6 +18,7 @@ spec:
       containers:
         - name: apcupsd
           image: docker.io/sfudeus/apcupsd:2026-05-31
+          command: ["apcupsd", "-b", "-d", "100"]
           securityContext:
             privileged: true
           ports:
