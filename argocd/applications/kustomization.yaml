@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: argocd
 
 resources:
-  - ./apcupsd-exporter.yaml
+  - ./apcupsd.yaml
   - ./grafana.yaml
   - ./influxdb.yaml
   - ./lb-test.yaml
