@@ -25,17 +25,12 @@ spec:
             - name: nis
               containerPort: 3551
           volumeMounts:
-            - name: dev-usb
-              mountPath: /dev/usb
             - name: config
               mountPath: /etc/apcupsd/apcupsd.conf
               subPath: apcupsd.conf
             - name: run
               mountPath: /run/apcupsd
       volumes:
-        - name: dev-usb
-          hostPath:
-            path: /dev/usb
         - name: config
           configMap:
             name: apcupsd-config
