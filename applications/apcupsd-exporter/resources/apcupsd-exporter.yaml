@@ -17,7 +17,7 @@ spec:
       containers:
         - args:
             - -apcupsd.addr
-            - service:3551
+            - chlorine.dns.ggrel.net:3551
             - -apcupsd.network
             - tcp
             - -telemetry.addr
