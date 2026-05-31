@@ -6,6 +6,7 @@ metadata:
 
 data:
   apcupsd.conf: |
+    ## apcupsd.conf v1.1 ##
     UPSNAME BR550S
     UPSCABLE usb
     UPSTYPE usb

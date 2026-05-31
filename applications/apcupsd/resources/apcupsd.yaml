@@ -30,6 +30,8 @@ spec:
             - name: config
               mountPath: /etc/apcupsd/apcupsd.conf
               subPath: apcupsd.conf
+            - name: run
+              mountPath: /run/apcupsd
       volumes:
         - name: dev-usb
           hostPath:
@@ -37,3 +39,5 @@ spec:
         - name: config
           configMap:
             name: apcupsd-config
+        - name: run
+          emptyDir: {}
