@@ -15,10 +15,33 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: hydrogen
+      initContainers:
+        - name: bind-usbhid
+          image: docker.io/library/busybox:1.37
+          securityContext:
+            privileged: true
+          command:
+            - sh
+            - -c
+            - |
+              for dir in /sys/bus/usb/devices/*/; do
+                [ -f "${dir}idVendor" ] || continue
+                [ "$(cat "${dir}idVendor")" = "051d" ] || continue
+                device=$(basename "$dir")
+                iface="${device}:1.0"
+                echo "Found APC UPS: ${device}"
+                if [ -L "/sys/bus/usb/devices/${iface}/driver" ]; then
+                  echo "Unbinding from $(readlink "/sys/bus/usb/devices/${iface}/driver")"
+                  echo "${iface}" > /sys/bus/usb/devices/${iface}/driver/unbind
+                fi
+                echo "Binding to usbhid"
+                echo "${iface}" > /sys/bus/usb/drivers/usbhid/bind
+                echo "Done"
+                break
+              done
       containers:
         - name: apcupsd
           image: docker.io/sfudeus/apcupsd:2026-05-31
-          command: ["apcupsd", "-b", "-d", "100"]
           securityContext:
             privileged: true
           ports:
