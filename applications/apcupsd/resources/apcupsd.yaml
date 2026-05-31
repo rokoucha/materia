@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: apcupsd
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apcupsd
+  template:
+    metadata:
+      labels:
+        app: apcupsd
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: hydrogen
+      containers:
+        - name: apcupsd
+          image: docker.io/sfudeus/apcupsd:2026-05-31
+          securityContext:
+            privileged: true
+          ports:
+            - name: nis
+              containerPort: 3551
+          volumeMounts:
+            - name: dev-usb
+              mountPath: /dev/usb
+            - name: config
+              mountPath: /etc/apcupsd/apcupsd.conf
+              subPath: apcupsd.conf
+      volumes:
+        - name: dev-usb
+          hostPath:
+            path: /dev/usb
+        - name: config
+          configMap:
+            name: apcupsd-config
