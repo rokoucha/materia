@@ -10,7 +10,7 @@ data:
     UPSNAME BR550S
     UPSCABLE usb
     UPSTYPE usb
-    DEVICE /dev/hidraw0
+    DEVICE
     LOCKFILE /run/apcupsd
     SCRIPTDIR /etc/apcupsd
     PWRFAILDIR /etc/apcupsd
