@@ -16,7 +16,6 @@ As of 2026-04-12, the live cluster contains these PVC-backed workloads:
 | mastodon | `postgresql-1` | `pvc-686eee23-9be9-40cc-a564-978445ab0be3` | `fa2d537f-3545-4589-ae09-bc78109c4bdc` | `beryllium-iscsi` | `10Gi` | `Git static` |
 | miniflux | `postgresql-1` | `pvc-5a02e06b-2e7b-45fe-9873-5a4629412ee3` | `11844839-4572-4042-ac42-4f5f10f48b66` | `beryllium-iscsi` | `5Gi` | `Git static` |
 | monitoring | `prometheus-prometheus-db-prometheus-prometheus-0` | `pvc-2a79df8c-7605-4225-9a79-04330e38d000` | `bac2b55c-933e-404a-88ff-0961ae073619` | `beryllium-iscsi` | `30Gi` | `Git static` |
-| nebraska | `postgresql-1` | `pvc-685aa8e2-7782-4f3c-b76e-cfe97d762426` | `636c3370-66e1-452d-83ed-ac387cb2456e` | `beryllium-iscsi` | `5Gi` | `Git static` |
 | teamspeak | `teamspeak-data` | `pvc-77f97c58-db4d-4205-80a0-dbdc42c2db66` | `b88af8c9-2633-4a97-bab3-546a7341d50f` | `beryllium-nfs` | `2Gi` | `Git static` |
 
 ## Safety changes
@@ -38,7 +37,6 @@ kubectl patch pv pvc-0d79abed-4876-4d85-a2e1-14edb751c5c7 -p '{"spec":{"persiste
 kubectl patch pv pvc-2a79df8c-7605-4225-9a79-04330e38d000 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 kubectl patch pv pvc-4e55ad3a-6dfd-49a7-8701-35f94bca49fe -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 kubectl patch pv pvc-5a02e06b-2e7b-45fe-9873-5a4629412ee3 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
-kubectl patch pv pvc-685aa8e2-7782-4f3c-b76e-cfe97d762426 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 kubectl patch pv pvc-686eee23-9be9-40cc-a564-978445ab0be3 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 kubectl patch pv pvc-77f97c58-db4d-4205-80a0-dbdc42c2db66 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 kubectl patch pv pvc-7c391557-b7b8-4ea2-b21a-582c3b2c6c79 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'

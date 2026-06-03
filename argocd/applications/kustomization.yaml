@@ -10,7 +10,6 @@ resources:
   - ./lb-test.yaml
   - ./mastodon.yaml
   - ./miniflux.yaml
-  - ./nebraska.yaml
   - ./nginx.yaml
   - ./oauth2-proxy.yaml
   - ./opentelemetry-collector.yaml
