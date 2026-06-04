@@ -47,13 +47,6 @@ spec:
         tls:
           insecure: true
 
-    connectors:
-      routing/metrics:
-        table:
-          - condition: "true"
-            pipelines:
-              - metrics
-
     service:
       extensions:
         - bearertokenauth
@@ -64,10 +57,9 @@ spec:
           processors:
             - resource/append_pod_ip
           exporters:
-            - routing/metrics
+            - otlp
         metrics:
           receivers:
-            - routing/metrics
             - otlp
           processors:
             - memory_limiter

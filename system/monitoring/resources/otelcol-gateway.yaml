@@ -85,20 +85,21 @@ spec:
           - condition: "true"
             pipelines:
               - metrics
+      routing/split:
+        table:
+          - condition: 'resource.attributes["telemetry.source"] == "external"'
+            pipelines:
+              - metrics/external
+              - traces/external
+              - logs/external
+          - condition: "true"
+            pipelines:
+              - metrics/internal
+              - traces/internal
+              - logs/internal
 
     service:
       pipelines:
-        logs:
-          receivers:
-            - otlp
-          processors:
-            - memory_limiter
-            - batch
-            - k8sattributes
-            - resource/cluster_name
-            - resource/remove_k8s_pod_ip
-          exporters:
-            - otlphttp/loki
         metrics/self:
           receivers:
             - prometheus/self
@@ -114,23 +115,74 @@ spec:
           processors:
             - memory_limiter
             - batch
-            - k8sattributes
-            - resource/cluster_name
-            - resource/remove_k8s_pod_ip
           exporters:
-            - mackerelotlp
-            - otlphttp/prometheus
+            - routing/split
         traces:
           receivers:
             - otlp
           processors:
             - memory_limiter
             - batch
+          exporters:
+            - routing/split
+        logs:
+          receivers:
+            - otlp
+          processors:
+            - memory_limiter
+            - batch
+          exporters:
+            - routing/split
+        metrics/internal:
+          receivers:
+            - routing/split
+          processors:
             - k8sattributes
             - resource/cluster_name
             - resource/remove_k8s_pod_ip
           exporters:
             - mackerelotlp
+            - otlphttp/prometheus
+        traces/internal:
+          receivers:
+            - routing/split
+          processors:
+            - k8sattributes
+            - resource/cluster_name
+            - resource/remove_k8s_pod_ip
+          exporters:
+            - mackerelotlp
+        logs/internal:
+          receivers:
+            - routing/split
+          processors:
+            - k8sattributes
+            - resource/cluster_name
+            - resource/remove_k8s_pod_ip
+          exporters:
+            - otlphttp/loki
+        metrics/external:
+          receivers:
+            - routing/split
+          processors:
+            - resource/remove_k8s_pod_ip
+          exporters:
+            - mackerelotlp
+            - otlphttp/prometheus
+        traces/external:
+          receivers:
+            - routing/split
+          processors:
+            - resource/remove_k8s_pod_ip
+          exporters:
+            - mackerelotlp
+        logs/external:
+          receivers:
+            - routing/split
+          processors:
+            - resource/remove_k8s_pod_ip
+          exporters:
+            - otlphttp/loki
   envFrom:
     - secretRef:
         name: mackerel-apikey
