@@ -67,8 +67,6 @@ spec:
             action: delete
 
     exporters:
-      debug:
-        verbosity: basic
       mackerelotlp:
         sending_queue:
           batch:
@@ -100,7 +98,6 @@ spec:
             - resource/cluster_name
             - resource/remove_k8s_pod_ip
           exporters:
-            - debug
             - otlphttp/loki
         metrics/self:
           receivers:
