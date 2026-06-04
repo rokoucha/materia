@@ -85,18 +85,24 @@ spec:
           - condition: "true"
             pipelines:
               - metrics
-      routing/split:
+      routing/split-metrics:
         table:
           - condition: 'resource.attributes["telemetry.source"] == "external"'
-            pipelines:
-              - metrics/external
-              - traces/external
-              - logs/external
+            pipelines: [metrics/external]
           - condition: "true"
-            pipelines:
-              - metrics/internal
-              - traces/internal
-              - logs/internal
+            pipelines: [metrics/internal]
+      routing/split-traces:
+        table:
+          - condition: 'resource.attributes["telemetry.source"] == "external"'
+            pipelines: [traces/external]
+          - condition: "true"
+            pipelines: [traces/internal]
+      routing/split-logs:
+        table:
+          - condition: 'resource.attributes["telemetry.source"] == "external"'
+            pipelines: [logs/external]
+          - condition: "true"
+            pipelines: [logs/internal]
 
     service:
       pipelines:
@@ -116,7 +122,7 @@ spec:
             - memory_limiter
             - batch
           exporters:
-            - routing/split
+            - routing/split-metrics
         traces:
           receivers:
             - otlp
@@ -124,7 +130,7 @@ spec:
             - memory_limiter
             - batch
           exporters:
-            - routing/split
+            - routing/split-traces
         logs:
           receivers:
             - otlp
@@ -132,10 +138,10 @@ spec:
             - memory_limiter
             - batch
           exporters:
-            - routing/split
+            - routing/split-logs
         metrics/internal:
           receivers:
-            - routing/split
+            - routing/split-metrics
           processors:
             - k8sattributes
             - resource/cluster_name
@@ -145,7 +151,7 @@ spec:
             - otlphttp/prometheus
         traces/internal:
           receivers:
-            - routing/split
+            - routing/split-traces
           processors:
             - k8sattributes
             - resource/cluster_name
@@ -154,7 +160,7 @@ spec:
             - mackerelotlp
         logs/internal:
           receivers:
-            - routing/split
+            - routing/split-logs
           processors:
             - k8sattributes
             - resource/cluster_name
@@ -163,7 +169,7 @@ spec:
             - otlphttp/loki
         metrics/external:
           receivers:
-            - routing/split
+            - routing/split-metrics
           processors:
             - resource/remove_k8s_pod_ip
           exporters:
@@ -171,14 +177,14 @@ spec:
             - otlphttp/prometheus
         traces/external:
           receivers:
-            - routing/split
+            - routing/split-traces
           processors:
             - resource/remove_k8s_pod_ip
           exporters:
             - mackerelotlp
         logs/external:
           receivers:
-            - routing/split
+            - routing/split-logs
           processors:
             - resource/remove_k8s_pod_ip
           exporters:
