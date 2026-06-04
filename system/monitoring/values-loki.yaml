@@ -1,3 +1,6 @@
+global:
+  clusterDomain: materia-cluster.ggrel.net
+
 loki:
   deploymentMode: SingleBinary
 
