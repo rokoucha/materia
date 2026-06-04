@@ -22,14 +22,14 @@ loki:
           prefix: loki_index_
           period: 24h
 
-  # セキュリティコンテキストの設定
+  # セキュリティコンテキストの設定 (Prometheusに合わせる)
   podSecurityContext:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsUser: 10001
+    fsGroup: 2000
+    runAsGroup: 2000
+    runAsUser: 1000
   containerSecurityContext:
-    runAsUser: 10001
-    runAsGroup: 10001
+    runAsUser: 1000
+    runAsGroup: 2000
     runAsNonRoot: true
 
 # 永続ストレージ (PVC) の設定
@@ -40,23 +40,9 @@ singleBinary:
     storageClass: beryllium-nfs
     size: 10Gi
   podSecurityContext:
-    fsGroup: 10001
-    runAsGroup: 10001
-    runAsUser: 10001
-  initContainers:
-    - name: fix-permissions
-      image: busybox:1.36.1
-      command:
-        - sh
-        - -c
-        - |
-          chown -R 10001:10001 /var/loki
-      securityContext:
-        runAsUser: 0
-        privileged: true
-      volumeMounts:
-        - name: storage
-          mountPath: /var/loki
+    fsGroup: 2000
+    runAsGroup: 2000
+    runAsUser: 1000
 
 # SSDモード用のコンポーネントを 0 にしてバリデーションを回避
 write:
