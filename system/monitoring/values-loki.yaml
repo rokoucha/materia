@@ -1,0 +1,41 @@
+loki:
+  deploymentMode: SingleBinary
+
+  commonConfig:
+    path_prefix: /var/loki
+    replication_factor: 1
+
+  # OTLP インテグレーションを明示的に有効化
+  limits_config:
+    otlp_config:
+      enabled: true
+
+  # ストレージ設定 (ファイルシステムを使用)
+  storage:
+    type: filesystem
+
+  schemaConfig:
+    configs:
+      - from: "2024-04-01"
+        store: tsdb
+        object_store: filesystem
+        schema: v13
+        index:
+          prefix: loki_index_
+          period: 24h
+
+# 永続ストレージ (PVC) の設定
+singleBinary:
+  replicas: 1
+  persistence:
+    enabled: true
+    storageClass: beryllium-nfs
+    size: 10Gi
+
+# SimpleScalable用のコンポーネントを無効化
+read:
+  replicas: 0
+write:
+  replicas: 0
+backend:
+  replicas: 0

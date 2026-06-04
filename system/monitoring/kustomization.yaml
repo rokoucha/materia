@@ -16,6 +16,12 @@ helmCharts:
     version: 4.55.0
     repo: https://prometheus-community.github.io/helm-charts
     valuesFile: ./values-node-exporter.yaml
+  - name: loki
+    releaseName: loki
+    namespace: monitoring
+    version: 6.6.0
+    repo: https://grafana.github.io/helm-charts
+    valuesFile: ./values-loki.yaml
 
 resources:
   - ./resources/mackerel-agent-sa.yaml
