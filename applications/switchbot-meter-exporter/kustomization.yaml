@@ -5,6 +5,7 @@ namespace: switchbot-meter-exporter
 
 resources:
   - ./resources/deployment.yaml
+  - ./resources/monitor.yaml
   - ./resources/namespace.yaml
   - ./resources/service.yaml
   - ./resources/switchbot-token.yaml

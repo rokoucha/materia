@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+
+metadata:
+  name: switchbot-meter-exporter
+
+spec:
+  selector:
+    matchLabels:
+      app: default
+  endpoints:
+    - port: telemetry
+      path: /probe
+      params:
+        target:
+          - CED37C9CA281
+          - D4DF46B693B1
+          - ED867D5919E9
+      relabelings:
+        - sourceLabels: [__param_target]
+          targetLabel: instance
+        - targetLabel: job
+          replacement: switchbot-meter

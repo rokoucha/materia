@@ -12,7 +12,5 @@ resources:
   - ./miniflux.yaml
   - ./nginx.yaml
   - ./oauth2-proxy.yaml
-  - ./opentelemetry-collector.yaml
-  - ./snmp-exporter.yaml
   - ./switchbot-meter-exporter.yaml
   - ./teamspeak.yaml
