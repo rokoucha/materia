@@ -1,9 +1,9 @@
+deploymentMode: SingleBinary
+
 global:
   clusterDomain: materia-cluster.ggrel.net
 
 loki:
-  deploymentMode: SingleBinary
-
   commonConfig:
     path_prefix: /var/loki
     replication_factor: 1
@@ -35,10 +35,10 @@ singleBinary:
     storageClass: beryllium-nfs
     size: 10Gi
 
-# SimpleScalable用のコンポーネントを無効化
-read:
-  replicas: 0
+# SSDモード用のコンポーネントを 0 にしてバリデーションを回避
 write:
+  replicas: 0
+read:
   replicas: 0
 backend:
   replicas: 0
