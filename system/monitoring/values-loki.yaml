@@ -22,6 +22,16 @@ loki:
           prefix: loki_index_
           period: 24h
 
+  # セキュリティコンテキストの設定を追加
+  podSecurityContext:
+    fsGroup: 10001
+    runAsGroup: 10001
+    runAsUser: 10001
+  containerSecurityContext:
+    runAsUser: 10001
+    runAsGroup: 10001
+    runAsNonRoot: true
+
 # 永続ストレージ (PVC) の設定
 singleBinary:
   replicas: 1
@@ -29,6 +39,10 @@ singleBinary:
     enabled: true
     storageClass: beryllium-nfs
     size: 10Gi
+  podSecurityContext:
+    fsGroup: 10001
+    runAsGroup: 10001
+    runAsUser: 10001
 
 # SSDモード用のコンポーネントを 0 にしてバリデーションを回避
 write:
