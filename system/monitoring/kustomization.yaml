@@ -19,7 +19,7 @@ helmCharts:
   - name: loki
     releaseName: loki
     namespace: monitoring
-    version: 6.6.0
+    version: 7.0.0
     repo: https://grafana.github.io/helm-charts
     valuesFile: ./values-loki.yaml
 
