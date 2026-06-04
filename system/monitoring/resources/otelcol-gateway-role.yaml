@@ -17,7 +17,10 @@ rules:
   - apiGroups:
       - "apps"
     resources:
+      - "daemonsets"
+      - "deployments"
       - "replicasets"
+      - "statefulsets"
     verbs:
       - "get"
       - "list"
@@ -26,6 +29,14 @@ rules:
       - "extensions"
     resources:
       - "replicasets"
+    verbs:
+      - "get"
+      - "list"
+      - "watch"
+  - apiGroups:
+      - "batch"
+    resources:
+      - "jobs"
     verbs:
       - "get"
       - "list"
