@@ -14,7 +14,25 @@ spec:
       params:
         target:
           - CED37C9CA281
+      relabelings:
+        - sourceLabels: [__param_target]
+          targetLabel: instance
+        - targetLabel: job
+          replacement: switchbot-meter
+    - port: telemetry
+      path: /probe
+      params:
+        target:
           - D4DF46B693B1
+      relabelings:
+        - sourceLabels: [__param_target]
+          targetLabel: instance
+        - targetLabel: job
+          replacement: switchbot-meter
+    - port: telemetry
+      path: /probe
+      params:
+        target:
           - ED867D5919E9
       relabelings:
         - sourceLabels: [__param_target]
