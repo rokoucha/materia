@@ -9,6 +9,10 @@ spec:
   enableOTLPReceiver: true
   enableFeatures:
     - otlp-deltatocumulative
+  otlp:
+    keepIdentifyingResourceAttributes: true
+  tsdb:
+    outOfOrderTimeWindow: 30m
   # ServiceMonitor / PodMonitor discovery is handled by the OpenTelemetry Operator.
   # Keep Prometheus from selecting any of them directly.
   serviceMonitorSelector:
