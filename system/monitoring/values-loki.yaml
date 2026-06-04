@@ -8,11 +8,6 @@ loki:
     path_prefix: /var/loki
     replication_factor: 1
 
-  # OTLP インテグレーションを明示的に有効化
-  limits_config:
-    otlp_config:
-      enabled: true
-
   # ストレージ設定 (ファイルシステムを使用)
   storage:
     type: filesystem
