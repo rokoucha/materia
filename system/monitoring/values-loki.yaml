@@ -4,11 +4,12 @@ global:
   clusterDomain: materia-cluster.ggrel.net
 
 loki:
+  auth_enabled: false
+
   commonConfig:
     path_prefix: /var/loki
     replication_factor: 1
 
-  # ストレージ設定 (ファイルシステムを使用)
   storage:
     type: filesystem
 
@@ -22,9 +23,9 @@ loki:
           prefix: loki_index_
           period: 24h
 
-  # セキュリティコンテキストの設定 (Prometheusに合わせる)
   podSecurityContext:
     fsGroup: 2000
+    fsGroupChangePolicy: OnRootMismatch
     runAsGroup: 2000
     runAsUser: 1000
   containerSecurityContext:
@@ -32,22 +33,27 @@ loki:
     runAsGroup: 2000
     runAsNonRoot: true
 
-# 永続ストレージ (PVC) の設定
 singleBinary:
   replicas: 1
   persistence:
     enabled: true
-    storageClass: beryllium-nfs
+    storageClass: beryllium-iscsi
     size: 10Gi
   podSecurityContext:
     fsGroup: 2000
+    fsGroupChangePolicy: OnRootMismatch
     runAsGroup: 2000
     runAsUser: 1000
 
-# SSDモード用のコンポーネントを 0 にしてバリデーションを回避
 write:
   replicas: 0
 read:
   replicas: 0
 backend:
   replicas: 0
+
+chunksCache:
+  enabled: false
+
+resultsCache:
+  enabled: false
