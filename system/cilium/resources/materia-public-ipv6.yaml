@@ -3,6 +3,8 @@ kind: CiliumLoadBalancerIPPool
 
 metadata:
   name: materia-public-ipv6
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 
 spec:
   blocks:
