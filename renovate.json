@@ -53,7 +53,7 @@
       "datasourceTemplate": "github-releases",
       "managerFilePatterns": ["/kustomization.yaml/"],
       "matchStrings": [
-        "https://github.com/(?<depName>(?!cloudnative-pg/cloudnative-pg).*/.*?)/releases/download/(?<currentValue>.*?)/"
+        "https://github.com/(?<depName>cert-manager/cert-manager|emberstack/kubernetes-reflector|open-telemetry/opentelemetry-operator|prometheus-operator/prometheus-operator)/releases/download/(?<currentValue>.*?)/"
       ]
     },
     {
@@ -61,7 +61,7 @@
       "datasourceTemplate": "github-tags",
       "managerFilePatterns": ["/kustomization.yaml/"],
       "matchStrings": [
-        "https://raw.githubusercontent.com/(?<depName>(?!cloudnative-pg/cloudnative-pg)[^/]*/[^/]*)/(?<currentValue>.*?)/"
+        "https://raw.githubusercontent.com/(?<depName>argoproj/argo-cd|zebernst/synology-csi-talos)/(?<currentValue>.*?)/"
       ]
     },
     {
