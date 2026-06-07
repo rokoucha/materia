@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ./resources/materia-public-ipv4.yaml
   - ./resources/materia-public-ipv6.yaml
+  - ./resources/l2-announcement-policy.yaml
   - ./resources/bgp-cluster-config.yaml
   - ./resources/bgp-peer-config.yaml
   - ./resources/bgp-peer-config-v6.yaml

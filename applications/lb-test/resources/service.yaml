@@ -5,19 +5,19 @@ metadata:
   name: lb-test
   namespace: lb-test
   labels:
-    chlorinate.rokoucha.com/lb: public-test
+    chlorinate.rokoucha.com/lb: public
   annotations:
-    io.cilium/lb-ipam-ips: "172.16.2.64,2404:9200:225:103::64"
+    lbipam.cilium.io/sharing-key: public-dmz
 
 spec:
   selector:
     app: lb-test
   type: LoadBalancer
-  ipFamilyPolicy: PreferDualStack
+  ipFamilyPolicy: RequireDualStack
   ipFamilies:
     - IPv4
     - IPv6
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: Cluster
   ports:
     - name: http
       port: 80

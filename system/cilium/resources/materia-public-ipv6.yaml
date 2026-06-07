@@ -8,7 +8,7 @@ metadata:
 
 spec:
   blocks:
-    - cidr: 2404:9200:225:103::/112
+    - cidr: 240b:10:3f6d:1403::10/128
   serviceSelector:
     matchLabels:
-      chlorinate.rokoucha.com/lb: public-test
+      chlorinate.rokoucha.com/lb: public

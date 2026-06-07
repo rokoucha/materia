@@ -1,0 +1,16 @@
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+
+metadata:
+  name: public-lb
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+
+spec:
+  nodeSelector:
+    matchLabels:
+      chlorinate.rokoucha.com/bgp: srv-lan
+  serviceSelector:
+    matchLabels:
+      chlorinate.rokoucha.com/lb: public
+  loadBalancerIPs: true
