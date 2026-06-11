@@ -9,6 +9,13 @@ helmCharts:
     repo: https://kubernetes-sigs.github.io/external-dns/
     includeCRDs: true
     valuesFile: ./values.yaml
+  - name: external-dns
+    releaseName: external-dns-lb-test
+    namespace: external-dns
+    version: 1.21.1
+    repo: https://kubernetes-sigs.github.io/external-dns/
+    includeCRDs: false
+    valuesFile: ./values-lb-test.yaml
 
 resources:
   - ./resources/cloudflare-api-key.yaml

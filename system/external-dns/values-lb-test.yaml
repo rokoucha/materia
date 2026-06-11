@@ -1,0 +1,29 @@
+sources:
+  - service
+
+domainFilters:
+  - ggrel.net
+
+labelFilter: external-dns.rokoucha.com/scope=lb-test
+
+annotationPrefix: lb-test.external-dns.alpha.kubernetes.io/
+
+managedRecordTypes:
+  - A
+  - AAAA
+
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-key
+        key: apiKey
+
+policy: sync
+
+txtOwnerId: materia-lb-test
+
+logLevel: debug
+
+provider:
+  name: cloudflare
