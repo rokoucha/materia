@@ -1,10 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: apcupsd-exporter
+namespace: apcupsd
 
 resources:
   - resources/namespace.yaml
-  - resources/apcupsd-exporter.yaml
-  - resources/monitor.yaml
+  - resources/configmap.yaml
+  - resources/apcupsd.yaml
   - resources/service.yaml
+  - resources/apcupsd-exporter.yaml
+  - resources/apcupsd-exporter-service.yaml
+  - resources/monitor.yaml
