@@ -8,4 +8,5 @@ resources:
   - ./resources/otelcol-external-ingress.yaml
   - ./resources/otelcol-external-tls.yaml
   - ./resources/otelcol-external-token.yaml
+  - ./resources/mackerel-apikey.yaml
   - ./resources/otelcol-external.yaml

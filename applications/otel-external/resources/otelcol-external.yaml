@@ -40,10 +40,25 @@ spec:
           - key: k8s.pod.ip
             action: insert
             value: ${env:MY_POD_IP}
+      resource/remove_k8s_pod_ip:
+        attributes:
+          - key: k8s.pod.ip
+            action: delete
 
     exporters:
+      mackerelotlp:
+        sending_queue:
+          batch:
+            # grpc: received message after decompression larger than max 4194304
+            max_size: 4_000_000
       otlp:
         endpoint: otelcol-gateway-collector-headless.monitoring.svc.materia-cluster.ggrel.net:4317
+        tls:
+          insecure: true
+      otlphttp/prometheus:
+        metrics_endpoint: http://prometheus-operated.prometheus.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
+      otlphttp/loki:
+        endpoint: http://loki-gateway.loki.svc.materia-cluster.ggrel.net/otlp
         tls:
           insecure: true
 
@@ -64,28 +79,35 @@ spec:
           processors:
             - memory_limiter
             - resource/source
+            - resource/remove_k8s_pod_ip
             - batch
           exporters:
-            - otlp
+            - mackerelotlp
+            - otlphttp/prometheus
         traces:
           receivers:
             - otlp
           processors:
             - memory_limiter
             - resource/source
+            - resource/remove_k8s_pod_ip
             - batch
           exporters:
-            - otlp
+            - mackerelotlp
         logs:
           receivers:
             - otlp
           processors:
             - memory_limiter
             - resource/source
+            - resource/remove_k8s_pod_ip
             - batch
           exporters:
-            - otlp
+            - otlphttp/loki
 
+  envFrom:
+    - secretRef:
+        name: mackerel-apikey
   env:
     - name: OTEL_BEARER_TOKEN
       valueFrom:
