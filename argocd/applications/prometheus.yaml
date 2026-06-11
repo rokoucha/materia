@@ -2,20 +2,15 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 
 metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
-  name: monitoring
+  name: prometheus
 
 spec:
   destination:
     server: https://kubernetes.default.svc
-  project: system
+  project: applications
   source:
-    path: system/monitoring
+    path: applications/prometheus
     repoURL: https://github.com/rokoucha/materia.git
     targetRevision: HEAD
-  syncPolicy:
-    automated:
-      selfHeal: true

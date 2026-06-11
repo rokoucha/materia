@@ -13,7 +13,7 @@ spec:
     apiVersion: v1
     kind: PersistentVolumeClaim
     name: prometheus-prometheus-db-prometheus-prometheus-0
-    namespace: monitoring
+    namespace: prometheus
   csi:
     driver: csi.san.synology.com
     fsType: btrfs

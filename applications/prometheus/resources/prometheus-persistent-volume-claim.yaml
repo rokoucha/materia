@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 
 metadata:
   name: prometheus-prometheus-db-prometheus-prometheus-0
-  namespace: monitoring
+  namespace: prometheus
 
 spec:
   accessModes:

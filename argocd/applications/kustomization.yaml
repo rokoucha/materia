@@ -8,9 +8,12 @@ resources:
   - ./grafana.yaml
   - ./influxdb.yaml
   - ./lb-test.yaml
+  - ./loki.yaml
   - ./mastodon.yaml
   - ./miniflux.yaml
   - ./nginx.yaml
   - ./oauth2-proxy.yaml
+  - ./otel-external.yaml
+  - ./prometheus.yaml
   - ./switchbot-meter-exporter.yaml
   - ./teamspeak.yaml
