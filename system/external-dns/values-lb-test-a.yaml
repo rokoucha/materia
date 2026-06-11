@@ -9,7 +9,7 @@ labelFilter: external-dns.rokoucha.com/scope=lb-test
 annotationPrefix: lb-test.external-dns.alpha.kubernetes.io/
 
 managedRecordTypes:
-  - AAAA
+  - A
 
 env:
   - name: CF_API_TOKEN
@@ -17,6 +17,10 @@ env:
       secretKeyRef:
         name: cloudflare-api-key
         key: apiKey
+
+extraArgs:
+  - --default-targets=175.177.69.46
+  - --force-default-targets
 
 policy: sync
 
