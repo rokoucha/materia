@@ -203,7 +203,7 @@ spec:
         fieldRef:
           apiVersion: v1
           fieldPath: status.podIP
-  image: ghcr.io/rokoucha/otelcol/materia-gateway:20260414.101702
+  image: ghcr.io/rokoucha/otelcol/materia-gateway:20260611.224311
   ipFamilies:
     - IPv4
     - IPv6
