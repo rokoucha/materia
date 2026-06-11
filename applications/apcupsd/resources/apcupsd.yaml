@@ -32,7 +32,7 @@ spec:
             - name: run
               mountPath: /run/apcupsd
         - name: apcupsd-events
-          image: docker.io/library/busybox:1.37
+          image: docker.io/library/busybox:1.38
           command:
             - sh
             - -c
