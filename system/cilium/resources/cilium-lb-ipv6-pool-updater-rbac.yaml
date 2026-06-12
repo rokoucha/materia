@@ -4,6 +4,15 @@ metadata:
   name: cilium-lb-ipv6-pool-updater
   namespace: kube-system
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cilium-lb-ipv6-pool-updater-token
+  namespace: kube-system
+  annotations:
+    kubernetes.io/service-account.name: cilium-lb-ipv6-pool-updater
+type: kubernetes.io/service-account-token
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
