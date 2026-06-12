@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cilium-lb-ipv6-pool-updater
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cilium-lb-ipv6-pool-updater
+rules:
+  - apiGroups:
+      - cilium.io
+    resources:
+      - ciliumloadbalancerippools
+    verbs:
+      - get
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cilium-lb-ipv6-pool-updater
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cilium-lb-ipv6-pool-updater
+subjects:
+  - kind: ServiceAccount
+    name: cilium-lb-ipv6-pool-updater
+    namespace: kube-system
