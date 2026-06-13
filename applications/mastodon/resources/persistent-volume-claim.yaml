@@ -12,11 +12,6 @@ metadata:
     cnpg.io/instanceRole: primary
     cnpg.io/pvcRole: PG_DATA
     role: primary
-  annotations:
-    cnpg.io/nodeSerial: "1"
-    cnpg.io/operatorVersion: 1.29.0
-    cnpg.io/pvcStatus: ready
-
 spec:
   accessModes:
     - ReadWriteOnce

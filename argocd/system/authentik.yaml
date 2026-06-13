@@ -13,6 +13,12 @@ spec:
     server: https://kubernetes.default.svc
   ignoreDifferences:
     - jsonPointers:
+        - /metadata/annotations/cnpg.io~1nodeSerial
+        - /metadata/annotations/cnpg.io~1operatorVersion
+        - /metadata/annotations/cnpg.io~1pvcStatus
+      kind: PersistentVolumeClaim
+      name: postgresql-1
+    - jsonPointers:
         - /data/tls.crt
         - /data/tls.key
         - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-at
