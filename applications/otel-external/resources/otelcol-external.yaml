@@ -61,6 +61,10 @@ spec:
         endpoint: http://loki-gateway.loki.svc.materia-cluster.ggrel.net/otlp
         tls:
           insecure: true
+      otlp/logs_secondary:
+        endpoint: otelcol-log-sink-collector.monitoring.svc.materia-cluster.ggrel.net:4317
+        tls:
+          insecure: true
 
     service:
       extensions:
@@ -104,6 +108,7 @@ spec:
             - batch
           exporters:
             - otlphttp/loki
+            - otlp/logs_secondary
 
   envFrom:
     - secretRef:

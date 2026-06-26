@@ -83,6 +83,10 @@ spec:
         endpoint: http://loki-gateway.loki.svc.materia-cluster.ggrel.net/otlp
         tls:
           insecure: true
+      otlp/logs_secondary:
+        endpoint: otelcol-log-sink-collector.monitoring.svc.materia-cluster.ggrel.net:4317
+        tls:
+          insecure: true
 
     connectors:
       routing/metrics:
@@ -136,6 +140,7 @@ spec:
             - resource/remove_k8s_pod_ip
           exporters:
             - otlphttp/loki
+            - otlp/logs_secondary
   envFrom:
     - secretRef:
         name: mackerel-apikey
