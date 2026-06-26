@@ -46,11 +46,7 @@ spec:
             action: delete
 
     exporters:
-      mackerelotlp:
-        sending_queue:
-          batch:
-            # grpc: received message after decompression larger than max 4194304
-            max_size: 4_000_000
+      mackerelotlp: {}
       otlp:
         endpoint: otelcol-gateway-collector-headless.monitoring.svc.materia-cluster.ggrel.net:4317
         tls:
