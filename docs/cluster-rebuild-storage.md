@@ -10,7 +10,7 @@ As of 2026-04-12, the live cluster contains these PVC-backed workloads:
 | Namespace | PVC | PV | VolumeHandle | StorageClass | Capacity | Management |
 | --- | --- | --- | --- | --- | --- | --- |
 | authentik | `postgresql-1` | `pvc-0d79abed-4876-4d85-a2e1-14edb751c5c7` | `76ca4738-69b7-4249-8bee-8c64a380df1d` | `beryllium-iscsi` | `5Gi` | `Git static` |
-| grafana | `data` | `pvc-4e55ad3a-6dfd-49a7-8701-35f94bca49fe` | `b8fba46a-e3d1-4155-b827-6fa51d9f6de8` | `beryllium-iscsi` | `1Gi` | `Git static` |
+| grafana | `data` | `pvc-c12e0c9b-690e-40e8-b755-191ec0f225a6` | `8a4e1ac7-c330-4a3b-a0da-3114ec5fa118` | `beryllium-nfs` | `1Gi` | `Dynamic` |
 | influxdb | `data` | `pvc-9c6e10ab-0422-490d-ad99-94064fdc7bfb` | `d26e0e90-57e9-40b7-8b3e-8646af1435d7` | `beryllium-iscsi` | `1Gi` | `Git static` |
 | mastodon | `elasticsearch-data-elasticsearch-es-default-0` | `pvc-7c391557-b7b8-4ea2-b21a-582c3b2c6c79` | `bb3641c2-a007-4dd0-bc4e-049838e34601` | `beryllium-iscsi` | `2Gi` | `Git static` |
 | mastodon | `postgresql-1` | `pvc-686eee23-9be9-40cc-a564-978445ab0be3` | `fa2d537f-3545-4589-ae09-bc78109c4bdc` | `beryllium-iscsi` | `10Gi` | `Git static` |
@@ -23,8 +23,8 @@ As of 2026-04-12, the live cluster contains these PVC-backed workloads:
 1. Patch every existing PV to `Retain`.
 2. Set both Synology `StorageClass` objects to `Retain` so future dynamic PVs
    inherit the safer policy.
-3. Keep the static PV manifests for Grafana and InfluxDB aligned with the live
-   cluster policy.
+3. Keep the static PV manifests for InfluxDB aligned with the live cluster
+   policy. Grafana now uses dynamic NFS provisioning.
 4. Because `StorageClass.reclaimPolicy` is immutable, Argo CD must delete and
    recreate the `StorageClass` objects when syncing the manifest change.
 
@@ -35,7 +35,7 @@ Patch existing PVs:
 ```sh
 kubectl patch pv pvc-0d79abed-4876-4d85-a2e1-14edb751c5c7 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 kubectl patch pv pvc-2a79df8c-7605-4225-9a79-04330e38d000 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
-kubectl patch pv pvc-4e55ad3a-6dfd-49a7-8701-35f94bca49fe -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+kubectl patch pv pvc-c12e0c9b-690e-40e8-b755-191ec0f225a6 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 kubectl patch pv pvc-5a02e06b-2e7b-45fe-9873-5a4629412ee3 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 kubectl patch pv pvc-686eee23-9be9-40cc-a564-978445ab0be3 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 kubectl patch pv pvc-77f97c58-db4d-4205-80a0-dbdc42c2db66 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'

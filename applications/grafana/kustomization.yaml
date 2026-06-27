@@ -15,7 +15,6 @@ resources:
   - ./resources/grafana-secrets.yaml
   - ./resources/namespace.yaml
   - ./resources/persistent-volume-claim.yaml
-  - ./resources/persistent-volume.yaml
   - ./resources/tls.yaml
 
 configMapGenerator:
