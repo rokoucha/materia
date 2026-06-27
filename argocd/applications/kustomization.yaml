@@ -16,4 +16,5 @@ resources:
   - ./otel-external.yaml
   - ./prometheus.yaml
   - ./switchbot-meter-exporter.yaml
+  - ./tempo.yaml
   - ./teamspeak.yaml

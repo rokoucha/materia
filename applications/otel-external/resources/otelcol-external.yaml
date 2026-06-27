@@ -57,6 +57,10 @@ spec:
         endpoint: http://loki-gateway.loki.svc.materia-cluster.ggrel.net/otlp
         tls:
           insecure: true
+      otlp/tempo:
+        endpoint: tempo.tempo.svc.materia-cluster.ggrel.net:4317
+        tls:
+          insecure: true
       otlp/logs_secondary:
         endpoint: otelcol-log-sink-collector.monitoring.svc.materia-cluster.ggrel.net:4317
         tls:
@@ -94,6 +98,7 @@ spec:
             - batch
           exporters:
             - mackerelotlp
+            - otlp/tempo
         logs:
           receivers:
             - otlp

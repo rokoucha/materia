@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: tempo
+
+helmCharts:
+  - name: tempo
+    releaseName: tempo
+    namespace: tempo
+    version: 1.24.4
+    repo: https://grafana.github.io/helm-charts
+    valuesFile: ./values.yaml
+
+resources:
+  - ./namespace.yaml
+
+patches:
+  - path: ./patches/service-dual-stack.yaml
+    target:
+      kind: Service
+      name: tempo

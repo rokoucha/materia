@@ -32,6 +32,16 @@ persistence:
   enabled: true
   existingClaim: data
 
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Tempo
+        type: tempo
+        access: proxy
+        url: http://tempo.tempo.svc.materia-cluster.ggrel.net:3200
+        isDefault: false
+
 envFromSecrets:
   - name: grafana-secrets
 

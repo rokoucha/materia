@@ -1,0 +1,25 @@
+global:
+  clusterDomain: materia-cluster.ggrel.net
+
+tempo:
+  reportingEnabled: false
+  retention: 168h
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+      wal:
+        path: /var/tempo/wal
+
+persistence:
+  enabled: true
+  storageClassName: beryllium-iscsi
+  size: 10Gi
+
+service:
+  type: ClusterIP
