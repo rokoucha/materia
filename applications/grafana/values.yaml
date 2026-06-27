@@ -1,0 +1,42 @@
+image:
+  tag: "13.1.0"
+
+env:
+  GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: "true"
+
+service:
+  type: ClusterIP
+  port: 3000
+  targetPort: 3000
+  ipFamilyPolicy: RequireDualStack
+  ipFamilies:
+    - IPv4
+    - IPv6
+
+ingress:
+  enabled: true
+  ingressClassName: haproxy
+  hosts:
+    - monitor.ggrel.net
+  tls:
+    - secretName: tls
+      hosts:
+        - monitor.ggrel.net
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 750Mi
+
+persistence:
+  enabled: true
+  existingClaim: data
+
+envFromSecrets:
+  - name: grafana-secrets
+
+envFromConfigMaps:
+  - name: config
+
+testFramework:
+  enabled: false
