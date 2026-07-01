@@ -44,6 +44,25 @@ spec:
         attributes:
           - key: k8s.pod.ip
             action: delete
+      transform/add_sample_key:
+        error_mode: ignore
+        log_statements:
+          - set(log.attributes["_sample_key"], UUID())
+      probabilistic_sampler/logs:
+        sampling_percentage: 10
+        mode: hash_seed
+        attribute_source: record
+        from_attribute: _sample_key
+        hash_seed: 12345
+        fail_closed: true
+      transform/remove_sample_key:
+        error_mode: ignore
+        log_statements:
+          - delete_key(log.attributes, "_sample_key")
+      batch/mackerel_logs:
+        send_batch_size: 1000
+        send_batch_max_size: 1000
+        timeout: 1s
 
     exporters:
       mackerelotlp: {}
@@ -61,10 +80,11 @@ spec:
         endpoint: tempo.tempo.svc.materia-cluster.ggrel.net:4317
         tls:
           insecure: true
-      otlp/logs_secondary:
-        endpoint: otelcol-log-sink-collector.monitoring.svc.materia-cluster.ggrel.net:4317
-        tls:
-          insecure: true
+      otlphttp/mackerel_logs:
+        logs_endpoint: https://otlp-vaxila.mackerelio.com/v1/logs
+        headers:
+          Mackerel-Api-Key: ${env:MACKEREL_APIKEY}
+          Accept: "*/*"
 
     service:
       extensions:
@@ -109,7 +129,19 @@ spec:
             - batch
           exporters:
             - otlphttp/loki
-            - otlp/logs_secondary
+        logs/mackerel:
+          receivers:
+            - otlp
+          processors:
+            - memory_limiter
+            - resource/source
+            - resource/remove_k8s_pod_ip
+            - transform/add_sample_key
+            - probabilistic_sampler/logs
+            - transform/remove_sample_key
+            - batch/mackerel_logs
+          exporters:
+            - otlphttp/mackerel_logs
 
   envFrom:
     - secretRef:
@@ -126,7 +158,7 @@ spec:
           apiVersion: v1
           fieldPath: status.podIP
 
-  image: ghcr.io/rokoucha/otelcol/materia-external:20260611.224311
+  image: ghcr.io/rokoucha/otelcol/materia-external:20260701.123135
   ipFamilies:
     - IPv4
     - IPv6
