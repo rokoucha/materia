@@ -4,4 +4,4 @@ kind: Kustomization
 resources:
   - ./resources/cloudnative-pg-monitor.yaml
   # renovate: datasource=github-releases depName=cloudnative-pg/cloudnative-pg
-  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.29.1/releases/cnpg-1.29.1.yaml
+  - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.0/releases/cnpg-1.30.0.yaml
