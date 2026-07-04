@@ -5,6 +5,7 @@ namespace: otel-external
 
 resources:
   - ./resources/namespace.yaml
+  - ./resources/otelcol-external-grpc-ingress.yaml
   - ./resources/otelcol-external-ingress.yaml
   - ./resources/otelcol-external-tls.yaml
   - ./resources/otelcol-external-token.yaml
