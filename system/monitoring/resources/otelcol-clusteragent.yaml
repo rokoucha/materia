@@ -27,7 +27,7 @@ spec:
             value: ${env:MY_POD_IP}
 
     exporters:
-      otlp:
+      otlp_grpc:
         endpoint: otelcol-gateway-collector-headless.monitoring.svc.materia-cluster.ggrel.net:4317
         tls:
           insecure: true
@@ -41,7 +41,7 @@ spec:
             - memory_limiter
             - batch
           exporters:
-            - otlp
+            - otlp_grpc
         metrics:
           receivers:
             - prometheus/self
@@ -50,7 +50,7 @@ spec:
             - batch
             - resource/append_otelcol_agent_pod_ip
           exporters:
-            - otlp
+            - otlp_grpc
   env:
     - name: MY_POD_IP
       valueFrom:

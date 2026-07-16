@@ -87,13 +87,13 @@ spec:
           - delete_key(log.attributes, "_sample_key")
     exporters:
       mackerel_otlp: {}
-      otlphttp/prometheus:
+      otlp_http/prometheus:
         metrics_endpoint: http://prometheus-operated.prometheus.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
-      otlphttp/loki:
+      otlp_http/loki:
         endpoint: http://loki-gateway.loki.svc.materia-cluster.ggrel.net/otlp
         tls:
           insecure: true
-      otlp/tempo:
+      otlp_grpc/tempo:
         endpoint: tempo.tempo.svc.materia-cluster.ggrel.net:4317
         tls:
           insecure: true
@@ -126,7 +126,7 @@ spec:
             - resource/remove_k8s_pod_ip
           exporters:
             - mackerel_otlp
-            - otlphttp/prometheus
+            - otlp_http/prometheus
         traces:
           receivers:
             - otlp
@@ -138,7 +138,7 @@ spec:
             - resource/remove_k8s_pod_ip
           exporters:
             - mackerel_otlp
-            - otlp/tempo
+            - otlp_grpc/tempo
         logs:
           receivers:
             - otlp
@@ -149,7 +149,7 @@ spec:
             - resource/cluster_name
             - resource/remove_k8s_pod_ip
           exporters:
-            - otlphttp/loki
+            - otlp_http/loki
         logs/mackerel:
           receivers:
             - otlp
