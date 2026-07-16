@@ -85,13 +85,8 @@ spec:
         error_mode: ignore
         log_statements:
           - delete_key(log.attributes, "_sample_key")
-      batch/mackerel_logs:
-        send_batch_size: 1000
-        send_batch_max_size: 1000
-        timeout: 1s
-
     exporters:
-      mackerelotlp: {}
+      mackerel_otlp: {}
       otlphttp/prometheus:
         metrics_endpoint: http://prometheus-operated.prometheus.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
       otlphttp/loki:
@@ -102,12 +97,6 @@ spec:
         endpoint: tempo.tempo.svc.materia-cluster.ggrel.net:4317
         tls:
           insecure: true
-      otlphttp/mackerel_logs:
-        logs_endpoint: https://otlp-vaxila.mackerelio.com/v1/logs
-        headers:
-          Mackerel-Api-Key: ${env:MACKEREL_APIKEY}
-          Accept: "*/*"
-
     connectors:
       routing/metrics:
         table:
@@ -136,7 +125,7 @@ spec:
             - resource/cluster_name
             - resource/remove_k8s_pod_ip
           exporters:
-            - mackerelotlp
+            - mackerel_otlp
             - otlphttp/prometheus
         traces:
           receivers:
@@ -148,7 +137,7 @@ spec:
             - resource/cluster_name
             - resource/remove_k8s_pod_ip
           exporters:
-            - mackerelotlp
+            - mackerel_otlp
             - otlp/tempo
         logs:
           receivers:
@@ -172,9 +161,8 @@ spec:
             - transform/add_sample_key
             - probabilistic_sampler/logs
             - transform/remove_sample_key
-            - batch/mackerel_logs
           exporters:
-            - otlphttp/mackerel_logs
+            - mackerel_otlp
   envFrom:
     - secretRef:
         name: mackerel-apikey
