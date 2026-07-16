@@ -102,6 +102,12 @@ spec:
         endpoint: tempo.tempo.svc.materia-cluster.ggrel.net:4317
         tls:
           insecure: true
+      otlphttp/mackerel_logs:
+        logs_endpoint: https://otlp-vaxila.mackerelio.com/v1/logs
+        headers:
+          Mackerel-Api-Key: ${env:MACKEREL_APIKEY}
+          Accept: "*/*"
+
     connectors:
       routing/metrics:
         table:
@@ -168,7 +174,7 @@ spec:
             - transform/remove_sample_key
             - batch/mackerel_logs
           exporters:
-            - mackerelotlp
+            - otlphttp/mackerel_logs
   envFrom:
     - secretRef:
         name: mackerel-apikey
