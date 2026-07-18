@@ -11,7 +11,7 @@ spec:
   endpoints:
     - port: telemetry
       path: /probe
-      interval: 1m
+      interval: 1m30s
       params:
         target:
           - CED37C9CA281
@@ -22,7 +22,7 @@ spec:
           replacement: switchbot-meter
     - port: telemetry
       path: /probe
-      interval: 1m
+      interval: 1m30s
       params:
         target:
           - D4DF46B693B1
@@ -33,7 +33,7 @@ spec:
           replacement: switchbot-meter
     - port: telemetry
       path: /probe
-      interval: 1m
+      interval: 1m30s
       params:
         target:
           - ED867D5919E9
