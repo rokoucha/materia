@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: cloudflare-ddns
-          image: ghcr.io/rokoucha/cloudflare-ddns:20260719.114718
+          image: ghcr.io/rokoucha/cloudflare-ddns:20260721.122610
           imagePullPolicy: IfNotPresent
           args:
             - -e
