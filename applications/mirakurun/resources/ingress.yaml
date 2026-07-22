@@ -21,6 +21,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: oauth2-proxy
+                name: service
                 port:
-                  number: 4180
+                  number: 40772
