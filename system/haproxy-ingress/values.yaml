@@ -15,10 +15,6 @@ controller:
 
   config:
     global-config-snippet: |
-      tune.lua.bool-sample-conversion normal
-      lua-prepend-path /etc/haproxy/forward-auth/?.lua
-      lua-load /etc/haproxy/forward-auth/auth-request.lua
-
       ssl-default-bind-ciphers ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384
       ssl-default-bind-ciphersuites TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384
       ssl-default-bind-curves X25519MLKEM768:secp521r1:secp384r1
@@ -32,23 +28,6 @@ controller:
       # curl https://ssl-config.mozilla.org/ffdhe2048.txt > /path/to/dhparam
       #ssl-dh-param-file /path/to/dhparam
     quic-alt-svc-max-age: "86400"
-
-  auxiliaryConfig: |
-    backend authentik_forward_auth
-      mode http
-      option httpchk GET /-/health/live/
-      http-check expect status 200
-      server authentik authentik-server.authentik.svc.materia-cluster.ggrel.net:80 check
-
-  extraVolumeMounts:
-    - name: forward-auth-lua
-      mountPath: /etc/haproxy/forward-auth
-      readOnly: true
-
-  extraVolumes:
-    - name: forward-auth-lua
-      configMap:
-        name: haproxy-forward-auth-lua
 
   service:
     nodePorts:
