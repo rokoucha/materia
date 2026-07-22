@@ -34,7 +34,7 @@ controller:
     frontend-config-snippet: |
       # Forward Auth PoC. Add hosts to this ACL only after creating a matching
       # single-application Forward Auth provider in authentik.
-      acl forward_auth_protected var(txn.host) -m str mirakurun.ggrel.net
+      acl forward_auth_protected var(txn.host) -m str forward-auth-disabled.invalid
       acl forward_auth_outpost var(txn.path) -m beg /outpost.goauthentik.io/
 
       # The generated use_backend rule consumes txn.path_match. Point only the
