@@ -23,10 +23,6 @@ spec:
       containers:
         - name: mirakurun
           image: ghcr.io/starrybluesky/mirakurun-custom:2026.7.22
-          securityContext:
-            capabilities:
-              add:
-                - SYS_NICE
           env:
             - name: TZ
               value: Asia/Tokyo
