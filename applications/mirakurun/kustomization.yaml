@@ -5,6 +5,7 @@ namespace: mirakurun
 
 resources:
   - ./resources/config.yaml
+  - ./resources/authentik-proxy-service.yaml
   - ./resources/statefulset.yaml
   - ./resources/ghcr-credentials.yaml
   - ./resources/ingress.yaml

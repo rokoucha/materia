@@ -21,6 +21,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: service
+                name: authentik-proxy
                 port:
-                  number: 40772
+                  name: http
