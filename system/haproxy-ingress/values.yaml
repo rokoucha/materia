@@ -41,7 +41,7 @@ controller:
       http-request set-header X-Forwarded-Method %[method] if forward_auth_protected { ssl_fc } !forward_auth_outpost
       http-request set-header X-Forwarded-Proto https if forward_auth_protected { ssl_fc } !forward_auth_outpost
       http-request set-header X-Forwarded-Host %[req.hdr(host)] if forward_auth_protected { ssl_fc } !forward_auth_outpost
-      http-request set-header X-Original-URL https://%[req.hdr(host)]%[url] if forward_auth_protected { ssl_fc } !forward_auth_outpost
+      http-request set-header X-Original-URL https://%[req.hdr(host)]%[pathq] if forward_auth_protected { ssl_fc } !forward_auth_outpost
 
       http-request lua.auth-intercept authentik_forward_auth /outpost.goauthentik.io/auth/nginx HEAD x-original-url,x-real-ip,x-forwarded-host,x-forwarded-proto,user-agent,cookie,accept,x-forwarded-method x-authentik-* - if forward_auth_protected { ssl_fc } !forward_auth_outpost
 
