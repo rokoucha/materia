@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: ingress
+  annotations:
+    haproxy.org/ssl-redirect: "true"
+    haproxy.org/timeout-server: 24h
+
+spec:
+  ingressClassName: haproxy
+  tls:
+    - secretName: tls
+      hosts:
+        - mirakurun.ggrel.net
+  rules:
+    - host: mirakurun.ggrel.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: authentik-outpost
+                port:
+                  number: 9000

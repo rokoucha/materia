@@ -14,6 +14,7 @@ helmCharts:
       operator:
         autoRestart: true
         create: true
+        enableAnnotations: true
 
 resources:
   - ./resources/namespace.yaml

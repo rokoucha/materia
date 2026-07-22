@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: mirakurun
+
+spec:
+  replicas: 1
+  serviceName: service
+  selector:
+    matchLabels:
+      app: mirakurun
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: mirakurun
+    spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
+      containers:
+        - name: mirakurun
+          image: ghcr.io/starrybluesky/mirakurun-custom:2026.7.22
+          env:
+            - name: TZ
+              value: Asia/Tokyo
+          ports:
+            - name: mirakurun
+              containerPort: 40772
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: mirakurun
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: config
+              mountPath: /etc/mirakurun
+              readOnly: true
+            - name: data
+              mountPath: /var/db/mirakurun
+      volumes:
+        - name: config
+          secret:
+            secretName: mirakurun-config
+            items:
+              - key: channels.yml
+                path: channels.yml
+              - key: server.yml
+                path: server.yml
+              - key: tuners.yml
+                path: tuners.yml
+              - key: external.json
+                path: external.json
+        - name: data
+          persistentVolumeClaim:
+            claimName: data

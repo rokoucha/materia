@@ -102,6 +102,11 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/rokoucha/otelcol/**"],
       "versioning": "regex:^(?<major>\\d{8})\\.(?<minor>\\d{6})$"
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/starrybluesky/mirakurun-custom"],
+      "versioning": "regex:^(?<major>\\d{4})\\.(?<minor>\\d{1,2})\\.(?<patch>\\d{1,2})$"
     }
   ]
 }

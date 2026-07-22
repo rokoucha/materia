@@ -11,6 +11,7 @@ resources:
   - ./loki.yaml
   - ./mastodon.yaml
   - ./miniflux.yaml
+  - ./mirakurun.yaml
   - ./nginx.yaml
   - ./oauth2-proxy.yaml
   - ./otel-external.yaml

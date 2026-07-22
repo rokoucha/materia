@@ -11,6 +11,7 @@ resources:
   - ./cilium.yaml
   - ./cloudflare-ddns.yaml
   - ./cloudnative-pg.yaml
+  - ./docker-registry-secrets.yaml
   - ./elastic-operator.yaml
   - ./external-dns.yaml
   - ./haproxy-ingress.yaml
