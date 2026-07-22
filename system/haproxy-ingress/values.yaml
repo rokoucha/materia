@@ -15,6 +15,10 @@ controller:
 
   config:
     global-config-snippet: |
+      tune.lua.bool-sample-conversion normal
+      lua-prepend-path /etc/haproxy/forward-auth/?.lua
+      lua-load /etc/haproxy/forward-auth/auth-request.lua
+
       ssl-default-bind-ciphers ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384
       ssl-default-bind-ciphersuites TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384
       ssl-default-bind-curves X25519MLKEM768:secp521r1:secp384r1
@@ -27,7 +31,49 @@ controller:
 
       # curl https://ssl-config.mozilla.org/ffdhe2048.txt > /path/to/dhparam
       #ssl-dh-param-file /path/to/dhparam
+    frontend-config-snippet: |
+      # Forward Auth PoC. Add hosts to this ACL only after creating a matching
+      # single-application Forward Auth provider in authentik.
+      acl forward_auth_protected var(txn.host) -m str mirakurun.ggrel.net
+      acl forward_auth_outpost var(txn.path) -m beg /outpost.goauthentik.io/
+
+      # The generated use_backend rule consumes txn.path_match. Point only the
+      # outpost path at authentik; normal requests retain their Ingress backend.
+      http-request set-var(txn.path_match) str(authentik_forward_auth) if forward_auth_protected forward_auth_outpost
+
+      http-request set-header X-Real-IP %[src] if forward_auth_protected { ssl_fc } !forward_auth_outpost
+      http-request set-header X-Forwarded-Method %[method] if forward_auth_protected { ssl_fc } !forward_auth_outpost
+      http-request set-header X-Forwarded-Proto https if forward_auth_protected { ssl_fc } !forward_auth_outpost
+      http-request set-header X-Forwarded-Host %[req.hdr(host)] if forward_auth_protected { ssl_fc } !forward_auth_outpost
+      http-request set-header X-Original-URL https://%[req.hdr(host)]%[url] if forward_auth_protected { ssl_fc } !forward_auth_outpost
+
+      # Copy an explicit request-header allowlist so WebSocket Upgrade headers
+      # never reach the auth subrequest. Propagate authentik identity headers on
+      # success for applications that want to consume them.
+      http-request lua.auth-intercept authentik_forward_auth /outpost.goauthentik.io/auth/nginx HEAD x-original-url,x-real-ip,x-forwarded-host,x-forwarded-proto,user-agent,cookie,accept,x-forwarded-method x-authentik-* - if forward_auth_protected { ssl_fc } !forward_auth_outpost
+
+      http-request redirect code 302 location /outpost.goauthentik.io/start?rd=%[req.hdr(X-Original-URL),url_enc] if forward_auth_protected { ssl_fc } !forward_auth_outpost !{ var(txn.auth_response_successful) -m bool } { var(txn.auth_response_code) -m int 401 }
+      http-request deny deny_status 403 if forward_auth_protected { ssl_fc } !forward_auth_outpost !{ var(txn.auth_response_successful) -m bool } { var(txn.auth_response_code) -m int 403 }
+      http-request redirect code 302 location %[var(txn.auth_response_location)] if forward_auth_protected { ssl_fc } !forward_auth_outpost !{ var(txn.auth_response_successful) -m bool } { var(txn.auth_response_location) -m found }
+      http-request deny deny_status 503 if forward_auth_protected { ssl_fc } !forward_auth_outpost !{ var(txn.auth_response_successful) -m bool }
     quic-alt-svc-max-age: "86400"
+
+  auxiliaryConfig: |
+    backend authentik_forward_auth
+      mode http
+      option httpchk GET /-/health/live/
+      http-check expect status 200
+      server authentik authentik-server.authentik.svc.materia-cluster.ggrel.net:80 check
+
+  extraVolumeMounts:
+    - name: forward-auth-lua
+      mountPath: /etc/haproxy/forward-auth
+      readOnly: true
+
+  extraVolumes:
+    - name: forward-auth-lua
+      configMap:
+        name: haproxy-forward-auth-lua
 
   service:
     nodePorts:
