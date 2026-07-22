@@ -31,24 +31,6 @@ controller:
 
       # curl https://ssl-config.mozilla.org/ffdhe2048.txt > /path/to/dhparam
       #ssl-dh-param-file /path/to/dhparam
-    frontend-config-snippet: |
-      acl forward_auth_protected var(txn.host) -m str mirakurun.ggrel.net
-      acl forward_auth_outpost var(txn.path) -m beg /outpost.goauthentik.io/
-
-      http-request set-var(txn.path_match) str(authentik_forward_auth) if forward_auth_protected forward_auth_outpost
-
-      http-request set-header X-Real-IP %[src] if forward_auth_protected { ssl_fc } !forward_auth_outpost
-      http-request set-header X-Forwarded-Method %[method] if forward_auth_protected { ssl_fc } !forward_auth_outpost
-      http-request set-header X-Forwarded-Proto https if forward_auth_protected { ssl_fc } !forward_auth_outpost
-      http-request set-header X-Forwarded-Host %[req.hdr(host)] if forward_auth_protected { ssl_fc } !forward_auth_outpost
-      http-request set-header X-Original-URL https://%[req.hdr(host)]%[pathq] if forward_auth_protected { ssl_fc } !forward_auth_outpost
-
-      http-request lua.auth-intercept authentik_forward_auth /outpost.goauthentik.io/auth/nginx HEAD x-original-url,x-real-ip,x-forwarded-host,x-forwarded-proto,user-agent,cookie,accept,x-forwarded-method - - if forward_auth_protected { ssl_fc } !forward_auth_outpost
-
-      http-request redirect code 302 location /outpost.goauthentik.io/start?rd=%[req.hdr(X-Original-URL),url_enc] if forward_auth_protected { ssl_fc } !forward_auth_outpost !{ var(txn.auth_response_successful) -m bool } { var(txn.auth_response_code) -m int 401 }
-      http-request deny deny_status 403 if forward_auth_protected { ssl_fc } !forward_auth_outpost !{ var(txn.auth_response_successful) -m bool } { var(txn.auth_response_code) -m int 403 }
-      http-request redirect code 302 location %[var(txn.auth_response_location)] if forward_auth_protected { ssl_fc } !forward_auth_outpost !{ var(txn.auth_response_successful) -m bool } { var(txn.auth_response_location) -m found }
-      http-request deny deny_status 503 if forward_auth_protected { ssl_fc } !forward_auth_outpost !{ var(txn.auth_response_successful) -m bool }
     quic-alt-svc-max-age: "86400"
 
   auxiliaryConfig: |
