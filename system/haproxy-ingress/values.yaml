@@ -27,6 +27,8 @@ controller:
 
       # curl https://ssl-config.mozilla.org/ffdhe2048.txt > /path/to/dhparam
       #ssl-dh-param-file /path/to/dhparam
+    response-set-header: |
+      Strict-Transport-Security "max-age=31536000"
     quic-alt-svc-max-age: "86400"
 
   service:
