@@ -22,7 +22,7 @@ spec:
         - name: ghcr-credentials
       containers:
         - name: mirakurun
-          image: ghcr.io/starrybluesky/mirakurun-custom:2026.7.22
+          image: ghcr.io/starrybluesky/mirakurun-custom:2026.7.23
           env:
             - name: TZ
               value: Asia/Tokyo
