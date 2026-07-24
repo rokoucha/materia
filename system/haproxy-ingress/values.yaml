@@ -36,9 +36,7 @@ controller:
       #ssl-dh-param-file /path/to/dhparam
     frontend-config-snippet: |
       # Mirakurun-only forward-auth PoC. The outpost path itself bypasses auth.
-      # Disabled after the first cluster smoke test returned 503. Keep the PoC
-      # loaded for diagnosis without putting Mirakurun traffic through it.
-      acl materia_forward_auth_host var(txn.host) -m str mirakurun-poc-disabled.invalid
+      acl materia_forward_auth_host var(txn.host) -m str mirakurun.ggrel.net
       acl materia_forward_auth_outpost var(txn.path) -m beg /outpost.goauthentik.io/
 
       http-request lua.materia-forward-auth if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost
@@ -46,6 +44,9 @@ controller:
       http-request deny deny_status 403 if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str forbidden }
       http-request deny deny_status 503 if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str error }
 
+      http-response set-header X-Materia-Auth-Result %[var(txn.materia_auth_result)] if materia_forward_auth_host { var(txn.materia_auth_result) -m found }
+      http-response set-header X-Materia-Auth-Status %[var(txn.materia_auth_status)] if materia_forward_auth_host { var(txn.materia_auth_status) -m found }
+      http-response set-header X-Materia-Auth-Reason %[var(txn.materia_auth_reason)] if materia_forward_auth_host { var(txn.materia_auth_reason) -m found }
       http-response add-header Set-Cookie %[var(txn.materia_auth_set_cookie)] if materia_forward_auth_host { var(txn.materia_auth_set_cookie) -m found }
     response-set-header: |
       Strict-Transport-Security "max-age=31536000"

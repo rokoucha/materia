@@ -156,8 +156,16 @@ local function forward_auth(txn)
   end
 
   local status = response.status
+  local reason = response.reason or ""
   local response_headers = response.headers or {}
   local set_cookie = first_header(response_headers, "set-cookie")
+  txn:set_var("txn.materia_auth_reason", tostring(reason):sub(1, 128))
+  txn:Warning(
+    "materia-forward-auth result=response status="
+      .. tostring(status)
+      .. " reason="
+      .. tostring(reason):sub(1, 128)
+  )
 
   if status >= 200 and status <= 299 then
     for _, name in ipairs(IDENTITY_HEADERS) do
