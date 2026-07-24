@@ -15,6 +15,13 @@ controller:
 
   config:
     global-config-snippet: |
+      tune.lua.bool-sample-conversion normal
+      lua-load /etc/haproxy/forward-auth/materia-forward-auth.lua
+      httpclient.resolvers.id materia_dns
+      httpclient.resolvers.prefer ipv4
+      httpclient.timeout.connect 3s
+      httpclient.retries 0
+
       ssl-default-bind-ciphers ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384
       ssl-default-bind-ciphersuites TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384
       ssl-default-bind-curves X25519MLKEM768:secp521r1:secp384r1
@@ -27,9 +34,44 @@ controller:
 
       # curl https://ssl-config.mozilla.org/ffdhe2048.txt > /path/to/dhparam
       #ssl-dh-param-file /path/to/dhparam
+    frontend-config-snippet: |
+      # Mirakurun-only forward-auth PoC. The outpost path itself bypasses auth.
+      acl materia_forward_auth_host var(txn.host) -m str mirakurun.ggrel.net
+      acl materia_forward_auth_outpost var(txn.path) -m beg /outpost.goauthentik.io/
+
+      http-request lua.materia-forward-auth if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost
+      http-request redirect code 302 location %[var(txn.materia_auth_location)] if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str unauthorized }
+      http-request deny deny_status 403 if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str forbidden }
+      http-request deny deny_status 503 if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str error }
+
+      http-response add-header Set-Cookie %[var(txn.materia_auth_set_cookie)] if materia_forward_auth_host { var(txn.materia_auth_set_cookie) -m found }
     response-set-header: |
       Strict-Transport-Security "max-age=31536000"
+    timeout-tunnel: 24h
     quic-alt-svc-max-age: "86400"
+
+  extraVolumeMounts:
+    - name: forward-auth-lua
+      mountPath: /etc/haproxy/forward-auth
+      readOnly: true
+
+  extraVolumes:
+    - name: forward-auth-lua
+      configMap:
+        name: haproxy-forward-auth-lua
+
+  auxiliaryConfig: |
+    resolvers materia_dns
+      parse-resolv-conf
+      accepted_payload_size 8192
+      timeout resolve 1s
+      timeout retry 1s
+      resolve_retries 2
+      hold valid 10s
+      hold nx 10s
+      hold timeout 10s
+      hold refused 10s
+      hold other 10s
 
   service:
     nodePorts:
