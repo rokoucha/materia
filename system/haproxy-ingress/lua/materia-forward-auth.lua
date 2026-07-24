@@ -204,13 +204,16 @@ local function forward_auth(txn)
   end
 
   if status == 301 or status == 302 or status == 303 or status == 307 or status == 308 then
-    local location = allowed_redirect(first_header(response_headers, "location"))
-    if location ~= nil then
+    local response_location =
+      allowed_redirect(first_header(response_headers, "location"))
+    if response_location ~= nil then
+      local sign_in =
+        "/outpost.goauthentik.io/start?rd=" .. percent_encode(original_url)
       set_result(
         txn,
         "unauthorized",
         status,
-        location,
+        sign_in,
         set_cookie,
         elapsed_ms(started_at)
       )
