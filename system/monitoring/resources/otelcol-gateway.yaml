@@ -120,10 +120,10 @@ spec:
             - prometheus
           processors:
             - memory_limiter
-            - batch
             - k8sattributes
             - resource/cluster_name
             - resource/remove_k8s_pod_ip
+            - batch
           exporters:
             - mackerel_otlp
             - otlp_http/prometheus
@@ -132,10 +132,10 @@ spec:
             - otlp
           processors:
             - memory_limiter
-            - batch
             - k8sattributes
             - resource/cluster_name
             - resource/remove_k8s_pod_ip
+            - batch
           exporters:
             - mackerel_otlp
             - otlp_grpc/tempo
@@ -144,10 +144,10 @@ spec:
             - otlp
           processors:
             - memory_limiter
-            - batch
             - k8sattributes
             - resource/cluster_name
             - resource/remove_k8s_pod_ip
+            - batch
           exporters:
             - otlp_http/loki
         logs/mackerel:
