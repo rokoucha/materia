@@ -37,10 +37,11 @@ controller:
       acl materia_forward_auth_host var(txn.host) -m str mirakurun.ggrel.net
       acl materia_forward_auth_outpost var(txn.path) -m beg /outpost.goauthentik.io/
       acl materia_mirakurun_websocket req.hdr(Sec-WebSocket-Version) -m found
+      acl materia_forward_auth_local_probe src 127.0.0.1
 
       # Mirakurun's client opens //rpc, while its WebSocket endpoint only accepts /rpc.
       http-request set-path /rpc if materia_forward_auth_host materia_mirakurun_websocket
-      http-request lua.materia-forward-auth if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost
+      http-request lua.materia-forward-auth if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost !materia_forward_auth_local_probe
       http-request redirect code 302 location %[var(txn.materia_auth_location)] if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str unauthorized }
       http-request deny deny_status 403 if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str forbidden }
       http-request deny deny_status 503 if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str error }
