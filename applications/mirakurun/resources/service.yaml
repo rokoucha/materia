@@ -7,6 +7,7 @@ metadata:
     backend.materia.ggrel.net/forward-auth: "true"
     haproxy.org/backend-config-snippet: |
       http-request set-path /rpc if { path -m str //rpc }
+    haproxy.org/timeout-server: 10m
 
 spec:
   selector:

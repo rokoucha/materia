@@ -37,7 +37,6 @@ controller:
       #ssl-dh-param-file /path/to/dhparam
     response-set-header: |
       Strict-Transport-Security "max-age=31536000"
-    timeout-tunnel: 24h
     quic-alt-svc-max-age: "86400"
 
   extraVolumeMounts:

@@ -3,6 +3,9 @@ kind: Service
 
 metadata:
   name: service
+  annotations:
+    backend.materia.ggrel.net/forward-auth: "true"
+    haproxy.org/timeout-server: 10m
 
 spec:
   selector:
