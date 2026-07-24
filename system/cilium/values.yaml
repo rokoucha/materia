@@ -63,9 +63,20 @@ securityContext:
       - SYS_ADMIN
       - SYS_RESOURCE
 operator:
+  prometheus:
+    metricsService: true
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+      trustCRDsExist: true
   replicas: 1
 prometheus:
   enabled: true
+  metricsService: true
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    trustCRDsExist: true
 rollOutCiliumPods: true
 routingMode: tunnel
 serviceAccounts:
