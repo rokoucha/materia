@@ -118,6 +118,10 @@ local function forward_auth(txn)
 
   local method = txn.sf:method()
   local request_url = txn.sf:url()
+  if request_url:sub(-5) == "//rpc" then
+    txn.http:req_set_path("/rpc")
+    request_url = request_url:sub(1, -6) .. "/rpc"
+  end
   local client_ip = txn.sf:src()
   local origin = "https://" .. PROTECTED_HOST
   local original_url
