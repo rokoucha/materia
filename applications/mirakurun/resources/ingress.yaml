@@ -17,17 +17,10 @@ spec:
     - host: mirakurun.ggrel.net
       http:
         paths:
-          - path: /outpost.goauthentik.io
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: authentik-proxy
                 port:
                   name: http
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: service
-                port:
-                  name: mirakurun

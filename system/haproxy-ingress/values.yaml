@@ -36,7 +36,9 @@ controller:
       #ssl-dh-param-file /path/to/dhparam
     frontend-config-snippet: |
       # Mirakurun-only forward-auth PoC. The outpost path itself bypasses auth.
-      acl materia_forward_auth_host var(txn.host) -m str mirakurun.ggrel.net
+      # Disabled after the first cluster smoke test returned 503. Keep the PoC
+      # loaded for diagnosis without putting Mirakurun traffic through it.
+      acl materia_forward_auth_host var(txn.host) -m str mirakurun-poc-disabled.invalid
       acl materia_forward_auth_outpost var(txn.path) -m beg /outpost.goauthentik.io/
 
       http-request lua.materia-forward-auth if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost
