@@ -6,6 +6,9 @@ controller:
   kind: Deployment
   replicaCount: 1
 
+  extraArgs:
+    - --custom-validation-rules=haproxy-controller/materia-annotations
+
   ingressClassResource:
     default: true
 
@@ -32,20 +35,6 @@ controller:
 
       # curl https://ssl-config.mozilla.org/ffdhe2048.txt > /path/to/dhparam
       #ssl-dh-param-file /path/to/dhparam
-    frontend-config-snippet: |
-      # Mirakurun-only forward-auth PoC. The outpost path itself bypasses auth.
-      acl materia_forward_auth_host var(txn.host) -m str mirakurun.ggrel.net
-      acl materia_forward_auth_outpost var(txn.path) -m beg /outpost.goauthentik.io/
-
-      http-request lua.materia-forward-auth if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost
-      http-request redirect code 302 location %[var(txn.materia_auth_location)] if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str unauthorized }
-      http-request deny deny_status 403 if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str forbidden }
-      http-request deny deny_status 503 if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str error }
-
-      http-response set-header X-Materia-Auth-Result %[var(txn.materia_auth_result)] if materia_forward_auth_host { var(txn.materia_auth_result) -m found }
-      http-response set-header X-Materia-Auth-Status %[var(txn.materia_auth_status)] if materia_forward_auth_host { var(txn.materia_auth_status) -m found }
-      http-response set-header X-Materia-Auth-Reason %[var(txn.materia_auth_reason)] if materia_forward_auth_host { var(txn.materia_auth_reason) -m found }
-      http-response add-header Set-Cookie %[var(txn.materia_auth_set_cookie)] if materia_forward_auth_host { var(txn.materia_auth_set_cookie) -m found }
     response-set-header: |
       Strict-Transport-Security "max-age=31536000"
     timeout-tunnel: 24h

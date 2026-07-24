@@ -1,4 +1,4 @@
--- Mirakurun forward-auth PoC for HAProxy 3.2.
+-- Forward-auth action for HAProxy 3.2.
 --
 -- The authentication request is deliberately constructed from an allowlist.
 -- In particular, Connection, Upgrade, and Sec-WebSocket-* are never copied.
@@ -9,7 +9,6 @@ local AUTH_URL = os.getenv("MATERIA_FORWARD_AUTH_URL")
       .. "/outpost.goauthentik.io/auth/nginx"
   )
 local AUTH_TIMEOUT_MS = 3000
-local PROTECTED_HOST = "mirakurun.ggrel.net"
 local MAX_HEADER_VALUE_LENGTH = 16384
 
 local IDENTITY_HEADERS = {
@@ -81,7 +80,7 @@ local function percent_encode(value)
   end))
 end
 
-local function allowed_redirect(location)
+local function allowed_redirect(location, protected_host)
   if location == nil then
     return nil
   end
@@ -89,7 +88,7 @@ local function allowed_redirect(location)
     return location
   end
 
-  local origin = "https://" .. PROTECTED_HOST
+  local origin = "https://" .. protected_host
   if location:sub(1, #origin + 1) == origin .. "/" then
     return location
   end
@@ -106,7 +105,7 @@ local function forward_auth(txn)
   end
 
   host = string.lower((host:gsub(":%d+$", "")))
-  if host ~= PROTECTED_HOST then
+  if host == "" or not host:match("^[a-z0-9][a-z0-9.-]*[a-z0-9]$") then
     set_result(txn, "error", 0, nil, nil, elapsed_ms(started_at))
     return
   end
@@ -123,7 +122,7 @@ local function forward_auth(txn)
     request_url = request_url:sub(1, -6) .. "/rpc"
   end
   local client_ip = txn.sf:src()
-  local origin = "https://" .. PROTECTED_HOST
+  local origin = "https://" .. host
   local original_url
   if request_url:sub(1, #origin + 1) == origin .. "/" then
     -- HAProxy can expose an absolute URL for HTTP/2 requests.
@@ -137,11 +136,11 @@ local function forward_auth(txn)
   txn:set_var("txn.materia_original_url", original_url)
 
   local auth_headers = {
-    ["host"] = { PROTECTED_HOST },
+    ["host"] = { host },
     ["x-original-url"] = { original_url },
     ["x-real-ip"] = { client_ip },
     ["x-forwarded-for"] = { client_ip },
-    ["x-forwarded-host"] = { PROTECTED_HOST },
+    ["x-forwarded-host"] = { host },
     ["x-forwarded-method"] = { method },
     ["x-forwarded-proto"] = { "https" },
     ["connection"] = { "close" },
@@ -214,7 +213,7 @@ local function forward_auth(txn)
 
   if status == 301 or status == 302 or status == 303 or status == 307 or status == 308 then
     local response_location =
-      allowed_redirect(first_header(response_headers, "location"))
+      allowed_redirect(first_header(response_headers, "location"), host)
     if response_location ~= nil then
       local sign_in =
         "/outpost.goauthentik.io/start?rd=" .. percent_encode(original_url)

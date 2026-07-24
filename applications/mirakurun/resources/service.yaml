@@ -3,6 +3,8 @@ kind: Service
 
 metadata:
   name: service
+  annotations:
+    backend.materia.ggrel.net/forward-auth: "true"
 
 spec:
   selector:

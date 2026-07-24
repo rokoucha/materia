@@ -19,6 +19,7 @@ resources:
   - ./resources/noa-pp-ua-certificate.yaml
   - ./resources/rokoucha-net-certificate.yaml
   - ./resources/sayn-wittgenste-in-certificate.yaml
+  - ./resources/forward-auth-validation-rules.yaml
 
 configMapGenerator:
   - name: haproxy-forward-auth-lua
