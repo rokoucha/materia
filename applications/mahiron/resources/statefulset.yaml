@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: mahiron
+
+spec:
+  replicas: 1
+  serviceName: service
+  selector:
+    matchLabels:
+      app: mahiron
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: mahiron
+    spec:
+      containers:
+        - name: mahiron
+          image: ghcr.io/rokoucha/mahiron:2026.0724.031223-nightly
+          env:
+            - name: TZ
+              value: Asia/Tokyo
+          ports:
+            - name: mahiron
+              containerPort: 40772
+          readinessProbe:
+            httpGet:
+              path: /api/version
+              port: mahiron
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/version
+              port: mahiron
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+            - name: data
+              mountPath: /app/db
+      volumes:
+        - name: config
+          secret:
+            secretName: mahiron-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: data

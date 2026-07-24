@@ -9,6 +9,7 @@ resources:
   - ./influxdb.yaml
   - ./lb-test.yaml
   - ./loki.yaml
+  - ./mahiron.yaml
   - ./mastodon.yaml
   - ./miniflux.yaml
   - ./mirakurun.yaml

@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: ingress
+  annotations:
+    haproxy.org/ssl-redirect: "true"
+    haproxy.org/timeout-server: 24h
+
+spec:
+  ingressClassName: haproxy
+  tls:
+    - secretName: tls
+      hosts:
+        - mahiron.ggrel.net
+  rules:
+    - host: mahiron.ggrel.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: authentik-proxy
+                port:
+                  name: http
