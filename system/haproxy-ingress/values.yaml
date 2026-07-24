@@ -36,7 +36,7 @@ controller:
       # Mirakurun-only forward-auth PoC. The outpost path itself bypasses auth.
       acl materia_forward_auth_host var(txn.host) -m str mirakurun.ggrel.net
       acl materia_forward_auth_outpost var(txn.path) -m beg /outpost.goauthentik.io/
-      acl materia_mirakurun_websocket req.hdr(Upgrade) -i websocket
+      acl materia_mirakurun_websocket req.hdr(Sec-WebSocket-Version) -m found
 
       # Mirakurun's client opens //rpc, while its WebSocket endpoint only accepts /rpc.
       http-request set-path /rpc if materia_forward_auth_host materia_mirakurun_websocket
