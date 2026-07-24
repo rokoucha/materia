@@ -23,6 +23,12 @@ spec:
       containers:
         - name: mirakurun
           image: ghcr.io/starrybluesky/mirakurun-custom:2026.7.24
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 768Mi
           env:
             - name: TZ
               value: Asia/Tokyo

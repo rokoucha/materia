@@ -28,6 +28,12 @@ spec:
               "-c",
               "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -b [::] -p 3000",
             ]
+          resources:
+            requests:
+              cpu: 1
+              memory: 1280Mi
+            limits:
+              memory: 1536Mi
           env:
             - name: DB_HOST
               valueFrom:

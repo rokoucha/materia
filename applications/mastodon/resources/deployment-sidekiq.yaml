@@ -21,6 +21,12 @@ spec:
             - name: metrics
               containerPort: 9394
           command: ["bundle", "exec", "sidekiq"]
+          resources:
+            requests:
+              cpu: 500m
+              memory: 640Mi
+            limits:
+              memory: 1Gi
           env:
             - name: DB_HOST
               valueFrom:

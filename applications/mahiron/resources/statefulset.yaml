@@ -21,6 +21,12 @@ spec:
       containers:
         - name: mahiron
           image: ghcr.io/rokoucha/mahiron:2026.0724.125744-nightly
+          resources:
+            requests:
+              cpu: 400m
+              memory: 384Mi
+            limits:
+              memory: 640Mi
           env:
             - name: TZ
               value: Asia/Tokyo

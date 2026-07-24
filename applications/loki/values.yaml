@@ -43,6 +43,12 @@ loki:
 
 singleBinary:
   replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
   persistence:
     enabled: true
     storageClass: beryllium-iscsi

@@ -38,6 +38,12 @@ cgroup:
   autoMount:
     enabled: false
   hostRoot: /sys/fs/cgroup
+resources:
+  requests:
+    cpu: 150m
+    memory: 768Mi
+  limits:
+    memory: 1Gi
 securityContext:
   capabilities:
     ciliumAgent:

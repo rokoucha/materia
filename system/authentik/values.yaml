@@ -26,6 +26,12 @@ authentik:
     secretName: authentik
 
 server:
+  resources:
+    requests:
+      cpu: 200m
+      memory: 768Mi
+    limits:
+      memory: 1Gi
   ingress:
     enabled: true
     ingressClassName: haproxy
@@ -35,3 +41,11 @@ server:
       - secretName: ggrel-net-tls
         hosts:
           - auth.ggrel.net
+
+worker:
+  resources:
+    requests:
+      cpu: 150m
+      memory: 384Mi
+    limits:
+      memory: 640Mi

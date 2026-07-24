@@ -24,6 +24,12 @@ spec:
       materia-cluster.ggrel.net/prometheus: disabled
   podMonitorNamespaceSelector: {}
   scrapeInterval: 15s
+  resources:
+    requests:
+      cpu: 100m
+      memory: 768Mi
+    limits:
+      memory: 1536Mi
   storage:
     volumeClaimTemplate:
       spec:

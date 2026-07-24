@@ -178,6 +178,12 @@ spec:
     - IPv6
   ipFamilyPolicy: RequireDualStack
   mode: statefulset
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      memory: 1280Mi
   serviceAccount: otelcol-gateway-sa
   targetAllocator:
     allocationStrategy: consistent-hashing
