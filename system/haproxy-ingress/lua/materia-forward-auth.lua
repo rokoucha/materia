@@ -123,7 +123,17 @@ local function forward_auth(txn)
   local method = txn.sf:method()
   local request_url = txn.sf:url()
   local client_ip = txn.sf:src()
-  local original_url = "https://" .. PROTECTED_HOST .. request_url
+  local origin = "https://" .. PROTECTED_HOST
+  local original_url
+  if request_url:sub(1, #origin + 1) == origin .. "/" then
+    -- HAProxy can expose an absolute URL for HTTP/2 requests.
+    original_url = request_url
+  elseif request_url:sub(1, 1) == "/" then
+    original_url = origin .. request_url
+  else
+    set_result(txn, "error", 0, nil, nil, elapsed_ms(started_at))
+    return
+  end
   txn:set_var("txn.materia_original_url", original_url)
 
   local auth_headers = {
