@@ -5,13 +5,9 @@
 
 local AUTH_URL = os.getenv("MATERIA_FORWARD_AUTH_URL")
   or (
-    "http://ak-outpost-authentik-embedded-outpost.authentik.svc.materia-cluster.ggrel.net:9000"
+    "http://127.0.0.1:10080"
       .. "/outpost.goauthentik.io/auth/nginx"
   )
--- PoC workaround: core.httpclient() resolves the Service name in-cluster but
--- returns its synthetic 503 before connecting. Pin the current outpost
--- ClusterIP as the transport destination while preserving URL and Host.
-local AUTH_DST = os.getenv("MATERIA_FORWARD_AUTH_DST") or "10.102.185.101:9000"
 local AUTH_TIMEOUT_MS = 3000
 local PROTECTED_HOST = "mirakurun.ggrel.net"
 local MAX_HEADER_VALUE_LENGTH = 16384
@@ -158,7 +154,6 @@ local function forward_auth(txn)
     local client = core.httpclient()
     return client:head({
       url = AUTH_URL,
-      dst = AUTH_DST,
       headers = auth_headers,
       timeout = AUTH_TIMEOUT_MS,
     })

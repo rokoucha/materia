@@ -17,8 +17,6 @@ controller:
     global-config-snippet: |
       tune.lua.bool-sample-conversion normal
       lua-load /etc/haproxy/forward-auth/materia-forward-auth.lua
-      httpclient.resolvers.id materia_dns
-      httpclient.resolvers.prefer ipv4
       httpclient.timeout.connect 3s
       httpclient.retries 0
 
@@ -64,17 +62,13 @@ controller:
         name: haproxy-forward-auth-lua
 
   auxiliaryConfig: |
-    resolvers materia_dns
-      parse-resolv-conf
-      accepted_payload_size 8192
-      timeout resolve 1s
-      timeout retry 1s
-      resolve_retries 2
-      hold valid 10s
-      hold nx 10s
-      hold timeout 10s
-      hold refused 10s
-      hold other 10s
+    listen materia_forward_auth_relay
+      mode http
+      bind 127.0.0.1:10080
+      timeout connect 3s
+      timeout client 5s
+      timeout server 3s
+      server outpost ak-outpost-authentik-embedded-outpost.authentik.svc.materia-cluster.ggrel.net:9000 init-addr last,libc,none
 
   service:
     nodePorts:
