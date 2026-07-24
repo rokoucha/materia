@@ -1,5 +1,7 @@
 global:
   env:
+    - name: AUTHENTIK_WEB__TIMEOUT_HTTP_WRITE
+      value: 24h
     - name: AUTHENTIK_POSTGRESQL__HOST
       valueFrom:
         secretKeyRef:
