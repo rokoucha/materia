@@ -24,4 +24,4 @@ resources:
 configMapGenerator:
   - name: haproxy-forward-auth-lua
     files:
-      - materia-forward-auth.lua=./lua/materia-forward-auth.lua
+      - forward-auth.lua=./lua/forward-auth.lua

@@ -526,7 +526,7 @@ metadata:
 ```
 
 annotationは、そのServiceに対応するbackendへLua action、redirect、deny、
-response header ruleを生成する。outpost用Serviceにはannotationを設定しないため、
+`Set-Cookie`反映ruleを生成する。outpost用Serviceにはannotationを設定しないため、
 `/outpost.goauthentik.io`のbackendではforward authを実行しない。
 
 controller側にはLuaのload、HTTP client、loopback relay、`ValidationRules`だけを
@@ -547,3 +547,17 @@ commit `09f2caa`の実cluster適用後に次を確認した。
 - 認証済みの`/api/version`と`/api/status`が200になる
 - 未認証の`/api/version`がauthentik start URLへ302になる
 - 未認証の`/outpost.goauthentik.io/ping`が204になる
+
+## 18. 本運用向け整理
+
+PoC完了後、forward authの責務を横展開可能な範囲に限定した。
+
+- Luaの配置名を`system/haproxy-ingress/lua/forward-auth.lua`へ変更した
+- transaction変数を`txn.forward_auth_*`へ統一した
+- 認証結果・status・reasonを返すデバッグ用response headerを削除した
+- 成功を含む全認証応答のwarning logをやめ、異常応答と例外だけを記録する
+- Mirakurun固有の`//rpc`正規化をLuaからMirakurun Serviceの
+  `haproxy.org/backend-config-snippet`へ移した
+
+これにより、forward authのLuaは認証サブリクエストと、その結果のリクエストへの
+反映だけを担当する。利用側固有のpath補正は各application側で管理する。
