@@ -47,8 +47,6 @@ controller:
       http-response set-header X-Materia-Auth-Result %[var(txn.materia_auth_result)] if materia_forward_auth_host { var(txn.materia_auth_result) -m found }
       http-response set-header X-Materia-Auth-Status %[var(txn.materia_auth_status)] if materia_forward_auth_host { var(txn.materia_auth_status) -m found }
       http-response set-header X-Materia-Auth-Reason %[var(txn.materia_auth_reason)] if materia_forward_auth_host { var(txn.materia_auth_reason) -m found }
-      http-response set-header X-Materia-Debug-Raw-URI %[capture.req.uri] if materia_forward_auth_host
-      http-response set-header X-Materia-Debug-Path %[path] if materia_forward_auth_host
       http-response add-header Set-Cookie %[var(txn.materia_auth_set_cookie)] if materia_forward_auth_host { var(txn.materia_auth_set_cookie) -m found }
     response-set-header: |
       Strict-Transport-Security "max-age=31536000"
