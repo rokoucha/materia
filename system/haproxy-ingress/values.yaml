@@ -37,8 +37,8 @@ controller:
       acl materia_forward_auth_host var(txn.host) -m str mirakurun.ggrel.net
       acl materia_forward_auth_outpost var(txn.path) -m beg /outpost.goauthentik.io/
 
-      # Re-serialize HAProxy's parsed path so Mirakurun's //rpc becomes /rpc.
-      http-request set-path %[path] if materia_forward_auth_host
+      # Collapse leading slashes so Mirakurun's //rpc becomes /rpc.
+      http-request set-path %[path,regsub(^//+,/)] if materia_forward_auth_host
       http-request lua.materia-forward-auth if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost
       http-request redirect code 302 location %[var(txn.materia_auth_location)] if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str unauthorized }
       http-request deny deny_status 403 if materia_forward_auth_host { ssl_fc } !materia_forward_auth_outpost { var(txn.materia_auth_result) -m str forbidden }
