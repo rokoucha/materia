@@ -538,6 +538,12 @@ controller側にはLuaのload、HTTP client、loopback relay、`ValidationRules`
 - HAProxy 3.2.21でbackend内のLua、redirect、deny、response ruleが構文検査を通る
 - MirakurunとHAProxy controllerのKustomize buildが成功する
 
-実clusterへの適用後は、生成された`haproxy.cfg`でMirakurun backendだけに
-`materia.ggrel.net/forward-auth`由来のruleが入り、outpost backendには
-入っていないことを確認する。
+commit `09f2caa`の実cluster適用後に次を確認した。
+
+- Mirakurun backendだけに`materia.ggrel.net/forward-auth`由来のruleが入る
+- outpost backendにはforward auth ruleが入らない
+- frontendから保護対象hostのACLがなくなる
+- HAProxy 3.2.21の設定検査が成功する
+- 認証済みの`/api/version`と`/api/status`が200になる
+- 未認証の`/api/version`がauthentik start URLへ302になる
+- 未認証の`/outpost.goauthentik.io/ping`が204になる
