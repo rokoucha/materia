@@ -8,6 +8,7 @@ resources:
   - ./resources/argocd-redis.yaml
   - ./resources/argocd-secret.yaml
   - ./resources/ingress.yaml
+  - ./resources/monitor.yaml
   - ./resources/namespace.yaml
   - ./resources/projects/applications.yaml
   - ./resources/projects/root.yaml
