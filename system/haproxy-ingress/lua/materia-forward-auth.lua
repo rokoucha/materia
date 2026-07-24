@@ -151,6 +151,7 @@ local function forward_auth(txn)
 
   if not ok or type(response) ~= "table" or type(response.status) ~= "number" then
     txn:Warning("materia-forward-auth result=error status=0")
+    txn:set_var("txn.materia_auth_reason", "invalid-httpclient-response")
     set_result(txn, "error", 0, nil, nil, elapsed_ms(started_at))
     return
   end
@@ -223,5 +224,9 @@ core.register_action("materia-forward-auth", { "http-req" }, function(txn)
   end
 
   txn:Warning("materia-forward-auth result=error exception=" .. tostring(message))
+  txn:set_var(
+    "txn.materia_auth_reason",
+    ("lua-exception-" .. tostring(message)):sub(1, 128)
+  )
   set_result(txn, "error", 0, nil, nil, 0)
 end)
