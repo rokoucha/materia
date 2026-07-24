@@ -6,3 +6,12 @@ namespace: argocd
 resources:
   - ./applications-root.yaml
   - ./system-root.yaml
+
+patches:
+  - target:
+      kind: Application
+    patch: |-
+      - op: add
+        path: /spec/syncPolicy/syncOptions
+        value:
+          - ServerSideApply=true

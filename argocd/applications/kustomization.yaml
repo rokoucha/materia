@@ -20,3 +20,12 @@ resources:
   - ./switchbot-meter-exporter.yaml
   - ./tempo.yaml
   - ./teamspeak.yaml
+
+patches:
+  - target:
+      kind: Application
+    patch: |-
+      - op: add
+        path: /spec/syncPolicy/syncOptions
+        value:
+          - ServerSideApply=true

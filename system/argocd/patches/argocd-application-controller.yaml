@@ -6,6 +6,9 @@ metadata:
 
 spec:
   template:
+    metadata:
+      annotations:
+        materia.ggrel.net/restarted-for-server-side-diff: "2026-07-24"
     spec:
       containers:
         - name: argocd-application-controller
