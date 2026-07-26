@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cosense-cli-mcp
+  template:
+    metadata:
+      labels:
+        app: cosense-cli-mcp
+    spec:
+      containers:
+        - name: cosense-cli-mcp
+          image: ghcr.io/rokoucha/cosense-cli-mcp:sha-bdd248c
+          envFrom:
+            - configMapRef:
+                name: config
+            - secretRef:
+                name: cosense-cli-mcp-secrets
+          ports:
+            - name: http
+              containerPort: 3000
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /.well-known/oauth-protected-resource
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /.well-known/oauth-protected-resource
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault

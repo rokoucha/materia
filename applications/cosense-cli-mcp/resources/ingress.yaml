@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: ingress
+  annotations:
+    haproxy.org/ssl-redirect: "true"
+
+spec:
+  ingressClassName: haproxy
+  tls:
+    - secretName: tls
+      hosts:
+        - ccm.ggrel.net
+  rules:
+    - host: ccm.ggrel.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service
+                port:
+                  name: http
