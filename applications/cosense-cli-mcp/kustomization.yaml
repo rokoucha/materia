@@ -15,4 +15,4 @@ configMapGenerator:
   - name: config
     literals:
       - ISSUER=https://ccm.ggrel.net
-      - OAUTH_CLIENTS_JSON=[{"id":"chatgpt","redirectUris":["https://chatgpt.com/connector/oauth/c6997YKGPl-u","https://chatgpt.com/connector_platform_oauth_redirect"]}]
+      - OAUTH_CLIENTS_JSON=[{"id":"chatgpt","redirectUris":["https://chatgpt.com/connector/oauth/c6997YKGPl-u","https://chatgpt.com/connector_platform_oauth_redirect"]},{"id":"claude","redirectUris":["https://claude.ai/api/mcp/auth_callback"]}]
