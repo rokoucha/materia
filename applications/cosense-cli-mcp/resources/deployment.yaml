@@ -51,6 +51,12 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             runAsUser: 1000
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+      volumes:
+        - name: tmp
+          emptyDir: {}
