@@ -21,6 +21,7 @@ spec:
       containers:
         - name: server
           image: ghcr.io/rokoucha/sophie-server:20260729.153301
+          command: ["node", "dist/src/main.js"]
           env:
             - name: DATABASE_URL
               valueFrom:
