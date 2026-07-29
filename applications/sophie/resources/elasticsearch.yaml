@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: elasticsearch
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+
+spec:
+  serviceName: elasticsearch
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sophie-elasticsearch
+  template:
+    metadata:
+      labels:
+        app: sophie-elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:9.4.4
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: node.store.allow_mmap
+              value: "false"
+            - name: xpack.security.enabled
+              value: "false"
+            - name: ES_JAVA_OPTS
+              value: -Xms512m -Xmx512m
+          ports:
+            - name: http
+              containerPort: 9200
+          readinessProbe:
+            httpGet:
+              path: /_cluster/health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 1000
+          volumeMounts:
+            - name: elasticsearch-data
+              mountPath: /usr/share/elasticsearch/data
+      securityContext:
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+  volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: beryllium-nfs
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: elasticsearch
+
+spec:
+  selector:
+    app: sophie-elasticsearch
+  ports:
+    - name: http
+      port: 9200
+      targetPort: http

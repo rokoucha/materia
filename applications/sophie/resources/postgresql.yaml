@@ -1,0 +1,17 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+
+metadata:
+  name: postgresql
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.1-minimal-trixie
+  instances: 1
+  bootstrap:
+    initdb:
+      database: sophie
+  storage:
+    storageClass: beryllium-nfs
+    size: 10Gi
