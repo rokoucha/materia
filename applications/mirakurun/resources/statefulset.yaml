@@ -22,7 +22,7 @@ spec:
         - name: ghcr-credentials
       containers:
         - name: mirakurun
-          image: ghcr.io/starrybluesky/mirakurun-custom:2026.7.28
+          image: ghcr.io/starrybluesky/mirakurun-custom:2026.7.30
           resources:
             requests:
               cpu: 100m
