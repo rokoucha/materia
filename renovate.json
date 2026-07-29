@@ -85,6 +85,11 @@
   ],
   "packageRules": [
     {
+      "groupName": "Sophie",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/rokoucha/sophie-**"]
+    },
+    {
       "groupName": "Mastodon",
       "matchDatasources": ["docker"],
       "matchPackageNames": [
