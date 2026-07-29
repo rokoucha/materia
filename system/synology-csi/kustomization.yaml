@@ -17,3 +17,10 @@ patches:
     target:
       kind: Namespace
       name: synology-csi
+  - target:
+      kind: CSIDriver
+      name: csi.san.synology.com
+    patch: |-
+      - op: replace
+        path: /spec/fsGroupPolicy
+        value: File
