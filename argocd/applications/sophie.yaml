@@ -17,6 +17,12 @@ spec:
         - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-version
       kind: Secret
       name: tls
+    - jsonPointers:
+        - /data/.dockerconfigjson
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-at
+        - /metadata/annotations/reflector.v1.k8s.emberstack.com~1reflected-version
+      kind: Secret
+      name: ghcr-credentials
   project: applications
   source:
     path: applications/sophie

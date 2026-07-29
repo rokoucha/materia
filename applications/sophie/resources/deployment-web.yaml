@@ -16,6 +16,8 @@ spec:
       labels:
         app: sophie-web
     spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
       containers:
         - name: web
           image: ghcr.io/rokoucha/sophie-web:20260729.153301

@@ -12,6 +12,8 @@ spec:
   backoffLimit: 3
   template:
     spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
       restartPolicy: OnFailure
       containers:
         - name: migration
