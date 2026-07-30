@@ -11,9 +11,9 @@ spec:
   tls:
     - secretName: tls
       hosts:
-        - sophie.ggrel.net
+        - s.rokoucha.net
   rules:
-    - host: sophie.ggrel.net
+    - host: s.rokoucha.net
       http:
         paths:
           - path: /api
