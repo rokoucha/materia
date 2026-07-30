@@ -8,6 +8,7 @@ metadata:
 
 spec:
   replicas: 1
+  revisionHistoryLimit: 5
   selector:
     matchLabels:
       app: sophie-server
