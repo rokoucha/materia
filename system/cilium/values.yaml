@@ -2,10 +2,10 @@ bgpControlPlane:
   enabled: true
 cluster:
   name: materia-cluster
+preferIpv6: true
 hubble:
   peerService:
     clusterDomain: materia-cluster.ggrel.net
-  preferIpv6: true
   relay:
     enabled: true
   ui:
