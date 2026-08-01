@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: redis
-          image: docker.io/library/redis:8.8.1-alpine
+          image: docker.io/library/redis:8.10.0-alpine
           args: ["redis-server", "--appendonly", "yes"]
           ports:
             - name: redis
