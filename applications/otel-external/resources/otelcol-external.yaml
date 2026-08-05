@@ -149,7 +149,7 @@ spec:
           apiVersion: v1
           fieldPath: status.podIP
 
-  image: ghcr.io/rokoucha/otelcol/materia-external:20260730.035456
+  image: ghcr.io/rokoucha/otelcol/materia-external:20260805.095712
   ipFamilies:
     - IPv4
     - IPv6
