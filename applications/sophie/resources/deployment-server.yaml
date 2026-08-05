@@ -21,7 +21,7 @@ spec:
         - name: ghcr-credentials
       containers:
         - name: server
-          image: ghcr.io/rokoucha/sophie-server:20260805.145845
+          image: ghcr.io/rokoucha/sophie-server:20260805.161644
           command: ["node", "dist/src/main.js"]
           env:
             - name: DATABASE_URL
@@ -29,6 +29,8 @@ spec:
                 secretKeyRef:
                   name: postgresql-app
                   key: uri
+            - name: X_ARCHIVE_STAGING_DIRECTORY
+              value: /var/lib/sophie/x-archive-staging
           envFrom:
             - configMapRef:
                 name: config
@@ -66,9 +68,14 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
+            - name: x-archive-staging
+              mountPath: /var/lib/sophie/x-archive-staging
       securityContext:
         seccompProfile:
           type: RuntimeDefault
       volumes:
         - name: tmp
           emptyDir: {}
+        - name: x-archive-staging
+          emptyDir:
+            sizeLimit: 2Gi
