@@ -21,7 +21,7 @@ spec:
         - name: ghcr-credentials
       containers:
         - name: web
-          image: ghcr.io/rokoucha/sophie-web:20260806.160325
+          image: ghcr.io/rokoucha/sophie-web:20260806.162327
           ports:
             - name: http
               containerPort: 3000
