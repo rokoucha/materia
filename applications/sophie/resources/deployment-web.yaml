@@ -54,9 +54,13 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
+            - name: next-cache
+              mountPath: /app/web/.next/cache
       securityContext:
         seccompProfile:
           type: RuntimeDefault
       volumes:
         - name: tmp
+          emptyDir: {}
+        - name: next-cache
           emptyDir: {}
