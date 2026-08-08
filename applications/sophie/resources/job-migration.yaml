@@ -17,7 +17,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: migration
-          image: ghcr.io/rokoucha/sophie-migrate:20260808.003451
+          image: ghcr.io/rokoucha/sophie-migrate:20260808.130108
           env:
             - name: DATABASE_URL
               valueFrom:
