@@ -15,7 +15,6 @@ resources:
   - ./miniflux.yaml
   - ./mirakurun.yaml
   - ./nginx.yaml
-  - ./oauth2-proxy.yaml
   - ./otel-external.yaml
   - ./prometheus.yaml
   - ./sophie.yaml
