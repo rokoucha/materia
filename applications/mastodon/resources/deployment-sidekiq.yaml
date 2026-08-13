@@ -15,7 +15,7 @@ spec:
         app: sidekiq
     spec:
       containers:
-        - image: ghcr.io/mastodon/mastodon:v4.6.5
+        - image: ghcr.io/mastodon/mastodon:v4.6.6
           name: mastodon-sidekiq
           ports:
             - name: metrics
