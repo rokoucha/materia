@@ -3,6 +3,8 @@ kind: CronJob
 
 metadata:
   name: mastodon-previewcards-remove
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 
 spec:
   schedule: 5 4 * * 0

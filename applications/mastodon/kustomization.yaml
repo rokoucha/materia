@@ -12,7 +12,7 @@ resources:
   - ./resources/elasticsearch.yaml
   - ./resources/ingress.yaml
   #- ./resources/job-deploy-search.yaml
-  #- ./resources/job-migration.yaml
+  - ./resources/job-migration.yaml
   - ./resources/mastodon-secrets.yaml
   - ./resources/monitor-elasticsearch.yaml
   - ./resources/monitor-postgresql.yaml
