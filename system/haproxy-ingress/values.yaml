@@ -1,7 +1,7 @@
 controller:
   image:
     # renovate: image=ghcr.io/haproxytech/kubernetes-ingress
-    tag: 3.2.12
+    tag: 3.2.13
 
   kind: Deployment
   replicaCount: 1
