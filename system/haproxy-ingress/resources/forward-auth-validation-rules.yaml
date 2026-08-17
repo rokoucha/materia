@@ -13,7 +13,7 @@ spec:
       rule: value == true
       template: |
         http-request lua.forward-auth
-        http-request redirect code 302 location /outpost.goauthentik.io/start?rd=https%3A%2F%2F%[req.hdr(host),url_enc]%[url,url_enc] if { var(txn.forward_auth_result) -m str unauthorized }
+        http-request redirect code 302 location /outpost.goauthentik.io/start?rd=https%%3A%%2F%%2F%[req.hdr(host),url_enc]%[url,url_enc] if { var(txn.forward_auth_result) -m str unauthorized }
         http-request deny deny_status 403 if { var(txn.forward_auth_result) -m str forbidden }
         http-request deny deny_status 503 if { var(txn.forward_auth_result) -m str error }
         http-after-response add-header Set-Cookie %[var(txn.forward_auth_client_header_set_cookie)] if { var(txn.forward_auth_client_header_set_cookie) -m found }
