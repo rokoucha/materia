@@ -9,6 +9,16 @@ controller:
   extraArgs:
     - --custom-validation-rules=haproxy-controller/materia-annotations
 
+  extraEnvs:
+    - name: FORWARD_AUTH_URL
+      value: http://127.0.0.1:10080/outpost.goauthentik.io/auth/nginx
+    - name: FORWARD_AUTH_METHOD
+      value: HEAD
+    - name: FORWARD_AUTH_UPSTREAM_HEADERS
+      value: x-authentik-username,x-authentik-groups,x-authentik-entitlements,x-authentik-email,x-authentik-name,x-authentik-uid,x-authentik-jwt,x-authentik-meta-jwks,x-authentik-meta-outpost,x-authentik-meta-provider,x-authentik-meta-app,x-authentik-meta-version
+    - name: FORWARD_AUTH_CLIENT_HEADERS
+      value: set-cookie
+
   ingressClassResource:
     default: true
 
@@ -19,7 +29,7 @@ controller:
   config:
     global-config-snippet: |
       tune.lua.bool-sample-conversion normal
-      lua-load /etc/haproxy/forward-auth/forward-auth.lua
+      lua-load /etc/haproxy/forward-auth.lua
       httpclient.timeout.connect 3s
       httpclient.retries 0
 
@@ -41,7 +51,8 @@ controller:
 
   extraVolumeMounts:
     - name: forward-auth-lua
-      mountPath: /etc/haproxy/forward-auth
+      mountPath: /etc/haproxy/forward-auth.lua
+      subPath: forward-auth.lua
       readOnly: true
 
   extraVolumes:

@@ -14,6 +14,13 @@
   "customManagers": [
     {
       "customType": "regex",
+      "managerFilePatterns": ["/kustomization\\.yaml$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>git-refs) depName=(?<depName>\\S+) currentValue=(?<currentValue>\\S+)\\s+- https://github\\.com/[^?\\s]+\\?ref=(?<currentDigest>[a-f0-9]{40})"
+      ]
+    },
+    {
+      "customType": "regex",
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "k0sproject/k0s",
       "managerFilePatterns": ["/k0sctl.yaml/"],
