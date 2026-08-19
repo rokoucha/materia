@@ -3,3 +3,12 @@ kind: Kustomization
 
 resources:
   - https://github.com/open-telemetry/opentelemetry-operator/releases/download/v0.158.0/opentelemetry-operator.yaml
+
+patches:
+  - target:
+      kind: Deployment
+      name: opentelemetry-operator-controller-manager
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --feature-gates=-operator.networkpolicy,-operand.networkpolicy
