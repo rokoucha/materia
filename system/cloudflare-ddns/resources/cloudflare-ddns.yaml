@@ -23,7 +23,7 @@ spec:
           effect: NoSchedule
       containers:
         - name: cloudflare-ddns
-          image: ghcr.io/rokoucha/cloudflare-ddns:20260821.044234
+          image: ghcr.io/rokoucha/cloudflare-ddns:20260826.071324
           imagePullPolicy: IfNotPresent
           args:
             - -w
