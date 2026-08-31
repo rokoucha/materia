@@ -27,6 +27,7 @@ controller:
     secret: materia-ggrel-net-tls
 
   config:
+    ssl-redirect-port: "443"
     global-config-snippet: |
       tune.lua.bool-sample-conversion normal
       lua-load /etc/haproxy/forward-auth.lua
