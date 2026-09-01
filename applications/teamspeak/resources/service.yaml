@@ -3,8 +3,6 @@ kind: Service
 
 metadata:
   name: teamspeak
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: ts.ggrel.net
 
 spec:
   selector:

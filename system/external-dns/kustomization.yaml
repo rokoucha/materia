@@ -23,6 +23,20 @@ helmCharts:
     repo: https://kubernetes-sigs.github.io/external-dns/
     includeCRDs: false
     valuesFile: ./values-lb-test.yaml
+  - name: external-dns
+    releaseName: external-dns-teamspeak-a
+    namespace: external-dns
+    version: 1.21.1
+    repo: https://kubernetes-sigs.github.io/external-dns/
+    includeCRDs: false
+    valuesFile: ./values-teamspeak-a.yaml
+  - name: external-dns
+    releaseName: external-dns-teamspeak-aaaa
+    namespace: external-dns
+    version: 1.21.1
+    repo: https://kubernetes-sigs.github.io/external-dns/
+    includeCRDs: false
+    valuesFile: ./values-teamspeak-aaaa.yaml
 
 resources:
   - ./resources/cloudflare-api-key.yaml

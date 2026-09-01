@@ -1,0 +1,32 @@
+domainFilters:
+  - ggrel.net
+
+labelFilter: external-dns.rokoucha.com/scope=teamspeak
+
+annotationPrefix: teamspeak.external-dns.alpha.kubernetes.io/
+
+managedRecordTypes:
+  - A
+
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-key
+        key: apiKey
+
+extraArgs:
+  - --default-targets=175.177.69.46
+  - --force-default-targets
+
+policy: sync
+
+txtOwnerId: materia
+
+logLevel: debug
+
+provider:
+  name: cloudflare
+
+sources:
+  - service
