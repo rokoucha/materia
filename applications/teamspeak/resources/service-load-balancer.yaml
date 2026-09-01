@@ -7,6 +7,7 @@ metadata:
     chlorinate.rokoucha.com/lb: public
   annotations:
     lbipam.cilium.io/sharing-key: public-dmz
+    lbipam.cilium.io/sharing-cross-namespace: "*"
 
 spec:
   selector:

@@ -9,6 +9,7 @@ metadata:
     external-dns.rokoucha.com/scope: lb-test
   annotations:
     lbipam.cilium.io/sharing-key: public-dmz
+    lbipam.cilium.io/sharing-cross-namespace: "*"
     external-dns.alpha.kubernetes.io/controller: lb-test
     lb-test.external-dns.alpha.kubernetes.io/hostname: lb-test.ggrel.net
 
