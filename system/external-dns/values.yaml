@@ -12,7 +12,7 @@ env:
         key: apiKey
 
 extraArgs:
-  - --default-targets=materia.ggrel.net
+  - --default-targets=ingress.ggrel.net
   - --force-default-targets
   - --ignore-ingress-tls-spec
   - --txt-owner-id=materia
