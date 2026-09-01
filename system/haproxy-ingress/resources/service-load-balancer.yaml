@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: haproxy-ingress-load-balancer
+  labels:
+    chlorinate.rokoucha.com/lb: public
+    external-dns.rokoucha.com/scope: ingress-lb
+  annotations:
+    lbipam.cilium.io/ips: 172.16.3.11
+    external-dns.alpha.kubernetes.io/controller: ingress-lb
+    ingress-lb.external-dns.alpha.kubernetes.io/hostname: ingress.ggrel.net
+
+spec:
+  selector:
+    app.kubernetes.io/instance: haproxy-ingress
+    app.kubernetes.io/name: kubernetes-ingress
+  type: LoadBalancer
+  allocateLoadBalancerNodePorts: false
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ipFamilyPolicy: RequireDualStack
+  externalTrafficPolicy: Cluster
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: https
+      protocol: TCP
+    - name: quic
+      port: 443
+      targetPort: quic
+      protocol: UDP

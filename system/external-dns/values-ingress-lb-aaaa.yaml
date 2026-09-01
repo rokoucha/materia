@@ -1,0 +1,26 @@
+domainFilters:
+  - ggrel.net
+
+labelFilter: external-dns.rokoucha.com/scope=ingress-lb
+
+annotationPrefix: ingress-lb.external-dns.alpha.kubernetes.io/
+
+managedRecordTypes:
+  - AAAA
+
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-key
+        key: apiKey
+
+policy: sync
+txtOwnerId: materia-ingress-lb-aaaa
+logLevel: debug
+
+provider:
+  name: cloudflare
+
+sources:
+  - service

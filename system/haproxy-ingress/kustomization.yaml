@@ -22,3 +22,4 @@ resources:
   - ./resources/rokoucha-net-certificate.yaml
   - ./resources/sayn-wittgenste-in-certificate.yaml
   - ./resources/forward-auth-validation-rules.yaml
+  - ./resources/service-load-balancer.yaml

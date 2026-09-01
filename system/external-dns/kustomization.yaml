@@ -37,6 +37,20 @@ helmCharts:
     repo: https://kubernetes-sigs.github.io/external-dns/
     includeCRDs: false
     valuesFile: ./values-teamspeak-aaaa.yaml
+  - name: external-dns
+    releaseName: external-dns-ingress-lb-a
+    namespace: external-dns
+    version: 1.21.1
+    repo: https://kubernetes-sigs.github.io/external-dns/
+    includeCRDs: false
+    valuesFile: ./values-ingress-lb-a.yaml
+  - name: external-dns
+    releaseName: external-dns-ingress-lb-aaaa
+    namespace: external-dns
+    version: 1.21.1
+    repo: https://kubernetes-sigs.github.io/external-dns/
+    includeCRDs: false
+    valuesFile: ./values-ingress-lb-aaaa.yaml
 
 resources:
   - ./resources/cloudflare-api-key.yaml
