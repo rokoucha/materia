@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - ./resources/cilium-lb-ipv6-pool-updater-rbac.yaml
+  - ./resources/materia-public-ipv4.yaml
   - ./resources/l2-announcement-policy.yaml
   - ./resources/bgp-cluster-config.yaml
   - ./resources/bgp-peer-config.yaml
