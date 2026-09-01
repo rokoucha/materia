@@ -17,7 +17,7 @@ env:
 
 policy: sync
 
-txtOwnerId: materia
+txtOwnerId: materia-teamspeak-aaaa
 
 logLevel: debug
 

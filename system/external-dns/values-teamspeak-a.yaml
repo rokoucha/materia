@@ -21,7 +21,7 @@ extraArgs:
 
 policy: sync
 
-txtOwnerId: materia
+txtOwnerId: materia-teamspeak-a
 
 logLevel: debug
 
