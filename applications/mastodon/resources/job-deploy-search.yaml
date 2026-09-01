@@ -11,7 +11,7 @@ spec:
   template:
     spec:
       containers:
-        - image: ghcr.io/mastodon/mastodon:v4.7.0
+        - image: ghcr.io/mastodon/mastodon:v4.7.1
           name: mastodon-migration
           command: ["bin/tootctl", "search", "deploy"]
           env:
