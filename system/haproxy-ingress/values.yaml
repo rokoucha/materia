@@ -3,8 +3,8 @@ controller:
     # renovate: image=ghcr.io/haproxytech/kubernetes-ingress
     tag: 3.2.14
 
-  kind: Deployment
-  replicaCount: 1
+  # Keep ingress available through a single-node failure.
+  kind: DaemonSet
 
   extraArgs:
     - --custom-validation-rules=haproxy-controller/materia-annotations
