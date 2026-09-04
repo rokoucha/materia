@@ -72,7 +72,9 @@ spec:
               mountPath: /app/config
               readOnly: true
             - name: data
-              mountPath: /app/db
+              mountPath: /app/data
+            - name: tmp
+              mountPath: /app/tmp
       volumes:
         - name: config
           secret:
@@ -80,3 +82,5 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: data
+        - name: tmp
+          emptyDir: {}
