@@ -10,20 +10,6 @@ helmCharts:
     includeCRDs: true
     valuesFile: ./values.yaml
   - name: external-dns
-    releaseName: external-dns-lb-test-a
-    namespace: external-dns
-    version: 1.21.1
-    repo: https://kubernetes-sigs.github.io/external-dns/
-    includeCRDs: false
-    valuesFile: ./values-lb-test-a.yaml
-  - name: external-dns
-    releaseName: external-dns-lb-test-aaaa
-    namespace: external-dns
-    version: 1.21.1
-    repo: https://kubernetes-sigs.github.io/external-dns/
-    includeCRDs: false
-    valuesFile: ./values-lb-test.yaml
-  - name: external-dns
     releaseName: external-dns-teamspeak-a
     namespace: external-dns
     version: 1.21.1

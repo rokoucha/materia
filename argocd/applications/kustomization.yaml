@@ -8,7 +8,6 @@ resources:
   - ./cosense-cli-mcp.yaml
   - ./grafana.yaml
   - ./influxdb.yaml
-  - ./lb-test.yaml
   - ./loki.yaml
   - ./mahiron.yaml
   - ./mastodon.yaml
