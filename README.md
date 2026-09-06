@@ -5,28 +5,22 @@ Appellatur omnes res quae in res corporeas componi possunt
 ## 構成
 
 - Talos Linux
-  - customization:
-    - systemExtensions:
-      - officialExtensions:
-        - siderolabs/amd-ucode
-        - siderolabs/amdgpu
-        - siderolabs/btrfs
-        - siderolabs/i915
-        - siderolabs/intel-ucode
-        - siderolabs/iscsi-tools
-        - siderolabs/nfs-utils
-    - bootloader: sd-boot
 - Kubernetes
 - Cilium
 - Argo CD
 - HAProxy Kubernetes Ingress Controller
+
+| ノード | CPU | メモリ | 拡張 |
+| --- | --- | --- | --- |
+| hydrogen | Intel Core i3-8100T | 8 GiB | btrfs, iscsi-tools, intel-ucode, i915 |
+| lithium | AMD Ryzen 5 PRO 3400GE | 32 GiB | btrfs, iscsi-tools, amd-ucode, amdgpu |
+| phosphorus | Intel Core i3-1115G4 | 16 GiB | btrfs, iscsi-tools, intel-ucode, i915 |
 
 ## 事前準備
 
 `./bootstrap` に次を用意する
 
 - 1password-credentials.json
-  - 前は中身をbase64しておく必要があったが、不要になった
 - 1password.env
 
 ## ホスト構築

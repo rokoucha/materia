@@ -30,6 +30,10 @@ cniConfig:
   name: none
 
 controlPlane:
+  machineSpec:
+    mode: metal
+    arch: amd64
+    secureboot: true
   patches:
     - |-
       cluster:
@@ -42,8 +46,6 @@ controlPlane:
           extraArgs:
             allocate-node-cidrs: "false"
       machine:
-        install:
-          image: factory.talos.dev/metal-installer-secureboot/6c4436014f0b7e48a5aafb5840d160d5943fe937011c56d0307a95d49f7517a2:v1.13.9
         systemDiskEncryption:
           state:
             provider: luks2
@@ -58,6 +60,15 @@ controlPlane:
 
 nodes:
   - hostname: hydrogen
+    schematic: &intelSchematic
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/btrfs
+            - siderolabs/i915
+            - siderolabs/intel-ucode
+            - siderolabs/iscsi-tools
+        bootloader: sd-boot
     ipAddress: 172.16.2.21
     controlPlane: true
     installDiskSelector:
@@ -81,6 +92,15 @@ nodes:
             dhcp: false
 
   - hostname: lithium
+    schematic:
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/amd-ucode
+            - siderolabs/amdgpu
+            - siderolabs/btrfs
+            - siderolabs/iscsi-tools
+        bootloader: sd-boot
     ipAddress: 172.16.2.22
     controlPlane: true
     installDiskSelector:
@@ -104,6 +124,7 @@ nodes:
             dhcp: false
 
   - hostname: phosphorus
+    schematic: *intelSchematic
     ipAddress: 172.16.2.23
     controlPlane: true
     installDiskSelector:

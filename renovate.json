@@ -79,15 +79,6 @@
       "matchStrings": [
         "#\\s?renovate: image=(?<depName>.*?)\\s+(?:tag|version):\\s?[\"']?(?<currentValue>[\\w+\\.\\-]*)[\"']?"
       ]
-    },
-    {
-      "customType": "regex",
-      "datasourceTemplate": "github-releases",
-      "managerFilePatterns": ["/talconfig\\.yaml$/"],
-      "matchStrings": [
-        "image:\\s?(factory.talos.dev/[^:]+):(?<currentValue>.*)"
-      ],
-      "depNameTemplate": "siderolabs/talos"
     }
   ],
   "packageRules": [

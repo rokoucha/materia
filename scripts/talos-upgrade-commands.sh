@@ -6,6 +6,7 @@ readonly ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly CONFIG_FILE="${TALCONFIG_FILE:-${ROOT_DIR}/talconfig.yaml}"
 readonly TALOS_NODE_DOMAIN="${TALOS_NODE_DOMAIN:-dns.ggrel.net}"
 readonly TALOSCTL_BIN="${TALOSCTL_BIN:-talosctl}"
+readonly TALHELPER_BIN="${TALHELPER_BIN:-talhelper}"
 readonly KUBECTL_BIN="${KUBECTL_BIN:-kubectl}"
 readonly YQ_BIN="${YQ_BIN:-yq}"
 
@@ -25,6 +26,7 @@ shell_quote() {
 }
 
 require_command "${TALOSCTL_BIN}"
+require_command "${TALHELPER_BIN}"
 require_command "${KUBECTL_BIN}"
 require_command "${YQ_BIN}"
 
@@ -65,23 +67,23 @@ if [[ ${#requested_nodes[@]} -gt 0 ]]; then
   talos_nodes=("${filtered_nodes[@]}")
 fi
 
-mapfile -t installer_images < <(
-  "${YQ_BIN}" -r '.controlPlane.patches[]? | from_yaml | .machine.install.image // ""' "${CONFIG_FILE}" |
-    sed '/^$/d'
-)
-installer_image="${installer_images[0]:-}"
-
-if [[ -z "${installer_image}" ]]; then
-  talos_version="$("${YQ_BIN}" -r '.talosVersion // ""' "${CONFIG_FILE}")"
-
-  if [[ -z "${talos_version}" ]]; then
-    echo "Talos installer image was not found and talosVersion is missing in ${CONFIG_FILE}" >&2
+# Resolve every image before printing commands, using the same node schematics
+# and Secure Boot settings as genconfig. This also registers them with Factory.
+installer_images=()
+for talos_node in "${talos_nodes[@]}"; do
+  if ! installer_image="$("${TALHELPER_BIN}" genurl installer \
+    --config-file "${CONFIG_FILE}" --node "${talos_node}")"; then
+    echo "Failed to resolve Talos installer image for ${talos_node}" >&2
     exit 1
   fi
 
-  installer_image="ghcr.io/siderolabs/installer:${talos_version}"
-  echo "Warning: Talos installer image was not found in controlPlane patches; falling back to ${installer_image}" >&2
-fi
+  if [[ -z "${installer_image}" || "${installer_image}" == *[[:space:]]* ]]; then
+    echo "Expected one Talos installer image for ${talos_node}, got: ${installer_image}" >&2
+    exit 1
+  fi
+
+  installer_images+=("${installer_image}")
+done
 
 cnpg_clusters="$(
   if ! "${KUBECTL_BIN}" get clusters.postgresql.cnpg.io -A \
@@ -117,11 +119,11 @@ done
 
 echo
 echo "# 2. Upgrade Talos nodes"
-for talos_node in "${talos_nodes[@]}"; do
+for node_index in "${!talos_nodes[@]}"; do
   printf "%s upgrade --nodes %s --image %s\n" \
     "${TALOSCTL_BIN}" \
-    "$(shell_quote "${talos_node}.${TALOS_NODE_DOMAIN}")" \
-    "$(shell_quote "${installer_image}")"
+    "$(shell_quote "${talos_nodes[${node_index}]}.${TALOS_NODE_DOMAIN}")" \
+    "$(shell_quote "${installer_images[${node_index}]}")"
 done
 
 echo
