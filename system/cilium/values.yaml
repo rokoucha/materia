@@ -1,5 +1,5 @@
 bgpControlPlane:
-  enabled: true
+  enabled: false
 cluster:
   name: materia-cluster
 preferIpv6: true

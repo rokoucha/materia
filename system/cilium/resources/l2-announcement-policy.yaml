@@ -9,7 +9,7 @@ metadata:
 spec:
   nodeSelector:
     matchLabels:
-      chlorinate.rokoucha.com/bgp: srv-lan
+      kubernetes.io/hostname: hydrogen
   serviceSelector:
     matchLabels:
       chlorinate.rokoucha.com/lb: public

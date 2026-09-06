@@ -16,7 +16,7 @@ spec:
         app: lb-test
     spec:
       nodeSelector:
-        chlorinate.rokoucha.com/bgp: srv-lan
+        kubernetes.io/hostname: hydrogen
       containers:
         - name: nginx
           image: docker.io/library/nginx:1.31.5
