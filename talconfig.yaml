@@ -36,16 +36,10 @@ controlPlane:
     secureboot: true
   patches:
     - |-
-      cluster:
-        proxy:
-          disabled: true
-        apiServer:
-          extraArgs:
-            service-node-port-range: "80-32767"
-        controllerManager:
-          extraArgs:
-            allocate-node-cidrs: "false"
       machine:
+        kernel:
+          modules:
+            - name: btrfs
         systemDiskEncryption:
           state:
             provider: luks2
@@ -57,6 +51,21 @@ controlPlane:
             keys:
               - slot: 0
                 tpm: {}
+
+    - |-
+      apiVersion: v1alpha1
+      kind: KubeProxyConfig
+      enabled: false
+    - |-
+      apiVersion: v1alpha1
+      kind: KubeAPIServerConfig
+      extraArgs:
+        service-node-port-range: "80-32767"
+    - |-
+      apiVersion: v1alpha1
+      kind: KubeControllerManagerConfig
+      extraArgs:
+        allocate-node-cidrs: "false"
 
 nodes:
   - hostname: hydrogen

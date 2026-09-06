@@ -9,6 +9,7 @@ readonly TALOSCONFIG_FILE="${OUT_DIR}/talosconfig"
 readonly TALOSCONFIG_DNS_FILE="${OUT_DIR}/talosconfig.dns"
 readonly OP_BIN="${OP_BIN:-op}"
 readonly TALHELPER_BIN="${TALHELPER_BIN:-talhelper}"
+readonly TALOSCTL_BIN="${TALOSCTL_BIN:-talosctl}"
 readonly OP_FILE_REFERENCE="${OP_FILE_REFERENCE:-op://materia/talos-machine-secrets/talsecret.yaml?attr=content}"
 readonly TALOSCONFIG_NODE_DOMAIN="${TALOSCONFIG_NODE_DOMAIN:-dns.ggrel.net}"
 
@@ -36,6 +37,7 @@ require_command() {
 
 require_command "${OP_BIN}"
 require_command "${TALHELPER_BIN}"
+require_command "${TALOSCTL_BIN}"
 
 if [[ ! -f "${CONFIG_FILE}" ]]; then
   echo "Talos config file not found: ${CONFIG_FILE}" >&2
@@ -85,6 +87,18 @@ fi
   --secret-file "${secrets_file}" \
   --out-dir "${OUT_DIR}" \
   "$@"
+
+# Use the target Talos schema for fields not yet supported by talhelper.
+# Validate every node before reporting success; never apply old output after
+# this script exits with an error.
+cluster_name="$(awk '$1 == "clusterName:" { print $2; exit }' "${CONFIG_FILE}")"
+for node in "${talosconfig_nodes[@]}"; do
+  node_config="${OUT_DIR}/${cluster_name}-${node}.yaml"
+  "${TALOSCTL_BIN}" machineconfig patch "${node_config}" \
+    --patch "@${ROOT_DIR}/talpatches/network.yaml" \
+    --output "${node_config}"
+  "${TALOSCTL_BIN}" validate --config "${node_config}" --mode metal
+done
 
 if [[ ! -f "${TALOSCONFIG_FILE}" ]]; then
   echo "Generated talosconfig was not found: ${TALOSCONFIG_FILE}" >&2

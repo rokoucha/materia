@@ -1,0 +1,5 @@
+# Match Cilium's clusterPoolIPv6MaskSize for the fd00::/108 pod subnet.
+# Applied by talosctl after generation: talhelper 3.1.17 cannot decode this field.
+apiVersion: v1alpha1
+kind: KubeNetworkConfig
+nodeCIDRMaskSizeIPv6: 120

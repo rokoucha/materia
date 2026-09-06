@@ -25,6 +25,10 @@ Appellatur omnes res quae in res corporeas componi possunt
 
 ## ホスト構築
 
+Talos の対象バージョンに対応した `talosctl` を使用する。
+生成スクリプトは `talpatches/network.yaml` の適用と全ノードの構成検証も行う。
+生成が失敗した場合、`clusterconfig` に残った古い構成を適用しないこと。
+
 ```sh
 ./scripts/talos-genconfig.sh
 talosctl apply-config --insecure \
