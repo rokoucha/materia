@@ -42,7 +42,7 @@
       "customType": "regex",
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "kubernetes/kubernetes",
-      "managerFilePatterns": ["/talconfig\\.yaml$/"],
+      "managerFilePatterns": ["/topf\\.yaml$/"],
       "matchStrings": [
         "(?:^|\\r\\n|\\r|\\n)kubernetesVersion:\\s(?<currentValue>v?[^\\s]+)(?:\\r\\n|\\r|\\n|$)"
       ]
@@ -51,7 +51,7 @@
       "customType": "regex",
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "siderolabs/talos",
-      "managerFilePatterns": ["/talconfig\\.yaml$/"],
+      "managerFilePatterns": ["/topf\\.yaml$/"],
       "matchStrings": [
         "(?:^|\\r\\n|\\r|\\n)talosVersion:\\s(?<currentValue>v?[^\\s]+)(?:\\r\\n|\\r|\\n|$)"
       ]

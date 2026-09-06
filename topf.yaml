@@ -1,0 +1,21 @@
+clusterName: materia-cluster
+talosVersion: v1.14.0
+kubernetesVersion: v1.36.4
+clusterEndpoint: https://materia-cluster.ggrel.net:6443
+platform: metal
+secureboot: true
+patchesDir: talpatches
+secretsPath: talsecret.yaml
+nodes:
+  - host: hydrogen
+    ip: 172.16.2.21
+    role: control-plane
+    schematicId: '@schematics/intel.yaml'
+  - host: lithium
+    ip: 172.16.2.22
+    role: control-plane
+    schematicId: '@schematics/amd.yaml'
+  - host: phosphorus
+    ip: 172.16.2.23
+    role: control-plane
+    schematicId: '@schematics/intel.yaml'

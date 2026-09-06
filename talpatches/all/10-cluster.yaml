@@ -1,0 +1,37 @@
+machine:
+  certSANs:
+    - materia-cluster.ggrel.net
+    - 172.16.2.20
+    - hydrogen.dns.ggrel.net
+    - lithium.dns.ggrel.net
+    - phosphorus.dns.ggrel.net
+---
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+# Keep workloads schedulable on the three control-plane nodes.
+taints:
+  node-role.kubernetes.io/control-plane:
+    $patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeAPIServerConfig
+certExtraSANs:
+  - materia-cluster.ggrel.net
+  - 172.16.2.20
+---
+apiVersion: v1alpha1
+kind: KubeFlannelCNIConfig
+# Cilium provides the CNI.
+$patch: delete
+---
+apiVersion: v1alpha1
+kind: SecurityProfileConfig
+# Preserve the previous configuration; Talos 1.14 generation enables this by default.
+workloadIsolation: false
+---
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: EPHEMERAL
+# Preserve the legacy EPHEMERAL mount flags during the generator migration.
+mount:
+  secure: false

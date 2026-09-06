@@ -1,0 +1,10 @@
+apiVersion: v1alpha1
+kind: KubeNetworkConfig
+dnsDomain: materia-cluster.ggrel.net
+podSubnets:
+  - 10.244.0.0/16
+  - fd00::/108
+serviceSubnets:
+  - 10.96.0.0/12
+  - fd01::/108
+nodeCIDRMaskSizeIPv6: 120

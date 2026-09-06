@@ -3,10 +3,9 @@
 set -euo pipefail
 
 readonly ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-readonly CONFIG_FILE="${TALCONFIG_FILE:-${ROOT_DIR}/talconfig.yaml}"
+readonly CONFIG_FILE="${TOPFCONFIG:-${ROOT_DIR}/topf.yaml}"
 readonly TALOS_NODE_DOMAIN="${TALOS_NODE_DOMAIN:-dns.ggrel.net}"
 readonly TALOSCTL_BIN="${TALOSCTL_BIN:-talosctl}"
-readonly TALHELPER_BIN="${TALHELPER_BIN:-talhelper}"
 readonly KUBECTL_BIN="${KUBECTL_BIN:-kubectl}"
 readonly YQ_BIN="${YQ_BIN:-yq}"
 
@@ -26,7 +25,6 @@ shell_quote() {
 }
 
 require_command "${TALOSCTL_BIN}"
-require_command "${TALHELPER_BIN}"
 require_command "${KUBECTL_BIN}"
 require_command "${YQ_BIN}"
 
@@ -35,7 +33,7 @@ if [[ ! -f "${CONFIG_FILE}" ]]; then
   exit 1
 fi
 
-mapfile -t talos_nodes < <("${YQ_BIN}" -r '.nodes[].hostname // ""' "${CONFIG_FILE}" | sed '/^$/d')
+mapfile -t talos_nodes < <("${YQ_BIN}" -r '.nodes[].host // ""' "${CONFIG_FILE}" | sed '/^$/d')
 
 if [[ ${#talos_nodes[@]} -eq 0 ]]; then
   echo "No Talos nodes were found in ${CONFIG_FILE}" >&2
@@ -67,21 +65,22 @@ if [[ ${#requested_nodes[@]} -gt 0 ]]; then
   talos_nodes=("${filtered_nodes[@]}")
 fi
 
-# Resolve every image before printing commands, using the same node schematics
-# and Secure Boot settings as genconfig. This also registers them with Factory.
+# Generate and validate fresh configs with the same schematics as provisioning.
+# Keep the existing command-only upgrade workflow and CloudNativePG PDB handling.
+work_dir="$(mktemp -d "${TMPDIR:-/tmp}/materia-topf-upgrade.XXXXXX")"
+trap 'rm -rf -- "${work_dir}"' EXIT
+TOPFCONFIG="${CONFIG_FILE}" TALOS_OUT_DIR="${work_dir}/clusterconfig" \
+  "${ROOT_DIR}/scripts/talos-genconfig.sh" >&2
+cluster_name="$("${YQ_BIN}" -er '.clusterName' "${CONFIG_FILE}")"
 installer_images=()
 for talos_node in "${talos_nodes[@]}"; do
-  if ! installer_image="$("${TALHELPER_BIN}" genurl installer \
-    --config-file "${CONFIG_FILE}" --node "${talos_node}")"; then
-    echo "Failed to resolve Talos installer image for ${talos_node}" >&2
+  installer_image="$("${YQ_BIN}" -r \
+    'select(.kind == "UnattendedInstallConfig") | .installer.image' \
+    "${work_dir}/clusterconfig/${cluster_name}-${talos_node}.yaml")"
+  if [[ -z "${installer_image}" || "${installer_image}" == null || "${installer_image}" == *[[:space:]]* ]]; then
+    echo "Expected one Talos installer image for ${talos_node}" >&2
     exit 1
   fi
-
-  if [[ -z "${installer_image}" || "${installer_image}" == *[[:space:]]* ]]; then
-    echo "Expected one Talos installer image for ${talos_node}, got: ${installer_image}" >&2
-    exit 1
-  fi
-
   installer_images+=("${installer_image}")
 done
 

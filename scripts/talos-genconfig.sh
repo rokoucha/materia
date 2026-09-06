@@ -1,182 +1,90 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
+umask 077
 
 readonly ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
-readonly CONFIG_FILE="${TALCONFIG_FILE:-${ROOT_DIR}/talconfig.yaml}"
+readonly CONFIG_FILE="${TOPFCONFIG:-${ROOT_DIR}/topf.yaml}"
 readonly OUT_DIR="${TALOS_OUT_DIR:-${ROOT_DIR}/clusterconfig}"
-readonly TALOSCONFIG_FILE="${OUT_DIR}/talosconfig"
-readonly TALOSCONFIG_DNS_FILE="${OUT_DIR}/talosconfig.dns"
 readonly OP_BIN="${OP_BIN:-op}"
-readonly TALHELPER_BIN="${TALHELPER_BIN:-talhelper}"
+readonly TOPF_BIN="${TOPF_BIN:-topf}"
 readonly TALOSCTL_BIN="${TALOSCTL_BIN:-talosctl}"
+readonly YQ_BIN="${YQ_BIN:-yq}"
 readonly OP_FILE_REFERENCE="${OP_FILE_REFERENCE:-op://materia/talos-machine-secrets/talsecret.yaml?attr=content}"
 readonly TALOSCONFIG_NODE_DOMAIN="${TALOSCONFIG_NODE_DOMAIN:-dns.ggrel.net}"
 
-cleanup_files=()
-
-cleanup() {
-  local file
-  for file in "${cleanup_files[@]:-}"; do
-    if [[ -n "${file}" && -f "${file}" ]]; then
-      rm -f "${file}"
-    fi
-  done
-}
-
-trap cleanup EXIT
-
-require_command() {
-  local cmd="$1"
-
+for cmd in "${OP_BIN}" "${TOPF_BIN}" "${TALOSCTL_BIN}" "${YQ_BIN}"; do
   if ! command -v "${cmd}" >/dev/null 2>&1; then
     echo "Missing required command: ${cmd}" >&2
     exit 1
   fi
-}
+done
 
-require_command "${OP_BIN}"
-require_command "${TALHELPER_BIN}"
-require_command "${TALOSCTL_BIN}"
-
-if [[ ! -f "${CONFIG_FILE}" ]]; then
-  echo "Talos config file not found: ${CONFIG_FILE}" >&2
+if [[ $# -ne 0 ]]; then
+  echo "Usage: $0 (configure TOPFCONFIG and TALOS_OUT_DIR via environment)" >&2
   exit 1
 fi
 
-mkdir -p "${OUT_DIR}"
+# Stage all output privately. Publish only after every node validates.
+work_dir="$(mktemp -d "${TMPDIR:-/tmp}/materia-topf.XXXXXX")"
+trap 'rm -rf -- "${work_dir}"' EXIT
 
-secrets_file="$(mktemp "${TMPDIR:-/tmp}/talos-machine-secrets.XXXXXX.yaml")"
-cleanup_files+=("${secrets_file}")
-
-if ! "${OP_BIN}" read "${OP_FILE_REFERENCE}" >"${secrets_file}"; then
-  cat >&2 <<EOF
-Failed to read Talos machine secrets from 1Password.
-
-Expected an attached file reference:
-  ${OP_FILE_REFERENCE}
-
-Create or update a 1Password item like:
-  vault: materia
-  item: talos-machine-secrets
-  file: talsecret.yaml
-EOF
+"${OP_BIN}" read "${OP_FILE_REFERENCE}" >"${work_dir}/secrets.yaml"
+if [[ ! -s "${work_dir}/secrets.yaml" ]]; then
+  echo "1Password returned an empty Talos secrets bundle" >&2
   exit 1
 fi
 
-if [[ ! -s "${secrets_file}" ]]; then
-  echo "1Password returned an empty Talos machine secrets document: ${OP_FILE_REFERENCE}" >&2
-  exit 1
-fi
+# A relocated runtime config must retain the original relative path semantics.
+config_dir="$(cd -- "$(dirname -- "${CONFIG_FILE}")" && pwd)"
+CONFIG_DIR="${config_dir}" WORK_DIR="${work_dir}" "${YQ_BIN}" '
+  .secretsPath = strenv(WORK_DIR) + "/secrets.yaml" |
+  del(.secretsProvider) |
+  .patchesDir = (.patchesDir // ".") |
+  (select(.patchesDir | test("^/") | not).patchesDir) |= strenv(CONFIG_DIR) + "/" + . |
+  (.. | select(tag == "!!map" and has("schematicId")) | .schematicId |
+    select(test("^@[^/]"))) |= "@" + strenv(CONFIG_DIR) + "/" + sub("^@", "")
+' "${CONFIG_FILE}" >"${work_dir}/topf.yaml"
 
-mapfile -t talosconfig_nodes < <(
-  awk '
-    /^nodes:/ { in_nodes=1; next }
-    in_nodes && /^[^[:space:]-]/ { exit }
-    in_nodes && $1 == "-" && $2 == "hostname:" { print $3 }
-  ' "${CONFIG_FILE}"
-)
-
-if [[ ${#talosconfig_nodes[@]} -eq 0 ]]; then
+cluster_name="$("${YQ_BIN}" -er '.clusterName' "${work_dir}/topf.yaml")"
+node_list="$("${YQ_BIN}" -er '.nodes[].host' "${work_dir}/topf.yaml")"
+if [[ -z "${node_list}" ]]; then
   echo "No Talos nodes were found in ${CONFIG_FILE}" >&2
   exit 1
 fi
+nodes=()
+while IFS= read -r node; do
+  nodes+=("${node}")
+done <<<"${node_list}"
 
-"${TALHELPER_BIN}" genconfig \
-  --config-file "${CONFIG_FILE}" \
-  --secret-file "${secrets_file}" \
-  --out-dir "${OUT_DIR}" \
-  "$@"
-
-# Use the target Talos schema for fields not yet supported by talhelper.
-# Validate every node before reporting success; never apply old output after
-# this script exits with an error.
-cluster_name="$(awk '$1 == "clusterName:" { print $2; exit }' "${CONFIG_FILE}")"
-for node in "${talosconfig_nodes[@]}"; do
-  node_config="${OUT_DIR}/${cluster_name}-${node}.yaml"
-  "${TALOSCTL_BIN}" machineconfig patch "${node_config}" \
-    --patch "@${ROOT_DIR}/talpatches/network.yaml" \
-    --output "${node_config}"
-  "${TALOSCTL_BIN}" validate --config "${node_config}" --mode metal
+# Register declarative schematics just as talhelper did. Tests can disable this.
+"${TOPF_BIN}" --topfconfig "${work_dir}/topf.yaml" \
+  --submit-to-factory="${TOPF_SUBMIT_TO_FACTORY:-true}" \
+  render --output "${work_dir}/rendered"
+for node in "${nodes[@]}"; do
+  # Talos 1.14's generator names the encryption key differently from talhelper.
+  # Keep key1 so kube-apiserver can decrypt existing etcd values with that prefix.
+  "${YQ_BIN}" -i '
+    (select(.kind == "KubeEtcdEncryptionConfig") |
+      .config.resources[].providers[] | select(has("secretbox")) |
+      .secretbox.keys[0].name) = "key1"
+  ' "${work_dir}/rendered/${node}.yaml"
+  "${TALOSCTL_BIN}" validate --config "${work_dir}/rendered/${node}.yaml" --mode metal
 done
+"${TOPF_BIN}" --topfconfig "${work_dir}/topf.yaml" talosconfig >"${work_dir}/talosconfig"
 
-if [[ ! -f "${TALOSCONFIG_FILE}" ]]; then
-  echo "Generated talosconfig was not found: ${TALOSCONFIG_FILE}" >&2
-  exit 1
-fi
-
-hostname_entries=()
-
-for node in "${talosconfig_nodes[@]}"; do
-  hostname_entries+=("${node}.${TALOSCONFIG_NODE_DOMAIN}")
+# Preserve the IP-based config for bootstrap and DNS-based config for daily use.
+cp "${work_dir}/talosconfig" "${work_dir}/talosconfig.dns"
+hosts=()
+for node in "${nodes[@]}"; do
+  hosts+=("${node}.${TALOSCONFIG_NODE_DOMAIN}")
 done
+"${TALOSCTL_BIN}" --talosconfig "${work_dir}/talosconfig.dns" config endpoint "${hosts[@]}"
+"${TALOSCTL_BIN}" --talosconfig "${work_dir}/talosconfig.dns" config node "${hosts[@]}"
 
-tmp_talosconfig="$(mktemp "${TMPDIR:-/tmp}/talosconfig.XXXXXX.yaml")"
-cleanup_files+=("${tmp_talosconfig}")
-hostname_entries_file="$(mktemp "${TMPDIR:-/tmp}/talosconfig-hosts.XXXXXX.txt")"
-cleanup_files+=("${hostname_entries_file}")
-
-cp "${TALOSCONFIG_FILE}" "${TALOSCONFIG_DNS_FILE}"
-
-printf "%s\n" "${hostname_entries[@]}" >"${hostname_entries_file}"
-
-awk '
-  BEGIN {
-    in_contexts = 0
-    in_current_context = 0
-    section = ""
-
-    while ((getline line < ARGV[1]) > 0) {
-      hostnames[++hostname_count] = line
-    }
-    ARGV[1] = ""
-  }
-
-  function print_hostnames(indent) {
-    for (i = 1; i <= hostname_count; i++) {
-      printf "%s- %s\n", indent, hostnames[i]
-    }
-  }
-
-  /^contexts:$/ {
-    in_contexts = 1
-    in_current_context = 0
-    section = ""
-    print
-    next
-  }
-
-  in_contexts && /^    [^[:space:]][^:]*:$/ {
-    in_current_context = 1
-    section = ""
-    print
-    next
-  }
-
-  in_current_context && /^        endpoints:$/ {
-    print
-    print_hostnames("            ")
-    section = "endpoints"
-    next
-  }
-
-  in_current_context && /^        nodes:$/ {
-    print
-    print_hostnames("            ")
-    section = "nodes"
-    next
-  }
-
-  section != "" && /^            - / {
-    next
-  }
-
-  {
-    section = ""
-    print
-  }
-' "${hostname_entries_file}" "${TALOSCONFIG_DNS_FILE}" >"${tmp_talosconfig}"
-
-mv "${tmp_talosconfig}" "${TALOSCONFIG_DNS_FILE}"
-
-echo "Generated Talos config in ${OUT_DIR}"
+mkdir -p "${OUT_DIR}"
+for node in "${nodes[@]}"; do
+  cp "${work_dir}/rendered/${node}.yaml" "${OUT_DIR}/${cluster_name}-${node}.yaml"
+done
+cp "${work_dir}/talosconfig" "${work_dir}/talosconfig.dns" "${OUT_DIR}/"
+echo "Generated and validated Talos config in ${OUT_DIR}"

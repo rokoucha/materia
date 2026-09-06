@@ -25,9 +25,6 @@ Appellatur omnes res quae in res corporeas componi possunt
 
 ## ホスト構築
 
-Talos の対象バージョンに対応した `talosctl` を使用する。
-生成スクリプトは `talpatches/network.yaml` の適用と全ノードの構成検証も行う。
-生成が失敗した場合、`clusterconfig` に残った古い構成を適用しないこと。
 
 ```sh
 ./scripts/talos-genconfig.sh
@@ -41,6 +38,21 @@ talosctl bootstrap \
 talosctl config merge clusterconfig/talosconfig.dns
 talosctl config context materia-cluster
 talosctl kubeconfig
+```
+
+## Talos 更新
+
+```sh
+./scripts/talos-upgrade-commands.sh
+./scripts/talos-upgrade-commands.sh lithium
+```
+
+手順が出てくるのでそれにそってコマンド実行する
+
+## 設定の検証
+
+```sh
+./tests/talos-config.sh
 ```
 
 ## クラスター構築
