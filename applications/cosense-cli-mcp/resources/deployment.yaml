@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: cosense-cli-mcp
-          image: ghcr.io/rokoucha/cosense-cli-mcp:20260906.220948
+          image: ghcr.io/rokoucha/cosense-cli-mcp:20260907.023143
           envFrom:
             - configMapRef:
                 name: config
