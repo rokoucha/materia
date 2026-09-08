@@ -14,6 +14,8 @@ controller:
       value: http://127.0.0.1:10080/outpost.goauthentik.io/auth/nginx
     - name: FORWARD_AUTH_METHOD
       value: HEAD
+    - name: FORWARD_AUTH_TIMEOUT_MS
+      value: "12000"
     - name: FORWARD_AUTH_UPSTREAM_HEADERS
       value: x-authentik-username,x-authentik-groups,x-authentik-entitlements,x-authentik-email,x-authentik-name,x-authentik-uid,x-authentik-jwt,x-authentik-meta-jwks,x-authentik-meta-outpost,x-authentik-meta-provider,x-authentik-meta-app,x-authentik-meta-version
     - name: FORWARD_AUTH_CLIENT_HEADERS
@@ -66,8 +68,8 @@ controller:
       mode http
       bind 127.0.0.1:10080
       timeout connect 3s
-      timeout client 5s
-      timeout server 3s
+      timeout client 15s
+      timeout server 10s
       server outpost ak-outpost-authentik-embedded-outpost.authentik.svc.materia-cluster.ggrel.net:9000 init-addr last,libc,none
 
   service:

@@ -24,12 +24,14 @@ spec:
           resources:
             requests:
               cpu: 400m
-              memory: 384Mi
+              memory: 512Mi
             limits:
-              memory: 640Mi
+              memory: 1Gi
           env:
             - name: TZ
               value: Asia/Tokyo
+            - name: GOMEMLIMIT
+              value: 768MiB
             - name: K8S_NODE_NAME
               valueFrom:
                 fieldRef:
