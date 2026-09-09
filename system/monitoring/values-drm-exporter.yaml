@@ -1,0 +1,36 @@
+hostAccess:
+  devDri: /dev/dri
+
+securityContext:
+  # Talos/containerd blocks hostPath DRM devices through the device cgroup.
+  # Privileged mode is required until the GPU drivers expose DRA admin access.
+  privileged: true
+  allowPrivilegeEscalation: true
+  readOnlyRootFilesystem: true
+  capabilities: null
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: extensions.talos.dev/i915
+              operator: Exists
+        - matchExpressions:
+            - key: extensions.talos.dev/amdgpu
+              operator: Exists
+
+priorityClassName: system-node-critical
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    memory: 128Mi
+
+monitoring:
+  serviceMonitor:
+    enabled: true
+    interval: 15s
+    scrapeTimeout: 10s

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: DaemonSet
+
+metadata:
+  name: amd-gpu-device-plugin
+
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: amd-gpu-device-plugin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: amd-gpu-device-plugin
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: extensions.talos.dev/amdgpu
+                    operator: Exists
+      containers:
+        - image: docker.io/rocm/k8s-device-plugin:1.31.0.10
+          imagePullPolicy: IfNotPresent
+          name: amd-gpu-device-plugin
+          resources:
+            limits:
+              cpu: 100m
+              memory: 90Mi
+            requests:
+              cpu: 40m
+              memory: 45Mi
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /var/lib/kubelet/device-plugins
+              name: kubelet-sockets
+            - mountPath: /sys
+              name: sysfs
+              readOnly: true
+      priorityClassName: system-node-critical
+      volumes:
+        - hostPath:
+            path: /var/lib/kubelet/device-plugins
+            type: Directory
+          name: kubelet-sockets
+        - hostPath:
+            path: /sys
+            type: Directory
+          name: sysfs

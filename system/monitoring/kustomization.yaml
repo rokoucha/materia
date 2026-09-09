@@ -4,6 +4,12 @@ kind: Kustomization
 namespace: monitoring
 
 helmCharts:
+  - name: drm-exporter
+    releaseName: drm-exporter
+    namespace: monitoring
+    version: 0.3.3
+    repo: oci://ghcr.io/home-operations/charts
+    valuesFile: ./values-drm-exporter.yaml
   - name: kube-state-metrics
     releaseName: kube-state-metrics
     namespace: monitoring
@@ -37,3 +43,20 @@ resources:
   - ./resources/otelcol-gateway-ta-rolebinding.yaml
   - ./resources/otelcol-gateway-ta-sa.yaml
   - ./resources/otelcol-gateway.yaml
+
+patches:
+  - target:
+      labelSelector: app.kubernetes.io/instance=drm-exporter
+    patch: |-
+      - op: add
+        path: /metadata/namespace
+        value: monitoring
+  - target:
+      kind: Pod
+      name: drm-exporter-test-connection
+    patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: drm-exporter-test-connection

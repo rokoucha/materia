@@ -14,6 +14,7 @@ resources:
   - ./docker-registry-secrets.yaml
   - ./elastic-operator.yaml
   - ./external-dns.yaml
+  - ./gpu-device-plugins.yaml
   - ./haproxy-ingress.yaml
   - ./monitoring.yaml
   - ./opentelemetry-operator.yaml
