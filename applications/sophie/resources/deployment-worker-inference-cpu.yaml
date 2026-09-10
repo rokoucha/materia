@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: worker-inference-cpu
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+
+spec:
+  # #83 or #131 supplies the first runtime before this profile is enabled.
+  replicas: 0
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: sophie-worker-inference-cpu
+  template:
+    metadata:
+      labels:
+        app: sophie-worker-inference-cpu
+    spec:
+      terminationGracePeriodSeconds: 300
+      imagePullSecrets:
+        - name: ghcr-credentials
+      containers:
+        - name: worker
+          image: ghcr.io/rokoucha/sophie-worker-inference:20260910.230004
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-app
+                  key: uri
+            - name: INFERENCE_EXECUTION_PROFILE
+              value: cpu
+            - name: OTEL_SERVICE_NAME
+              value: sophie/worker-inference-cpu
+            - name: SOPHIE_ROLE
+              value: worker-inference
+          envFrom:
+            - configMapRef:
+                name: config
+            - secretRef:
+                name: sophie-secrets
+          ports:
+            - name: health
+              containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /api/health/ready
+              port: health
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health/live
+              port: health
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 500m
+              ephemeral-storage: 1Gi
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              ephemeral-storage: 4Gi
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 4Gi

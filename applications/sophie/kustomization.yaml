@@ -6,6 +6,8 @@ namespace: sophie
 resources:
   - ./resources/config-map-google-application-credentials.yaml
   - ./resources/deployment-server.yaml
+  - ./resources/deployment-worker-inference-cpu.yaml
+  - ./resources/deployment-worker-inference-gpu.yaml
   - ./resources/deployment-web.yaml
   - ./resources/elasticsearch.yaml
   - ./resources/ghcr-credentials.yaml
