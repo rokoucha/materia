@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: descheduler
+
+helmCharts:
+  - name: descheduler
+    releaseName: descheduler
+    namespace: descheduler
+    version: 0.36.0
+    repo: https://kubernetes-sigs.github.io/descheduler/
+    includeCRDs: true
+    valuesFile: ./values.yaml
+
+resources:
+  - ./resources/namespace.yaml

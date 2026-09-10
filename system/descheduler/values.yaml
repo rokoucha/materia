@@ -1,0 +1,56 @@
+kind: CronJob
+
+# Traffic bottoms out between 05:00 and 11:00 JST, so rebalance at the start of
+# that window. Evictions restart single-replica workloads, and the chart default
+# of every two minutes would make that unpredictable.
+schedule: "0 5 * * *"
+timeZone: Asia/Tokyo
+
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    memory: 256Mi
+
+deschedulerPolicy:
+  # Cap the blast radius of a single run. An outage strands about five pods, so
+  # this still converges the night after one.
+  maxNoOfPodsToEvictTotal: 5
+
+  profiles:
+    - name: default
+      pluginConfig:
+        - name: DefaultEvictor
+          args:
+            # Never evict a pod that cannot be placed somewhere else.
+            nodeFit: true
+            podProtections:
+              extraEnabled:
+                # Moving a PVC means an iSCSI detach and attach, turning a
+                # seconds-long restart into minutes. Leave stateful workloads
+                # where they are; drains still move them when a node is emptied.
+                - "PodsWithPVC"
+
+        - name: LowNodeUtilization
+          args:
+            # Node usage as a percentage of allocatable. A node under every
+            # threshold receives pods; a node over any target sheds them.
+            # Pod count is what actually diverges here, so it carries the rule.
+            thresholds:
+              cpu: 40
+              memory: 40
+              pods: 30
+            targetThresholds:
+              cpu: 55
+              memory: 55
+              pods: 45
+
+      plugins:
+        balance:
+          enabled:
+            - LowNodeUtilization
