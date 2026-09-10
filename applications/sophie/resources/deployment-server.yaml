@@ -17,6 +17,8 @@ spec:
       labels:
         app: sophie-server
     spec:
+      # Explicitly reset the service account after the OCR opt-in is removed.
+      serviceAccountName: default
       # Workers drain in-flight ingestion and collector jobs on SIGTERM.
       terminationGracePeriodSeconds: 600
       imagePullSecrets:
