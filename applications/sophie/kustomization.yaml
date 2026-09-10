@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: sophie
 
 resources:
-  - ./resources/config-map-google-application-credentials.yaml
   - ./resources/deployment-server.yaml
   - ./resources/deployment-web.yaml
   - ./resources/elasticsearch.yaml
@@ -17,7 +16,6 @@ resources:
   - ./resources/secrets.yaml
   - ./resources/service-server.yaml
   - ./resources/service-web.yaml
-  - ./resources/service-account-ocr.yaml
   - ./resources/tls.yaml
 
 configMapGenerator:
