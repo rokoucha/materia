@@ -6,7 +6,6 @@ readonly ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly CONFIG_FILE="${TOPFCONFIG:-${ROOT_DIR}/topf.yaml}"
 readonly TALOS_NODE_DOMAIN="${TALOS_NODE_DOMAIN:-dns.ggrel.net}"
 readonly TALOSCTL_BIN="${TALOSCTL_BIN:-talosctl}"
-readonly KUBECTL_BIN="${KUBECTL_BIN:-kubectl}"
 readonly YQ_BIN="${YQ_BIN:-yq}"
 
 require_command() {
@@ -25,7 +24,6 @@ shell_quote() {
 }
 
 require_command "${TALOSCTL_BIN}"
-require_command "${KUBECTL_BIN}"
 require_command "${YQ_BIN}"
 
 if [[ ! -f "${CONFIG_FILE}" ]]; then
@@ -66,7 +64,7 @@ if [[ ${#requested_nodes[@]} -gt 0 ]]; then
 fi
 
 # Generate and validate fresh configs with the same schematics as provisioning.
-# Keep the existing command-only upgrade workflow and CloudNativePG PDB handling.
+# Keep the existing command-only upgrade workflow.
 work_dir="$(mktemp -d "${TMPDIR:-/tmp}/materia-topf-upgrade.XXXXXX")"
 trap 'rm -rf -- "${work_dir}"' EXIT
 TOPFCONFIG="${CONFIG_FILE}" TALOS_OUT_DIR="${work_dir}/clusterconfig" \
@@ -84,55 +82,10 @@ for talos_node in "${talos_nodes[@]}"; do
   installer_images+=("${installer_image}")
 done
 
-cnpg_clusters="$(
-  if ! "${KUBECTL_BIN}" get clusters.postgresql.cnpg.io -A \
-    -o 'jsonpath={range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\n"}{end}'; then
-    echo "Failed to get CloudNativePG clusters from the current Kubernetes context." >&2
-    echo "Check your kubeconfig/context before generating upgrade commands." >&2
-    exit 1
-  fi
-)"
-
-mapfile -t cnpg_cluster_lines < <(printf "%s\n" "${cnpg_clusters}" | sed '/^$/d')
-
-if [[ ${#cnpg_cluster_lines[@]} -eq 0 ]]; then
-  echo "No CloudNativePG clusters were found in the current Kubernetes context." >&2
-  exit 1
-fi
-
-echo "# 1. Disable CloudNativePG PDBs before draining Talos nodes"
-for cnpg_cluster_line in "${cnpg_cluster_lines[@]}"; do
-  IFS=$'\t' read -r namespace name <<<"${cnpg_cluster_line}"
-
-  if [[ -z "${namespace}" || -z "${name}" ]]; then
-    echo "Unexpected CloudNativePG cluster entry from kubectl: ${cnpg_cluster_line}" >&2
-    exit 1
-  fi
-
-  printf "%s patch cluster.postgresql.cnpg.io %s -n %s --type=merge -p %s\n" \
-    "${KUBECTL_BIN}" \
-    "$(shell_quote "${name}")" \
-    "$(shell_quote "${namespace}")" \
-    "$(shell_quote '{"spec":{"enablePDB":false}}')"
-done
-
-echo
-echo "# 2. Upgrade Talos nodes"
+echo "# Upgrade Talos nodes"
 for node_index in "${!talos_nodes[@]}"; do
   printf "%s upgrade --nodes %s --image %s\n" \
     "${TALOSCTL_BIN}" \
     "$(shell_quote "${talos_nodes[${node_index}]}.${TALOS_NODE_DOMAIN}")" \
     "$(shell_quote "${installer_images[${node_index}]}")"
-done
-
-echo
-echo "# 3. Re-enable CloudNativePG PDBs after Talos upgrades"
-for cnpg_cluster_line in "${cnpg_cluster_lines[@]}"; do
-  IFS=$'\t' read -r namespace name <<<"${cnpg_cluster_line}"
-
-  printf "%s patch cluster.postgresql.cnpg.io %s -n %s --type=merge -p %s\n" \
-    "${KUBECTL_BIN}" \
-    "$(shell_quote "${name}")" \
-    "$(shell_quote "${namespace}")" \
-    "$(shell_quote '{"spec":{"enablePDB":true}}')"
 done

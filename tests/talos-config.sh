@@ -8,7 +8,7 @@ work_dir="$(mktemp -d "${TMPDIR:-/tmp}/materia-topf-test.XXXXXX")"
 trap 'rm -rf -- "${work_dir}"' EXIT
 export TEST_WORK_DIR="${work_dir}"
 export TALOS_OUT_DIR="${work_dir}/output" TOPF_SUBMIT_TO_FACTORY=false
-export OP_BIN="${work_dir}/op" KUBECTL_BIN="${work_dir}/kubectl"
+export OP_BIN="${work_dir}/op"
 TALOSCTL_BIN="${TALOSCTL_BIN:-talosctl}"
 YQ_BIN="${YQ_BIN:-yq}"
 "${TALOSCTL_BIN}" gen secrets -o "${work_dir}/secrets.yaml"
@@ -18,13 +18,7 @@ set -euo pipefail
 [[ "$1" == read ]]
 cat "${TEST_WORK_DIR}/secrets.yaml"
 MOCK
-cat >"${KUBECTL_BIN}" <<'MOCK'
-#!/usr/bin/env bash
-set -euo pipefail
-[[ "$1" == get && "$2" == clusters.postgresql.cnpg.io ]]
-printf 'database\tpostgres\n'
-MOCK
-chmod +x "${OP_BIN}" "${KUBECTL_BIN}"
+chmod +x "${OP_BIN}"
 ./scripts/talos-genconfig.sh
 
 for node in hydrogen lithium phosphorus; do
@@ -47,8 +41,10 @@ done
 ./scripts/talos-upgrade-commands.sh lithium >"${work_dir}/upgrade.sh"
 [[ "$(rg -c ' upgrade --nodes ' "${work_dir}/upgrade.sh")" == 1 ]]
 rg -q "lithium.dns.ggrel.net" "${work_dir}/upgrade.sh"
-rg -q 'enablePDB":false' "${work_dir}/upgrade.sh"
-rg -q 'enablePDB":true' "${work_dir}/upgrade.sh"
+# PDBs are disabled in git, so the upgrade flow must never touch them again.
+if rg -q 'enablePDB|poddisruptionbudget' "${work_dir}/upgrade.sh"; then
+  echo "Upgrade commands unexpectedly manage PDBs" >&2; exit 1
+fi
 if ./scripts/talos-upgrade-commands.sh unknown >"${work_dir}/invalid.sh" 2>/dev/null; then
   echo "Unknown node unexpectedly succeeded" >&2; exit 1
 fi
