@@ -17,6 +17,7 @@ spec:
       labels:
         app: sophie-server
     spec:
+      serviceAccountName: sophie-ocr
       # Workers drain in-flight ingestion and collector jobs on SIGTERM.
       terminationGracePeriodSeconds: 600
       imagePullSecrets:
@@ -33,6 +34,8 @@ spec:
                   key: uri
             - name: X_ARCHIVE_STAGING_DIRECTORY
               value: /var/lib/sophie/x-archive-staging
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/run/secrets/google/application_default_credentials.json
           envFrom:
             - configMapRef:
                 name: config
@@ -72,6 +75,12 @@ spec:
               mountPath: /tmp
             - name: x-archive-staging
               mountPath: /var/lib/sophie/x-archive-staging
+            - name: google-application-credentials
+              mountPath: /var/run/secrets/google
+              readOnly: true
+            - name: google-workload-identity-token
+              mountPath: /var/run/secrets/sophie-ocr
+              readOnly: true
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -81,3 +90,14 @@ spec:
         - name: x-archive-staging
           emptyDir:
             sizeLimit: 2Gi
+        - name: google-application-credentials
+          configMap:
+            name: google-application-credentials
+        - name: google-workload-identity-token
+          projected:
+            defaultMode: 0444
+            sources:
+              - serviceAccountToken:
+                  audience: https://iam.googleapis.com/projects/227166113239/locations/global/workloadIdentityPools/sophie-kubernetes/providers/materia-cluster
+                  expirationSeconds: 3600
+                  path: token
