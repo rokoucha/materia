@@ -7,6 +7,9 @@ metadata:
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1-minimal-trixie
   instances: 1
+  # Single instance: a PDB could only ever block eviction outright, which
+  # stops node drains and rebalancing. Accept the restart instead.
+  enablePDB: false
   postgresql:
     parameters:
       pg_stat_statements.max: "10000"
