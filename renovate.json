@@ -110,6 +110,12 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/starrybluesky/mirakurun-custom"],
       "versioning": "regex:^(?<major>\\d{4})\\.(?<minor>\\d{1,2})\\.(?<patch>\\d{1,2})$"
+    },
+    {
+      "description": "descheduler 0.36.0 reports zero node usage on its first descheduling cycle, and a CronJob runs exactly one cycle. Allow 0.35.x until upstream fixes it.",
+      "matchDatasources": ["helm"],
+      "matchPackageNames": ["descheduler"],
+      "allowedVersions": "<0.36.0"
     }
   ]
 }
