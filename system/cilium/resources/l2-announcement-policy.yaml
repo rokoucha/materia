@@ -7,9 +7,11 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 
 spec:
+  # Every node carries the public LB VLAN (ethSel0.30), so any of them can take
+  # over the announcement when the current leader is lost.
   nodeSelector:
     matchLabels:
-      kubernetes.io/hostname: hydrogen
+      node-role.kubernetes.io/control-plane: ""
   serviceSelector:
     matchLabels:
       chlorinate.rokoucha.com/lb: public
