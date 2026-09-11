@@ -4,6 +4,9 @@ image:
 deploymentStrategy:
   type: Recreate
 
+annotations:
+  argocd.argoproj.io/sync-options: Replace=true
+
 env:
   GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: "true"
 
