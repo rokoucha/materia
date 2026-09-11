@@ -16,6 +16,51 @@ spec:
         operators:
           - type: container
             id: container-parser
+          - type: json_parser
+            id: cnpg-json
+            if: 'resource["k8s.namespace.name"] == "sophie" and resource["k8s.container.name"] == "postgres"'
+            parse_from: body
+            parse_to: attributes.cnpg
+          - type: move
+            if: 'attributes.cnpg != nil and attributes.cnpg.record != nil and attributes.cnpg.record.application_name != nil'
+            from: attributes.cnpg.record.application_name
+            to: attributes["db.client.application.name"]
+          - type: move
+            if: 'attributes.cnpg != nil and attributes.cnpg.record != nil and attributes.cnpg.record.database_name != nil'
+            from: attributes.cnpg.record.database_name
+            to: attributes["db.namespace"]
+          - type: move
+            if: 'attributes.cnpg != nil and attributes.cnpg.record != nil and attributes.cnpg.record.process_id != nil'
+            from: attributes.cnpg.record.process_id
+            to: attributes["db.postgresql.process.id"]
+          - type: move
+            if: 'attributes.cnpg != nil and attributes.cnpg.record != nil and attributes.cnpg.record.session_id != nil'
+            from: attributes.cnpg.record.session_id
+            to: attributes["db.postgresql.session.id"]
+          - type: move
+            if: 'attributes.cnpg != nil and attributes.cnpg.record != nil and attributes.cnpg.record.query_id != nil'
+            from: attributes.cnpg.record.query_id
+            to: attributes["db.postgresql.query.id"]
+          - type: move
+            if: 'attributes.cnpg != nil and attributes.cnpg.record != nil and attributes.cnpg.record.transaction_id != nil'
+            from: attributes.cnpg.record.transaction_id
+            to: attributes["db.postgresql.transaction.id"]
+          - type: move
+            if: 'attributes.cnpg != nil and attributes.cnpg.record != nil and attributes.cnpg.record.log_time != nil'
+            from: attributes.cnpg.record.log_time
+            to: attributes["db.postgresql.log.time"]
+          - type: regex_parser
+            id: cnpg-traceparent
+            if: 'attributes.cnpg != nil and attributes.cnpg.record != nil and attributes.cnpg.record.statement != nil'
+            parse_from: attributes.cnpg.record.statement
+            regex: "traceparent='00-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-(?P<trace_flags>[0-9a-f]{2})'"
+            trace:
+              trace_id:
+                parse_from: attributes.trace_id
+              span_id:
+                parse_from: attributes.span_id
+              trace_flags:
+                parse_from: attributes.trace_flags
       hostmetrics:
         root_path: /hostfs
         scrapers:
