@@ -1,6 +1,9 @@
 image:
   tag: "13.1.0"
 
+deploymentStrategy:
+  type: Recreate
+
 env:
   GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: "true"
 
