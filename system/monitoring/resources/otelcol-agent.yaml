@@ -50,10 +50,23 @@ spec:
             from: attributes.cnpg.record.log_time
             to: attributes["db.postgresql.log.time"]
           - type: regex_parser
-            id: cnpg-traceparent
+            id: cnpg-statement-traceparent
             if: 'attributes.cnpg != nil and attributes.cnpg.record != nil and attributes.cnpg.record.statement != nil'
             parse_from: attributes.cnpg.record.statement
             regex: "traceparent='00-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-(?P<trace_flags>[0-9a-f]{2})'"
+            trace:
+              trace_id:
+                parse_from: attributes.trace_id
+              span_id:
+                parse_from: attributes.span_id
+              trace_flags:
+                parse_from: attributes.trace_flags
+          - type: regex_parser
+            id: cnpg-message-traceparent
+            if: 'attributes.cnpg != nil and attributes.cnpg.record != nil and attributes.cnpg.record.message != nil'
+            parse_from: attributes.cnpg.record.message
+            regex: "traceparent='00-(?P<trace_id>[0-9a-f]{32})-(?P<span_id>[0-9a-f]{16})-(?P<trace_flags>[0-9a-f]{2})'"
+            on_error: send
             trace:
               trace_id:
                 parse_from: attributes.trace_id
