@@ -49,7 +49,6 @@ datasources:
         url: http://loki-gateway.loki.svc.materia-cluster.ggrel.net
         isDefault: false
       - name: Tempo
-        uid: tempo
         type: tempo
         access: proxy
         url: http://tempo.tempo.svc.materia-cluster.ggrel.net:3200
