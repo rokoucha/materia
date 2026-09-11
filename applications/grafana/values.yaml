@@ -37,10 +37,35 @@ datasources:
     apiVersion: 1
     datasources:
       - name: Tempo
+        uid: tempo
         type: tempo
         access: proxy
         url: http://tempo.tempo.svc.materia-cluster.ggrel.net:3200
         isDefault: false
+        jsonData:
+          tracesToLogsV2:
+            datasourceUid: loki
+            tags:
+              - key: service.name
+                value: service_name
+            filterByTraceID: false
+            filterBySpanID: false
+            customQuery: true
+            query: '{service_name="postgresql", service_namespace="sophie"} |= "$${__trace.traceId}"'
+            spanStartTimeShift: -15m
+            spanEndTimeShift: 15m
+      - name: Loki
+        uid: loki
+        type: loki
+        access: proxy
+        url: http://loki-gateway.loki.svc.materia-cluster.ggrel.net
+        isDefault: false
+        jsonData:
+          derivedFields:
+            - datasourceUid: tempo
+              matcherRegex: "traceparent='00-([0-9a-f]{32})-"
+              name: TraceID
+              url: '$${__value.raw}'
 
 envFromSecrets:
   - name: grafana-secrets
