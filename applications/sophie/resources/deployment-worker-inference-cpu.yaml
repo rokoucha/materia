@@ -23,7 +23,7 @@ spec:
         - name: ghcr-credentials
       containers:
         - name: worker
-          image: ghcr.io/rokoucha/sophie-worker-inference:20260911.133602
+          image: ghcr.io/rokoucha/sophie-worker-inference:20260911.140903
           env:
             - name: DATABASE_URL
               valueFrom:
