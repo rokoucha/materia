@@ -5,35 +5,35 @@ helmCharts:
   - name: external-dns
     releaseName: external-dns
     namespace: external-dns
-    version: 1.21.1
+    version: 1.22.0
     repo: https://kubernetes-sigs.github.io/external-dns/
     includeCRDs: true
     valuesFile: ./values.yaml
   - name: external-dns
     releaseName: external-dns-teamspeak-a
     namespace: external-dns
-    version: 1.21.1
+    version: 1.22.0
     repo: https://kubernetes-sigs.github.io/external-dns/
     includeCRDs: false
     valuesFile: ./values-teamspeak-a.yaml
   - name: external-dns
     releaseName: external-dns-teamspeak-aaaa
     namespace: external-dns
-    version: 1.21.1
+    version: 1.22.0
     repo: https://kubernetes-sigs.github.io/external-dns/
     includeCRDs: false
     valuesFile: ./values-teamspeak-aaaa.yaml
   - name: external-dns
     releaseName: external-dns-ingress-lb-a
     namespace: external-dns
-    version: 1.21.1
+    version: 1.22.0
     repo: https://kubernetes-sigs.github.io/external-dns/
     includeCRDs: false
     valuesFile: ./values-ingress-lb-a.yaml
   - name: external-dns
     releaseName: external-dns-ingress-lb-aaaa
     namespace: external-dns
-    version: 1.21.1
+    version: 1.22.0
     repo: https://kubernetes-sigs.github.io/external-dns/
     includeCRDs: false
     valuesFile: ./values-ingress-lb-aaaa.yaml
