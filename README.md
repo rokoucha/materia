@@ -12,7 +12,7 @@ Appellatur omnes res quae in res corporeas componi possunt
 
 | ノード | CPU | メモリ | 拡張 |
 | --- | --- | --- | --- |
-| hydrogen | Intel Core i3-8100T | 8 GiB | btrfs, iscsi-tools, intel-ucode, i915 |
+| hydrogen | Intel Core i3-8100T | 16 GiB | btrfs, iscsi-tools, intel-ucode, i915 |
 | lithium | AMD Ryzen 5 PRO 3400GE | 32 GiB | btrfs, iscsi-tools, amd-ucode, amdgpu |
 | phosphorus | Intel Core i3-1115G4 | 16 GiB | btrfs, iscsi-tools, intel-ucode, i915 |
 
