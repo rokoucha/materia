@@ -62,12 +62,14 @@ done <<<"${node_list}"
   --submit-to-factory="${TOPF_SUBMIT_TO_FACTORY:-true}" \
   render --output "${work_dir}/rendered"
 for node in "${nodes[@]}"; do
-  # Talos 1.14's generator names the encryption key differently from talhelper.
-  # Keep key1 so kube-apiserver can decrypt existing etcd values with that prefix.
+  # Keep the provider chain compatible with the existing cluster. Encrypted
+  # resources carry the key name in their prefix, so changing it breaks reads.
   "${YQ_BIN}" -i '
     (select(.kind == "KubeEtcdEncryptionConfig") |
       .config.resources[].providers[] | select(has("secretbox")) |
-      .secretbox.keys[0].name) = "key1"
+      .secretbox.keys[0].name) = "key2" |
+    (select(.kind == "KubeEtcdEncryptionConfig") |
+      .config.resources[].providers) += [{"identity": {}}]
   ' "${work_dir}/rendered/${node}.yaml"
   "${TALOSCTL_BIN}" validate --config "${work_dir}/rendered/${node}.yaml" --mode metal
 done
