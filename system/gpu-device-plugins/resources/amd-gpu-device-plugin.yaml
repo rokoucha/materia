@@ -21,7 +21,7 @@ spec:
                   - key: extensions.talos.dev/amdgpu
                     operator: Exists
       containers:
-        - image: docker.io/rocm/k8s-device-plugin:1.31.0.10
+        - image: docker.io/rocm/k8s-device-plugin:1.31.0.11
           imagePullPolicy: IfNotPresent
           name: amd-gpu-device-plugin
           resources:
