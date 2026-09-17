@@ -23,7 +23,7 @@ spec:
         - name: ghcr-credentials
       containers:
         - name: worker
-          image: ghcr.io/rokoucha/sophie-worker-inference:20260917.150318
+          image: ghcr.io/rokoucha/sophie-worker-inference:20260917.151354
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -77,7 +77,7 @@ spec:
             - name: tmp
               mountPath: /tmp
         - name: model-callee
-          image: ghcr.io/rokoucha/sophie-worker-inference:20260917.150318
+          image: ghcr.io/rokoucha/sophie-worker-inference:20260917.151354
           command:
             - python3
             - /opt/sophie-inference/image_feature_callee.py
