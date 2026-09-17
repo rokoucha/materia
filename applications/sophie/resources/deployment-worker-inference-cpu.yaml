@@ -10,6 +10,11 @@ spec:
   # #206 supplies feature queueing before this profile is enabled.
   replicas: 0
   revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: sophie-worker-inference-cpu
