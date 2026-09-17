@@ -24,7 +24,7 @@ spec:
         - name: ghcr-credentials
       containers:
         - name: server
-          image: ghcr.io/rokoucha/sophie-server:20260917.192435
+          image: ghcr.io/rokoucha/sophie-server:20260917.195627
           command: ["node", "dist/src/main.js"]
           env:
             - name: DATABASE_URL
