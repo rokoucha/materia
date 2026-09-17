@@ -97,12 +97,12 @@ spec:
               cpu: "1"
               ephemeral-storage: 512Mi
               gpu.intel.com/i915: "1"
-              memory: 2560Mi
+              memory: 3Gi
             limits:
               cpu: "2"
               ephemeral-storage: 1Gi
               gpu.intel.com/i915: "1"
-              memory: 3Gi
+              memory: 4Gi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
