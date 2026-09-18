@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: mahiron
-          image: ghcr.io/rokoucha/mahiron:2026.0918.052507-nightly
+          image: ghcr.io/rokoucha/mahiron:2026.0918.084750-nightly
           resources:
             requests:
               cpu: 400m
