@@ -2,12 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: worker-inference-gpu
+  name: worker-ml-cpu
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 
 spec:
-  replicas: 1
+  # #206 supplies feature queueing before this profile is enabled.
+  replicas: 0
   revisionHistoryLimit: 5
   strategy:
     type: RollingUpdate
@@ -16,32 +17,30 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: sophie-worker-inference-gpu
+      app: sophie-worker-ml-cpu
   template:
     metadata:
       labels:
-        app: sophie-worker-inference-gpu
+        app: sophie-worker-ml-cpu
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: phosphorus
       terminationGracePeriodSeconds: 300
       imagePullSecrets:
         - name: ghcr-credentials
       containers:
         - name: worker
-          image: ghcr.io/rokoucha/sophie-worker-inference:20260918.003119
+          image: ghcr.io/rokoucha/sophie-worker-ml:20260918.125318
           env:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: postgresql-app
                   key: uri
-            - name: INFERENCE_EXECUTION_PROFILE
-              value: gpu
+            - name: ML_EXECUTION_PROFILE
+              value: cpu
             - name: OTEL_SERVICE_NAME
-              value: sophie/worker-inference-gpu
+              value: sophie/worker-ml-cpu
             - name: SOPHIE_ROLE
-              value: worker-inference
+              value: worker-ml
           envFrom:
             - configMapRef:
                 name: config
@@ -64,13 +63,13 @@ spec:
             periodSeconds: 30
           resources:
             requests:
-              cpu: 250m
-              ephemeral-storage: 512Mi
+              cpu: 500m
+              ephemeral-storage: 1Gi
               memory: 512Mi
             limits:
-              cpu: "1"
-              ephemeral-storage: 1Gi
-              memory: 1Gi
+              cpu: "2"
+              ephemeral-storage: 4Gi
+              memory: 2Gi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -83,25 +82,23 @@ spec:
             - name: tmp
               mountPath: /tmp
         - name: model-callee
-          image: ghcr.io/rokoucha/sophie-worker-inference:20260918.003119
+          image: ghcr.io/rokoucha/sophie-worker-ml:20260918.125318
           command:
             - python3
-            - /opt/sophie-inference/image_feature_callee.py
+            - /opt/sophie-ml/image_feature_callee.py
           env:
-            - name: INFERENCE_EXECUTION_PROFILE
-              value: gpu
-            - name: INFERENCE_THREADS
+            - name: ML_EXECUTION_PROFILE
+              value: cpu
+            - name: ML_THREADS
               value: "2"
           resources:
             requests:
               cpu: "1"
-              ephemeral-storage: 512Mi
-              gpu.intel.com/i915: "1"
+              ephemeral-storage: 1Gi
               memory: 3Gi
             limits:
               cpu: "2"
-              ephemeral-storage: 1Gi
-              gpu.intel.com/i915: "1"
+              ephemeral-storage: 2Gi
               memory: 4Gi
           securityContext:
             allowPrivilegeEscalation: false
@@ -120,4 +117,4 @@ spec:
       volumes:
         - name: tmp
           emptyDir:
-            sizeLimit: 2Gi
+            sizeLimit: 4Gi
