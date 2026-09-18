@@ -13,6 +13,8 @@ resources:
   - ./resources/ghcr-credentials.yaml
   - ./resources/ingress.yaml
   - ./resources/job-migration.yaml
+  - ./resources/job-model-preparation.yaml
+  - ./resources/persistent-volume-claim-ml-models.yaml
   - ./resources/namespace.yaml
   - ./resources/postgresql.yaml
   - ./resources/redis.yaml
