@@ -18,4 +18,4 @@ nodes:
   - host: phosphorus
     ip: 172.16.2.23
     role: control-plane
-    schematicId: '@schematics/intel.yaml'
+    schematicId: '@schematics/intel-huc.yaml'

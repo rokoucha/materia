@@ -1,0 +1,14 @@
+customization:
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/btrfs
+      - siderolabs/i915
+      - siderolabs/intel-ucode
+      - siderolabs/iscsi-tools
+  # Enable i915 HuC firmware loading (bit 1) without GuC submission (bit 0),
+  # so that Gen12 low-power encode can use bit rate control (VBR/ICQ).
+  # install.extraKernelArgs is not honored on sd-boot/UKI nodes, so the
+  # kernel argument must be baked into the boot assets via the schematic.
+  extraKernelArgs:
+    - i915.enable_guc=2
+  bootloader: sd-boot
