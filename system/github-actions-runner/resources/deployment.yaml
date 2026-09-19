@@ -26,6 +26,34 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       initContainers:
+        - name: prepare-state
+          image: ghcr.io/actions/actions-runner:2.334.0
+          command:
+            - /bin/bash
+            - -euo
+            - pipefail
+            - -c
+            - |
+              if [[ -L /runner-state/_work ]]; then
+                rm /runner-state/_work
+              fi
+              mkdir -p /runner-state/_work
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 1001
+          volumeMounts:
+            - name: runner-state
+              mountPath: /runner-state
         - name: configure
           image: ghcr.io/actions/actions-runner:2.334.0
           command:
