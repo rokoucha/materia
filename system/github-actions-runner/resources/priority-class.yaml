@@ -1,0 +1,10 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+
+metadata:
+  name: actions-runner
+
+description: Opportunistic GitHub Actions jobs yield to cluster workloads.
+globalDefault: false
+preemptionPolicy: Never
+value: -10

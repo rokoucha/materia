@@ -16,6 +16,7 @@ resources:
   - ./elastic-operator.yaml
   - ./external-dns.yaml
   - ./gpu-device-plugins.yaml
+  - ./github-actions-runner.yaml
   - ./haproxy-ingress.yaml
   - ./monitoring.yaml
   - ./opentelemetry-operator.yaml

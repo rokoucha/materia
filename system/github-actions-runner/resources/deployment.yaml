@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: sophie
+
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: sophie
+  template:
+    metadata:
+      labels:
+        app: sophie
+    spec:
+      automountServiceAccountToken: false
+      nodeSelector:
+        kubernetes.io/hostname: lithium
+      priorityClassName: actions-runner
+      securityContext:
+        fsGroup: 123
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: configure
+          image: ghcr.io/actions/actions-runner:2.334.0
+          command:
+            - /bin/bash
+            - -euo
+            - pipefail
+            - -c
+            - |
+              if [[ ! -x /runner/run.sh ]]; then
+                cp -a /home/runner/. /runner/
+              fi
+              ln -sfn /work /runner/_work
+              cat > /runner/cleanup-work.sh <<'EOF'
+              #!/bin/bash
+              find /work -mindepth 1 -maxdepth 1 -exec rm -rf -- {} + || true
+              EOF
+              chmod +x /runner/cleanup-work.sh
+
+              if [[ ! -f /runner/.runner ]]; then
+                token_file=/registration/token
+                if [[ ! -s "$token_file" ]]; then
+                  echo "A repository runner registration token is required for first boot." >&2
+                  exit 1
+                fi
+
+                cd /runner
+                ./config.sh \
+                  --unattended \
+                  --replace \
+                  --url https://github.com/rokoucha/sophie \
+                  --token "$(<"$token_file")" \
+                  --name materia-lithium \
+                  --no-default-labels \
+                  --labels sophie-materia \
+                  --work _work
+              fi
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+          volumeMounts:
+            - name: registration
+              mountPath: /registration
+              readOnly: true
+            - name: runner-state
+              mountPath: /runner
+      containers:
+        - name: runner
+          image: ghcr.io/actions/actions-runner:2.334.0
+          command:
+            - /runner/run.sh
+          env:
+            - name: ACTIONS_RUNNER_HOOK_JOB_COMPLETED
+              value: /runner/cleanup-work.sh
+          resources:
+            requests:
+              cpu: "1"
+              memory: 4Gi
+              ephemeral-storage: 40Gi
+            limits:
+              cpu: "4"
+              memory: 8Gi
+              ephemeral-storage: 80Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+          volumeMounts:
+            - name: pnpm-store
+              mountPath: /home/runner/.local/share/pnpm/store
+            - name: runner-state
+              mountPath: /runner
+            - name: work
+              mountPath: /work
+      volumes:
+        - name: pnpm-store
+          persistentVolumeClaim:
+            claimName: pnpm-store
+        - name: registration
+          secret:
+            optional: true
+            secretName: registration
+        - name: runner-state
+          persistentVolumeClaim:
+            claimName: runner-state
+        - name: work
+          emptyDir:
+            sizeLimit: 80Gi
