@@ -37,10 +37,9 @@ spec:
               if [[ ! -x /runner/run.sh ]]; then
                 cp -a /home/runner/. /runner/
               fi
-              ln -sfn /work /runner/_work
               cat > /runner/cleanup-work.sh <<'EOF'
               #!/bin/bash
-              find /work -mindepth 1 -maxdepth 1 -exec rm -rf -- {} + || true
+              find /runner/_work -mindepth 1 -maxdepth 1 -exec rm -rf -- {} + || true
               EOF
               chmod +x /runner/cleanup-work.sh
 
@@ -81,6 +80,8 @@ spec:
               readOnly: true
             - name: runner-state
               mountPath: /runner
+            - name: work
+              mountPath: /runner/_work
       containers:
         - name: runner
           image: ghcr.io/actions/actions-runner:2.334.0
@@ -111,7 +112,7 @@ spec:
             - name: runner-state
               mountPath: /runner
             - name: work
-              mountPath: /work
+              mountPath: /runner/_work
       volumes:
         - name: pnpm-store
           persistentVolumeClaim:
