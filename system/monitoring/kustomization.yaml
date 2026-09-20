@@ -7,7 +7,7 @@ helmCharts:
   - name: drm-exporter
     releaseName: drm-exporter
     namespace: monitoring
-    version: 0.3.3
+    version: 0.3.4
     repo: oci://ghcr.io/home-operations/charts
     valuesFile: ./values-drm-exporter.yaml
   - name: kube-state-metrics
