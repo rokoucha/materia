@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: redis
-          image: docker.io/library/redis:8.10.1@sha256:76961cd2a0f40ef6fdd334b6b1b3a76a2bad1848d89f3030ca30a7521d4a9493
+          image: docker.io/library/redis:8.10.1@sha256:5edb5f1591cd35076057573171f40e0439ec7fbbb38e04d56c0efae810d99d47
           args: ["redis-server", "--appendonly", "yes"]
           ports:
             - name: redis
