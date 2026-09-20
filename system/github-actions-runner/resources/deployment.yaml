@@ -27,7 +27,7 @@ spec:
           type: RuntimeDefault
       initContainers:
         - name: prepare-state
-          image: ghcr.io/actions/actions-runner:2.334.0
+          image: ghcr.io/actions/actions-runner:2.337.0
           command:
             - /bin/bash
             - -euo
@@ -55,7 +55,7 @@ spec:
             - name: runner-state
               mountPath: /runner-state
         - name: configure
-          image: ghcr.io/actions/actions-runner:2.334.0
+          image: ghcr.io/actions/actions-runner:2.337.0
           command:
             - /bin/bash
             - -euo
@@ -112,7 +112,7 @@ spec:
               mountPath: /runner/_work
       containers:
         - name: runner
-          image: ghcr.io/actions/actions-runner:2.334.0
+          image: ghcr.io/actions/actions-runner:2.337.0
           command:
             - /runner/run.sh
           env:
