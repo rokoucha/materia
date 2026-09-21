@@ -18,7 +18,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: prepare
-          image: ghcr.io/rokoucha/sophie-worker-ml:20260921.094730
+          image: ghcr.io/rokoucha/sophie-worker-ml:20260921.133611
           command:
             - python3
             - /opt/sophie-ml/model_cache.py
