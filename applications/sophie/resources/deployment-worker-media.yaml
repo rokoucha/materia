@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: worker-ml-gpu
+  name: worker-media
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 
@@ -16,32 +16,28 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: sophie-worker-ml-gpu
+      app: sophie-worker-media
   template:
     metadata:
       labels:
-        app: sophie-worker-ml-gpu
+        app: sophie-worker-media
     spec:
-      nodeSelector:
-        kubernetes.io/hostname: phosphorus
-      terminationGracePeriodSeconds: 300
+      terminationGracePeriodSeconds: 900
       imagePullSecrets:
         - name: ghcr-credentials
       containers:
         - name: worker
-          image: ghcr.io/rokoucha/sophie-worker-ml:20260923.165046
+          image: ghcr.io/rokoucha/sophie-worker-media:20260923.165046
           env:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: postgresql-app
                   key: uri
-            - name: ML_EXECUTION_PROFILE
-              value: gpu
             - name: OTEL_SERVICE_NAME
-              value: sophie/worker-ml-gpu
+              value: sophie/worker-media
             - name: SOPHIE_ROLE
-              value: worker-ml
+              value: worker-media
           envFrom:
             - configMapRef:
                 name: config
@@ -65,7 +61,7 @@ spec:
           resources:
             requests:
               cpu: 250m
-              ephemeral-storage: 512Mi
+              ephemeral-storage: 256Mi
               memory: 512Mi
             limits:
               cpu: "1"
@@ -82,50 +78,10 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
-        - name: model-callee
-          image: ghcr.io/rokoucha/sophie-worker-ml:20260923.165046
-          command:
-            - python3
-            - /opt/sophie-ml/image_feature_callee.py
-          env:
-            - name: ML_EXECUTION_PROFILE
-              value: gpu
-            - name: ML_THREADS
-              value: "2"
-          resources:
-            requests:
-              cpu: "1"
-              ephemeral-storage: 512Mi
-              gpu.intel.com/i915: "1"
-              memory: 3Gi
-            limits:
-              cpu: "2"
-              ephemeral-storage: 1Gi
-              gpu.intel.com/i915: "1"
-              memory: 4Gi
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            runAsUser: 1000
-          volumeMounts:
-            - name: tmp
-              mountPath: /tmp
-            - name: models
-              mountPath: /opt/sophie-models
-              readOnly: true
       securityContext:
-        fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
       volumes:
-        - name: models
-          persistentVolumeClaim:
-            claimName: ml-models
         - name: tmp
           emptyDir:
-            sizeLimit: 2Gi
+            sizeLimit: 1Gi
