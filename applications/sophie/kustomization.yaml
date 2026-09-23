@@ -6,6 +6,7 @@ namespace: sophie
 resources:
   - ./resources/config-map-google-application-credentials.yaml
   - ./resources/deployment-server.yaml
+  - ./resources/deployment-worker-media.yaml
   - ./resources/deployment-worker-ml-cpu.yaml
   - ./resources/deployment-worker-ml-gpu.yaml
   - ./resources/deployment-web.yaml

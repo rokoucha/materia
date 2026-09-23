@@ -19,12 +19,12 @@ spec:
     spec:
       serviceAccountName: sophie-ocr
       # Workers drain in-flight ingestion and collector jobs on SIGTERM.
-      terminationGracePeriodSeconds: 600
+      terminationGracePeriodSeconds: 900
       imagePullSecrets:
         - name: ghcr-credentials
       containers:
         - name: server
-          image: ghcr.io/rokoucha/sophie-server:20260923.154925
+          image: ghcr.io/rokoucha/sophie-server:20260923.165046
           command: ["node", "dist/src/main.js"]
           env:
             - name: DATABASE_URL
@@ -36,6 +36,10 @@ spec:
               value: /var/lib/sophie/x-archive-staging
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /var/run/secrets/google/application_default_credentials.json
+            - name: OTEL_SERVICE_NAME
+              value: sophie/server
+            - name: SOPHIE_ROLE
+              value: server
           envFrom:
             - configMapRef:
                 name: config
