@@ -4,15 +4,23 @@ global:
 tempo:
   reportingEnabled: false
   retention: 168h
+  memBallastSizeMbs: 0
+  extraEnv:
+    - name: GOMEMLIMIT
+      value: 3GiB
+  ingester:
+    max_block_duration: 5m
   resources:
     requests:
       cpu: 100m
       memory: 2Gi
     limits:
-      memory: 3Gi
+      memory: 4Gi
   storage:
     trace:
       backend: local
+      block:
+        parquet_row_group_size_bytes: 10000000
       local:
         path: /var/tempo/traces
       wal:
