@@ -28,7 +28,7 @@ spec:
         - name: ghcr-credentials
       containers:
         - name: worker
-          image: ghcr.io/rokoucha/sophie-worker-ml:20260924.132155
+          image: ghcr.io/rokoucha/sophie-worker-ml:20260924.151024
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -82,7 +82,7 @@ spec:
             - name: tmp
               mountPath: /tmp
         - name: model-callee
-          image: ghcr.io/rokoucha/sophie-worker-ml:20260924.132155
+          image: ghcr.io/rokoucha/sophie-worker-ml:20260924.151024
           command:
             - python3
             - /opt/sophie-ml/image_feature_callee.py
