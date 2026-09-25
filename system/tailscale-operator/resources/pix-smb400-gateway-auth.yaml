@@ -1,0 +1,8 @@
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+
+metadata:
+  name: pix-smb400-gateway-auth
+
+spec:
+  itemPath: vaults/materia/items/pix-smb400-gateway-auth

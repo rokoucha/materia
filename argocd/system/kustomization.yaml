@@ -24,3 +24,4 @@ resources:
   - ./redis-operator.yaml
   - ./reflector.yaml
   - ./synology-csi.yaml
+  - ./tailscale-operator.yaml

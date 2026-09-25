@@ -1,0 +1,8 @@
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+
+metadata:
+  name: operator-oauth
+
+spec:
+  itemPath: vaults/materia/items/tailscale-operator-oauth

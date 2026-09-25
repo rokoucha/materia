@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: tailscale
+
+helmCharts:
+  - name: tailscale-operator
+    releaseName: tailscale-operator
+    namespace: tailscale
+    version: "1.102.4"
+    repo: https://pkgs.tailscale.com/helmcharts
+    includeCRDs: true
+
+resources:
+  - ./resources/namespace.yaml
+  - ./resources/operator-oauth.yaml
+  - ./resources/pix-smb400-gateway-auth.yaml
+  - ./resources/pix-smb400-gateway-state.yaml
+  - ./resources/pix-smb400-gateway.yaml
+  - ./resources/pix-smb400-service.yaml
