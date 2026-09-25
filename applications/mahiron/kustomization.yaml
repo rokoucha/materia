@@ -9,6 +9,10 @@ resources:
   - ./resources/ingress.yaml
   - ./resources/namespace.yaml
   - ./resources/persistent-volume-claim.yaml
+  - ./resources/pix-smb400-gateway-auth.yaml
+  - ./resources/pix-smb400-gateway-state.yaml
+  - ./resources/pix-smb400-gateway.yaml
+  - ./resources/pix-smb400-service.yaml
   - ./resources/service.yaml
   - ./resources/statefulset.yaml
   - ./resources/tls.yaml
