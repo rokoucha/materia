@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: pix-smb400-gateway
+
+spec:
+  type: ClusterIP
+  selector:
+    app: pix-smb400-gateway
+  ports:
+    - name: tcp
+      port: 40772
+      targetPort: tcp
+      protocol: TCP
