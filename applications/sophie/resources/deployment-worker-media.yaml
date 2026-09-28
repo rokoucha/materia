@@ -27,7 +27,7 @@ spec:
         - name: ghcr-credentials
       containers:
         - name: worker
-          image: ghcr.io/rokoucha/sophie-worker-media:20260928.101552
+          image: ghcr.io/rokoucha/sophie-worker-media:20260928.180805
           env:
             - name: DATABASE_URL
               valueFrom:
