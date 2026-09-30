@@ -1,34 +1,46 @@
+$patch: delete
+apiVersion: v1
+kind: ServiceAccount
+
+metadata:
+  name: argocd-dex-server
+
+---
+$patch: delete
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+
+metadata:
+  name: argocd-dex-server
+
+---
+$patch: delete
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+
+metadata:
+  name: argocd-dex-server
+
+---
+$patch: delete
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: argocd-dex-server
+
+---
+$patch: delete
 apiVersion: apps/v1
 kind: Deployment
 
 metadata:
   name: argocd-dex-server
 
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-dex-server
-  template:
-    spec:
-      containers:
-        - name: dex
-          startupProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /api/dex/healthz
-              port: 5556
-              scheme: HTTPS
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            successThreshold: 1
-            timeoutSeconds: 5
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /api/dex/.well-known/openid-configuration
-              port: 5556
-              scheme: HTTPS
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            successThreshold: 1
-            timeoutSeconds: 5
+---
+$patch: delete
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: argocd-dex-server-network-policy

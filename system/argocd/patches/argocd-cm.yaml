@@ -10,20 +10,20 @@ metadata:
 data:
   url: https://argocd.materia.ggrel.net
   accounts.mcp-bot: apiKey
-  dex.config: |
-    connectors:
-      - type: oidc
-        id: authentik
-        name: authentik
-        config:
-          issuer: https://auth.ggrel.net/application/o/materia-argocd/
-          clientID: TrkjevcCNKOaFluWdtpE3A7siE3XwlnzI9IdMbds
-          clientSecret: $dex.authentik.clientSecret
-          insecureEnableGroups: true
-          scopes:
-            - openid
-            - profile
-            - email
+  oidc.config: |
+    name: authentik
+    issuer: https://auth.ggrel.net/application/o/argo-cd/
+    clientID: 48oKkchh0jq5I1GccvwDtrFcUANjtu8MqnTFmH4O
+    enablePKCEAuthentication: true
+    requestedScopes:
+      - openid
+      - profile
+      - email
+      - offline_access
+    requestedIDTokenClaims:
+      groups:
+        essential: true
+    refreshTokenThreshold: 30s
   resource.customizations: |
     networking.k8s.io/Ingress:
       health.lua: |
