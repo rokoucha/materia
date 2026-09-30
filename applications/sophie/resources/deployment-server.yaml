@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: server
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: sophie-server
+  template:
+    metadata:
+      labels:
+        app: sophie-server
+    spec:
+      serviceAccountName: sophie-ocr
+      # Workers drain in-flight ingestion and collector jobs on SIGTERM.
+      terminationGracePeriodSeconds: 900
+      imagePullSecrets:
+        - name: ghcr-credentials
+      containers:
+        - name: server
+          image: ghcr.io/rokoucha/sophie-server:20260930.084354
+          command: ["node", "dist/src/main.js"]
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-app
+                  key: uri
+            - name: X_ARCHIVE_STAGING_DIRECTORY
+              value: /var/lib/sophie/x-archive-staging
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/run/secrets/google/application_default_credentials.json
+            - name: OTEL_SERVICE_NAME
+              value: sophie/server
+            - name: SOPHIE_ROLE
+              value: server
+          envFrom:
+            - configMapRef:
+                name: config
+            - secretRef:
+                name: sophie-secrets
+          ports:
+            - name: http
+              containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /api/health/ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health/live
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: x-archive-staging
+              mountPath: /var/lib/sophie/x-archive-staging
+            - name: google-application-credentials
+              mountPath: /var/run/secrets/google
+              readOnly: true
+            - name: google-workload-identity-token
+              mountPath: /var/run/secrets/sophie-ocr
+              readOnly: true
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: x-archive-staging
+          emptyDir:
+            sizeLimit: 2Gi
+        - name: google-application-credentials
+          configMap:
+            name: google-application-credentials
+        - name: google-workload-identity-token
+          projected:
+            defaultMode: 0444
+            sources:
+              - serviceAccountToken:
+                  audience: https://iam.googleapis.com/projects/227166113239/locations/global/workloadIdentityPools/sophie-kubernetes/providers/materia-cluster
+                  expirationSeconds: 3600
+                  path: token
