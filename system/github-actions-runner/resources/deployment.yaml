@@ -65,6 +65,22 @@ spec:
               if [[ ! -x /runner/run.sh ]]; then
                 cp -a /home/runner/. /runner/
               fi
+              gh_version=2.102.0
+              gh_directory="/runner/tools/gh-$gh_version"
+              if [[ ! -x "$gh_directory/bin/gh" ]]; then
+                gh_archive="$(mktemp)"
+                trap 'rm -f "$gh_archive"' EXIT
+                curl --fail --silent --show-error --location --retry 3 --max-time 120 \
+                  "https://github.com/cli/cli/releases/download/v$gh_version/gh_${gh_version}_linux_amd64.tar.gz" \
+                  --output "$gh_archive"
+                echo "bb766f710eef8ede859c18578c72c327597cd4c8a85b06001b1f3843c6019386  $gh_archive" | sha256sum --check --status
+                mkdir -p "$gh_directory"
+                tar -xzf "$gh_archive" --strip-components=1 --directory "$gh_directory" \
+                  "gh_${gh_version}_linux_amd64/bin/gh"
+              fi
+              mkdir -p /runner/bin
+              ln -sfn "$gh_directory/bin/gh" /runner/bin/gh
+
               cat > /runner/cleanup-work.sh <<'EOF'
               #!/bin/bash
               find /runner/_work -mindepth 1 -maxdepth 1 -exec rm -rf -- {} + || true
@@ -114,7 +130,13 @@ spec:
         - name: runner
           image: ghcr.io/actions/actions-runner:2.337.0
           command:
-            - /runner/run.sh
+            - /bin/bash
+            - -euo
+            - pipefail
+            - -c
+            - |
+              export PATH="/runner/bin:$PATH"
+              exec /runner/run.sh
           env:
             - name: ACTIONS_RUNNER_HOOK_JOB_COMPLETED
               value: /runner/cleanup-work.sh
