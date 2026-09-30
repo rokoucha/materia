@@ -16,7 +16,6 @@ resources:
   - ./nginx.yaml
   - ./otel-external.yaml
   - ./prometheus.yaml
-  - ./sophie.yaml
   - ./switchbot-meter-exporter.yaml
   - ./tempo.yaml
   - ./teamspeak.yaml
