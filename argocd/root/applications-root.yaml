@@ -13,10 +13,13 @@ spec:
     namespace: argocd
     server: https://kubernetes.default.svc
   project: root
-  source:
-    path: argocd/applications
-    repoURL: https://github.com/rokoucha/materia.git
-    targetRevision: HEAD
+  sources:
+    - path: argocd/applications
+      repoURL: https://github.com/rokoucha/materia.git
+      targetRevision: main
+    - path: infrastructure/argocd
+      repoURL: https://github.com/rokoucha/sophie.git
+      targetRevision: main
   syncPolicy:
     automated:
       prune: true
