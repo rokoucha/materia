@@ -5,6 +5,7 @@ namespace: nginx
 
 resources:
   - ./resources/deployment.yaml
+  - ./resources/external-monitors.yaml
   - ./resources/ggrel-net-tls.yaml
   - ./resources/ingress.yaml
   - ./resources/namespace.yaml

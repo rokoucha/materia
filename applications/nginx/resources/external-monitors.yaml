@@ -1,0 +1,52 @@
+apiVersion: mackerel.starry.blue/v1alpha1
+kind: ExternalMonitor
+
+metadata:
+  name: ggrel-net
+
+spec:
+  name: ggrel.net
+  service: Ggrel
+  url: https://ggrel.net
+  maxCheckAttempts: 3
+  responseTimeDuration: 3
+  responseTimeWarning: 5000
+  responseTimeCritical: 10000
+  certificationExpirationWarning: 7
+  certificationExpirationCritical: 3
+
+---
+apiVersion: mackerel.starry.blue/v1alpha1
+kind: ExternalMonitor
+
+metadata:
+  name: heinrike-prinzessin-zu-sayn-wittgenste-in
+
+spec:
+  name: heinrike.prinzessin.zu.sayn-wittgenste.in
+  service: Ggrel
+  url: https://heinrike.prinzessin.zu.sayn-wittgenste.in
+  maxCheckAttempts: 3
+  responseTimeDuration: 3
+  responseTimeWarning: 5000
+  responseTimeCritical: 10000
+  certificationExpirationWarning: 7
+  certificationExpirationCritical: 3
+
+---
+apiVersion: mackerel.starry.blue/v1alpha1
+kind: ExternalMonitor
+
+metadata:
+  name: noa-pp-ua
+
+spec:
+  name: noa.pp.ua
+  service: Ggrel
+  url: https://noa.pp.ua
+  maxCheckAttempts: 3
+  responseTimeDuration: 3
+  responseTimeWarning: 5000
+  responseTimeCritical: 10000
+  certificationExpirationWarning: 7
+  certificationExpirationCritical: 3
