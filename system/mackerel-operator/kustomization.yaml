@@ -23,3 +23,12 @@ helmCharts:
 resources:
   - ./resources/mackerel-apikey.yaml
   - ./resources/namespace.yaml
+
+patches:
+  - target:
+      kind: Deployment|Role|RoleBinding|ServiceAccount
+      labelSelector: app.kubernetes.io/instance=mackerel-operator
+    patch: |-
+      - op: add
+        path: /metadata/namespace
+        value: mackerel-operator
