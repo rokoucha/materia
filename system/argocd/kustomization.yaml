@@ -9,6 +9,7 @@ resources:
   - ./resources/argocd-secret.yaml
   - ./resources/github-app-credentials.yaml
   - ./resources/repositories.yaml
+  - ./resources/external-monitor.yaml
   - ./resources/ingress.yaml
   - ./resources/monitor.yaml
   - ./resources/namespace.yaml

@@ -12,6 +12,7 @@ helmCharts:
     valuesFile: ./values.yaml
 
 resources:
+  - ./resources/external-monitor.yaml
   - ./resources/ggrel-net-tls.yaml
   - ./resources/namespace.yaml
   - ./resources/monitor.yaml

@@ -1,0 +1,17 @@
+apiVersion: mackerel.starry.blue/v1alpha1
+kind: ExternalMonitor
+
+metadata:
+  name: argocd
+
+spec:
+  name: Argo CD
+  service: Ggrel
+  url: https://argocd.materia.ggrel.net/healthz
+  expectedStatusCode: 200
+  maxCheckAttempts: 3
+  responseTimeDuration: 3
+  responseTimeWarning: 5000
+  responseTimeCritical: 10000
+  certificationExpirationWarning: 7
+  certificationExpirationCritical: 3

@@ -17,7 +17,12 @@ spec:
     metadata:
       labels:
         app: mahiron
+        agent.mackerel.starry.blue/inject: "true"
+      annotations:
+        agent.mackerel.starry.blue/apikey-secret-name: mackerel-apikey
+        agent.mackerel.starry.blue/roles: Ggrel-DTV:mahiron
     spec:
+      serviceAccountName: mahiron
       containers:
         - name: mahiron
           image: ghcr.io/rokoucha/mahiron:2026.1003.134634-nightly

@@ -1,0 +1,15 @@
+apiVersion: mackerel.starry.blue/v1alpha1
+kind: ExternalMonitor
+
+metadata:
+  name: mastodon
+
+spec:
+  name: Mastodon/Rokoucha
+  service: Ggrel
+  url: https://ma.rokoucha.net
+  followRedirect: true
+  maxCheckAttempts: 3
+  responseTimeDuration: 3
+  responseTimeWarning: 5000
+  responseTimeCritical: 10000
