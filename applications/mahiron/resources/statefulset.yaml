@@ -25,7 +25,7 @@ spec:
       serviceAccountName: mahiron
       containers:
         - name: mahiron
-          image: ghcr.io/rokoucha/mahiron:2026.1005.111057-nightly
+          image: ghcr.io/rokoucha/mahiron:2026.1007.023721-nightly
           resources:
             requests:
               cpu: 400m
