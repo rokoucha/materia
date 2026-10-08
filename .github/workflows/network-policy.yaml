@@ -16,7 +16,7 @@ jobs:
       - uses: azure/setup-kubectl@v4
         with:
           version: v1.37.1
-      - uses: azure/setup-helm@v4
+      - uses: azure/setup-helm@v5
         with:
           version: v3.19.0
       - name: Install yq
