@@ -12,7 +12,6 @@ spec:
         values:
           - 1password
           - actions-runner
-          - apcupsd
           - argocd
           - authentik
           - cert-manager
@@ -33,7 +32,6 @@ spec:
           - otel-external
           - prometheus-operator
           - redis-operator
-          - switchbot-meter-exporter
           - synology-csi
           - tailscale
           - teamspeak
