@@ -114,8 +114,8 @@ spec:
           max_elapsed_time: 60s
         sending_queue:
           sizer: bytes
-          queue_size: 8388608
-          num_consumers: 2
+          queue_size: 67108864
+          num_consumers: 4
           block_on_overflow: false
           wait_for_result: false
           batch:

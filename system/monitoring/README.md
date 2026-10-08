@@ -6,13 +6,15 @@
 
 | Collector | キュー容量（exporter・signal ごと） |
 | --- | --- |
-| gateway | 8 MiB |
+| gateway | Prometheus 64 MiB、その他 8 MiB |
 | external | 4 MiB |
 | agent | 4 MiB |
 | clusteragent | 2 MiB |
 
 容量は `sending_queue.sizer: bytes` によるシリアライズ後のサイズで、ヒープ使用量そのものではない。
-各キューは非同期・非ブロッキングとし、送信処理は2並列、1バッチは最大512 KiBに制限する。
+各キューは非同期・非ブロッキングとし、送信処理は Gateway の Prometheus が4並列、
+その他は2並列、1バッチは最大512 KiBに制限する。
+Prometheus 向けはクラスタ全体のスクレイプが集中する瞬間の入力を吸収できる容量にする。
 再送期限は Mackerel が30秒、その他は60秒、1回の送信タイムアウトは5秒。
 Mackerel は最大5秒、その他は最大1秒待ってバッチをまとめる。
 
