@@ -1,0 +1,53 @@
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: default-deny-egress
+spec:
+  endpointSelector:
+    matchExpressions:
+      - key: k8s:io.kubernetes.pod.namespace
+        operator: Exists
+      - key: k8s:io.kubernetes.pod.namespace
+        operator: NotIn
+        values:
+          - 1password
+          - actions-runner
+          - apcupsd
+          - argocd
+          - authentik
+          - cert-manager
+          - cloudflare-ddns
+          - cnpg-system
+          - cosense-cli-mcp
+          - descheduler
+          - docker-registry-secrets
+          - elastic-system
+          - external-dns
+          - grafana
+          - haproxy-controller
+          - influxdb
+          - kube-system
+          - loki
+          - mackerel-operator
+          - mahiron
+          - mastodon
+          - miniflux
+          - mirakurun
+          - monitoring
+          - nginx
+          - opentelemetry-operator-system
+          - otel-external
+          - prometheus
+          - prometheus-operator
+          - redis-operator
+          - sophie
+          - switchbot-meter-exporter
+          - synology-csi
+          - tailscale
+          - teamspeak
+          - tempo
+  enableDefaultDeny:
+    egress: true
+    ingress: false
+  egress:
+    - {}

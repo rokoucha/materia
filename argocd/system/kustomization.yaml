@@ -22,6 +22,7 @@ resources:
   - ./mackerel-operator.yaml
   - ./metrics-server.yaml
   - ./monitoring.yaml
+  - ./network-policy.yaml
   - ./opentelemetry-operator.yaml
   - ./prometheus-operator.yaml
   - ./redis-operator.yaml

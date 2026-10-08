@@ -1,0 +1,38 @@
+name: Network policy
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  network-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: azure/setup-kubectl@v4
+        with:
+          version: v1.37.1
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.19.0
+      - name: Install yq
+        run: |
+          curl -fsSL https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64 -o "$RUNNER_TEMP/yq"
+          chmod +x "$RUNNER_TEMP/yq"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+      - name: Test validator
+        run: python3 -m unittest discover -s tests -p 'network_policy_*.py'
+      - name: Render manifests
+        run: python3 scripts/render-network-policy.py "$RUNNER_TEMP/network-policy"
+      - name: Check policy and exceptions
+        env:
+          POLICY_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          REVIEWED_RISK_CHANGES: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'network-policy-exception-reviewed') }}
+        run: |
+          args=()
+          if [[ "$REVIEWED_RISK_CHANGES" == true ]]; then args+=(--reviewed-risk-changes); fi
+          python3 scripts/check-network-policy.py --base "$POLICY_BASE" "${args[@]}" "$RUNNER_TEMP/network-policy"/*.yaml
