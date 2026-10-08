@@ -29,6 +29,12 @@ DNS や外部 HTTPS の全体許可は置かない。必要な送信元に明示
 API server、operator、webhook、LAN/UDP、外部公開、OIDC の折り返しも実経路で検証する。
 Sophie の許可は `rokoucha/sophie` の `infrastructure/sophie` で管理する。
 
+## 移行済みの範囲
+
+受信は nginx、Miniflux、cosense-cli-mcp、Grafana が移行済み。送信は引き続き移行待ち。
+Cosense MCP と Grafana は HAProxy Ingress Pod から TCP 3000 のみ許可し、
+直接の監視受信は現在設定がないため許可しない。
+
 ## Git の検査
 
 Python 3、kubectl、Helm、yq v4 が必要。全 system/applications の Kustomize・Helm 生成結果を
