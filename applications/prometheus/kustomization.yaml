@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: prometheus
 
 resources:
+  - ./network-policy.yaml
   - ./resources/namespace.yaml
   - ./resources/prometheus-persistent-volume-claim.yaml
   - ./resources/prometheus-persistent-volume.yaml

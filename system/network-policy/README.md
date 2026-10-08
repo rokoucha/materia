@@ -35,6 +35,11 @@ Sophie の許可は `rokoucha/sophie` の `infrastructure/sophie` で管理す�
 Cosense MCP と Grafana は HAProxy Ingress Pod から TCP 3000 のみ許可し、
 直接の監視受信は現在設定がないため許可しない。
 
+Prometheus は OTel gateway・外部 OTel collector・Grafana から TCP 9090、
+Loki gateway は同じ送信元から TCP 8080 を許可する。Loki 本体は gateway から
+TCP 3100 と同じ single-binary Pod 間の TCP 3100/9095・TCP/UDP 7946 のみ許可する。
+Tempo は両 OTel collector から TCP 4317、Grafana から TCP 3200 のみ許可する。
+
 ## Git の検査
 
 Python 3、kubectl、Helm、yq v4 が必要。全 system/applications の Kustomize・Helm 生成結果を
