@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: switchbot-meter-exporter
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/deployment.yaml
   - ./resources/monitor.yaml
   - ./resources/namespace.yaml
