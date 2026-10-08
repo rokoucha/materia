@@ -133,11 +133,15 @@ try:
                     return sum(value for key, value in values.items() if key.startswith('otelcol_exporter_enqueue_failed_') and 'exporter="' + exporter + '"' in key)
                 failures_before = enqueue_failures(metrics(ports['8888/tcp']))
                 with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-                    for _ in range(35):
+                    for iteration in range(256):
                         futures = [executor.submit(send, ports['4318/tcp'], signal) for signal in ['metrics', 'logs', 'traces']]
                         for future in futures:
                             future.result()
-                        time.sleep(.2)
+                        time.sleep(.05)
+                        if (iteration + 1) % 10 == 0 and enqueue_failures(metrics(ports['8888/tcp'])) > failures_before:
+                            break
+                    else:
+                        raise AssertionError('Test did not fill a queue')
                     middle = {backend: metrics(url) for backend, (_, url) in sinks.items() if backend != failed}
                     for _ in range(10):
                         futures = [executor.submit(send, ports['4318/tcp'], signal) for signal in ['metrics', 'logs', 'traces']]
