@@ -8,6 +8,7 @@ resources:
   - ./resources/ingress.yaml
   - ./resources/miniflux-secrets.yaml
   - ./resources/namespace.yaml
+  - ./resources/network-policy.yaml
   - ./resources/persistent-volume.yaml
   - ./resources/persistent-volume-claim.yaml
   - ./resources/postgresql.yaml
