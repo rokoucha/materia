@@ -1,0 +1,42 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kube-system
+
+helmCharts:
+  - name: kubelet-csr-approver
+    releaseName: kubelet-csr-approver
+    namespace: kube-system
+    version: 1.2.15
+    repo: https://postfinance.github.io/kubelet-csr-approver
+    valuesFile: ./values.yaml
+
+patches:
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /spec/template/spec/hostAliases
+        # Use node addresses; management DNS returns a Talos-specific IPv6 address.
+        value:
+          - ip: 172.16.2.21
+            hostnames: [hydrogen]
+          - ip: 240b:10:3f6d:1402:da9e:f3ff:fe9d:854e
+            hostnames: [hydrogen]
+          - ip: 172.16.2.22
+            hostnames: [lithium]
+          - ip: 240b:10:3f6d:1402:6e4b:90ff:feef:5391
+            hostnames: [lithium]
+          - ip: 172.16.2.23
+            hostnames: [phosphorus]
+          - ip: 240b:10:3f6d:1402:1e69:7aff:fea4:f698
+            hostnames: [phosphorus]
+  - target:
+      kind: Job
+      name: kubelet-csr-approver-test-connection
+    patch: |-
+      $patch: delete
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        name: kubelet-csr-approver-test-connection

@@ -18,7 +18,9 @@ resources:
   - ./gpu-device-plugins.yaml
   - ./github-actions-runner.yaml
   - ./haproxy-ingress.yaml
+  - ./kubelet-csr-approver.yaml
   - ./mackerel-operator.yaml
+  - ./metrics-server.yaml
   - ./monitoring.yaml
   - ./opentelemetry-operator.yaml
   - ./prometheus-operator.yaml

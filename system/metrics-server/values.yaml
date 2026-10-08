@@ -1,0 +1,9 @@
+args:
+  - --kubelet-certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+apiService:
+  insecureSkipTLSVerify: false
+
+tls:
+  type: cert-manager
+  clusterDomain: materia-cluster.ggrel.net
