@@ -6,6 +6,7 @@
 /clusterconfig/
 /kubeconfig
 charts/
+__pycache__/
 talsecret.yaml
 /secrets.yaml
 /output/
