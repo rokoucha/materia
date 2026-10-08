@@ -20,6 +20,7 @@ resources:
   - ./resources/monitor-redis.yaml
   - ./resources/monitor-streaming.yaml
   - ./resources/namespace.yaml
+  - ./resources/network-policy.yaml
   - ./resources/elasticsearch-persistent-volume.yaml
   - ./resources/elasticsearch-persistent-volume-claim.yaml
   - ./resources/persistent-volume.yaml
