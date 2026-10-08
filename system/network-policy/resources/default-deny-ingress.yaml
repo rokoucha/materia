@@ -25,21 +25,18 @@ spec:
           - haproxy-controller
           - influxdb
           - kube-system
-          - loki
           - mackerel-operator
           - mahiron
           - mirakurun
           - monitoring
           - opentelemetry-operator-system
           - otel-external
-          - prometheus
           - prometheus-operator
           - redis-operator
           - switchbot-meter-exporter
           - synology-csi
           - tailscale
           - teamspeak
-          - tempo
   enableDefaultDeny:
     ingress: true
     egress: false
