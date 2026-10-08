@@ -7,6 +7,7 @@ resources:
   - ./resources/deployment.yaml
   - ./resources/ingress.yaml
   - ./resources/namespace.yaml
+  - ./resources/network-policy.yaml
   - ./resources/secrets.yaml
   - ./resources/service.yaml
   - ./resources/tls.yaml
