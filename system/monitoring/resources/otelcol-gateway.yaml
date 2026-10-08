@@ -23,7 +23,10 @@ spec:
                 - targets: ["0.0.0.0:8888"]
 
     processors:
-      batch: {}
+      batch:
+        send_batch_size: 1024
+        send_batch_max_size: 1024
+        timeout: 1s
       memory_limiter:
         check_interval: 1s
         limit_mib: 1000
@@ -85,15 +88,75 @@ spec:
         error_mode: ignore
         log_statements:
           - delete_key(log.attributes, "_sample_key")
+      batch/mackerel_logs:
+        send_batch_size: 1024
+        send_batch_max_size: 1024
+        timeout: 1s
     exporters:
-      mackerel_otlp: {}
+      mackerel_otlp:
+        timeout: 5s
+        retry_on_failure:
+          max_elapsed_time: 30s
+        sending_queue:
+          sizer: bytes
+          queue_size: 8388608
+          num_consumers: 2
+          block_on_overflow: false
+          wait_for_result: false
+          batch:
+            sizer: bytes
+            min_size: 65536
+            max_size: 524288
+            flush_timeout: 5s
       otlp_http/prometheus:
+        timeout: 5s
+        retry_on_failure:
+          max_elapsed_time: 60s
+        sending_queue:
+          sizer: bytes
+          queue_size: 8388608
+          num_consumers: 2
+          block_on_overflow: false
+          wait_for_result: false
+          batch:
+            sizer: bytes
+            min_size: 65536
+            max_size: 524288
+            flush_timeout: 1s
         metrics_endpoint: http://prometheus-operated.prometheus.svc.materia-cluster.ggrel.net:9090/api/v1/otlp/v1/metrics
       otlp_http/loki:
+        timeout: 5s
+        retry_on_failure:
+          max_elapsed_time: 60s
+        sending_queue:
+          sizer: bytes
+          queue_size: 8388608
+          num_consumers: 2
+          block_on_overflow: false
+          wait_for_result: false
+          batch:
+            sizer: bytes
+            min_size: 65536
+            max_size: 524288
+            flush_timeout: 1s
         endpoint: http://loki-gateway.loki.svc.materia-cluster.ggrel.net/otlp
         tls:
           insecure: true
       otlp_grpc/tempo:
+        timeout: 5s
+        retry_on_failure:
+          max_elapsed_time: 60s
+        sending_queue:
+          sizer: bytes
+          queue_size: 8388608
+          num_consumers: 2
+          block_on_overflow: false
+          wait_for_result: false
+          batch:
+            sizer: bytes
+            min_size: 65536
+            max_size: 524288
+            flush_timeout: 1s
         endpoint: tempo.tempo.svc.materia-cluster.ggrel.net:4317
         tls:
           insecure: true
@@ -161,6 +224,7 @@ spec:
             - transform/add_sample_key
             - probabilistic_sampler/logs
             - transform/remove_sample_key
+            - batch/mackerel_logs
           exporters:
             - mackerel_otlp
   envFrom:
