@@ -6,7 +6,6 @@
     "ingress": [
       "1password",
       "actions-runner",
-      "apcupsd",
       "argocd",
       "authentik",
       "cert-manager",
@@ -27,7 +26,6 @@
       "otel-external",
       "prometheus-operator",
       "redis-operator",
-      "switchbot-meter-exporter",
       "synology-csi",
       "tailscale",
       "teamspeak"
