@@ -23,6 +23,7 @@ chmod +x "${OP_BIN}"
 
 for node in hydrogen lithium phosphorus; do
   config="${TALOS_OUT_DIR}/materia-cluster-${node}.yaml"
+  "${YQ_BIN}" -e 'select(.kind == "KubeletConfig") | .config.serverTLSBootstrap == true' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.kind == "UnattendedInstallConfig") | .installer.image | test("^factory.talos.dev/metal-installer-secureboot/[a-f0-9]{64}:v[0-9.]+$")' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.kind == "UnattendedInstallConfig") | .provisioning.diskSelector.match == "disk.transport == \"nvme\""' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.kind == "KubeNetworkConfig") | .nodeCIDRMaskSizeIPv6 == 120 and .podSubnets[1] == "fd00::/108"' "${config}" >/dev/null
