@@ -28,7 +28,6 @@ spec:
           - loki
           - mackerel-operator
           - mahiron
-          - mastodon
           - mirakurun
           - monitoring
           - opentelemetry-operator-system
@@ -36,7 +35,6 @@ spec:
           - prometheus
           - prometheus-operator
           - redis-operator
-          - sophie
           - switchbot-meter-exporter
           - synology-csi
           - tailscale
