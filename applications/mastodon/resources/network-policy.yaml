@@ -1,0 +1,222 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: web
+spec:
+  podSelector:
+    matchLabels:
+      app: web
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: haproxy-controller
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: haproxy-ingress
+              app.kubernetes.io/name: kubernetes-ingress
+      ports:
+        - port: 3000
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: streaming
+spec:
+  podSelector:
+    matchLabels:
+      app: streaming
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: haproxy-controller
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: haproxy-ingress
+              app.kubernetes.io/name: kubernetes-ingress
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: monitoring.otelcol-gateway
+              app.kubernetes.io/component: opentelemetry-collector
+      ports:
+        - port: 4000
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgresql
+spec:
+  podSelector:
+    matchLabels:
+      cnpg.io/cluster: postgresql
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - web
+                  - sidekiq
+                  - streaming
+                  - maintenance
+        - podSelector:
+            matchLabels:
+              batch.kubernetes.io/job-name: mastodon-migration
+        - podSelector:
+            matchLabels:
+              batch.kubernetes.io/job-name: mastodon-deploy-search
+      ports:
+        - port: 5432
+          protocol: TCP
+    - from:
+        - podSelector:
+            matchLabels:
+              cnpg.io/cluster: postgresql
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cnpg-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: cloudnative-pg
+      ports:
+        - port: 5432
+          protocol: TCP
+        - port: 8000
+          protocol: TCP
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: monitoring.otelcol-gateway
+              app.kubernetes.io/component: opentelemetry-collector
+      ports:
+        - port: 9187
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - web
+                  - sidekiq
+                  - streaming
+                  - maintenance
+        - podSelector:
+            matchLabels:
+              batch.kubernetes.io/job-name: mastodon-deploy-search
+        - podSelector:
+            matchLabels:
+              app: redis
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: redis-operator
+          podSelector:
+            matchLabels:
+              name: redis-operator
+      ports:
+        - port: 6379
+          protocol: TCP
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: monitoring.otelcol-gateway
+              app.kubernetes.io/component: opentelemetry-collector
+      ports:
+        - port: 9121
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: elasticsearch
+spec:
+  podSelector:
+    matchLabels:
+      elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - web
+                  - sidekiq
+                  - maintenance
+                  - elastic-exporter
+        - podSelector:
+            matchLabels:
+              batch.kubernetes.io/job-name: mastodon-deploy-search
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: elastic-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: elastic-operator
+              app.kubernetes.io/instance: elastic-operator
+      ports:
+        - port: 9200
+          protocol: TCP
+    - from:
+        - podSelector:
+            matchLabels:
+              elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+      ports:
+        - port: 9300
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: elastic-exporter
+spec:
+  podSelector:
+    matchLabels:
+      app: elastic-exporter
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: monitoring.otelcol-gateway
+              app.kubernetes.io/component: opentelemetry-collector
+      ports:
+        - port: 9114
+          protocol: TCP
