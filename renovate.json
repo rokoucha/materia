@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", ":dependencyDashboard"],
+  "extends": ["config:recommended", ":dependencyDashboard", "helpers:pinGitHubActionDigests"],
   "minimumReleaseAge": "1 day",
   "minimumReleaseAgeBehaviour": "timestamp-optional",
   "kubernetes": {
@@ -116,6 +116,10 @@
       "matchDatasources": ["helm"],
       "matchPackageNames": ["descheduler"],
       "allowedVersions": "<0.36.0"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "rangeStrategy": "pin"
     }
   ]
 }
