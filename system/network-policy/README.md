@@ -40,6 +40,12 @@ Loki gateway は同じ送信元から TCP 8080 を許可する。Loki 本体は 
 TCP 3100 と同じ single-binary Pod 間の TCP 3100/9095・TCP/UDP 7946 のみ許可する。
 Tempo は両 OTel collector から TCP 4317、Grafana から TCP 3200 のみ許可する。
 
+apcupsd は同じ Namespace の exporter から TCP 3551 のみ、apcupsd exporter は
+OTel gateway から TCP 9162、SwitchBot exporter は同じ gateway から TCP 8888 のみ許可する。
+
+InfluxDB は LAN の NAT 送信元 `172.16.2.1` と NodePort のノード間 SNAT を考慮して
+公開経路を整理してから移行する。SNAT 後のノードアドレスを広く許可して回避しない。
+
 ## Git の検査
 
 Python 3、kubectl、Helm、yq v4 が必要。全 system/applications の Kustomize・Helm 生成結果を

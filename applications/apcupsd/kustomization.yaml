@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: apcupsd
 
 resources:
+  - ./resources/network-policy.yaml
   - resources/namespace.yaml
   - resources/configmap.yaml
   - resources/apcupsd.yaml
