@@ -9,9 +9,7 @@
       "authentik",
       "haproxy-controller",
       "influxdb",
-      "kube-system",
-      "synology-csi",
-      "tailscale"
+      "kube-system"
     ],
     "egress": [
       "1password",
