@@ -31,3 +31,8 @@ patches:
   - path: ./patches/argocd-redis-resources.yaml
   - path: ./patches/argocd-repo-server.yaml
   - path: ./patches/argocd-secret.yaml
+  - path: ./patches/argocd-application-controller-network-policy.yaml
+  - path: ./patches/argocd-applicationset-controller-network-policy.yaml
+  - path: ./patches/argocd-notifications-controller-network-policy.yaml
+  - path: ./patches/argocd-server-network-policy.yaml
+  - path: ./patches/argocd-repo-server-network-policy.yaml
