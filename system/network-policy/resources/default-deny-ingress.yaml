@@ -25,9 +25,7 @@ spec:
           - influxdb
           - kube-system
           - mackerel-operator
-          - monitoring
           - opentelemetry-operator-system
-          - otel-external
           - prometheus-operator
           - redis-operator
           - synology-csi
