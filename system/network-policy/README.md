@@ -160,3 +160,8 @@ Service を追加する場合は必要な受信経路を先に許可する。
 HAProxy の ValidationRules を変更した際は values.yaml の
 validation-rules-revision も更新し、DaemonSet の順次更新後に実経路を確認する。
 controller はこのルールを起動時に読み込むため、CR の同期だけでは反映されない。
+
+authentik は HAProxy から server の TCP 9000、監視 gateway から server/worker
+の TCP 9300 のみ許可する。PostgreSQL は server/worker と DB peer、CNPG operator
+に限定する。outpost の auth/nginx を確認する場合は X-Original-URL を必ず付ける。
+ヘッダーなしの直接アクセスは configuration_error と通知を発生させる。

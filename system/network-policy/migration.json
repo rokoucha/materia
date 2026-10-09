@@ -5,7 +5,6 @@
   "namespaces": {
     "ingress": [
       "argocd",
-      "authentik",
       "haproxy-controller",
       "influxdb",
       "kube-system"
