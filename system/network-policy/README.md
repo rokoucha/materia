@@ -138,3 +138,9 @@ hostNetwork DaemonSet は Pod の基準外であり、ノード保護は別段�
 
 cert-manager、Elastic、OpenTelemetry operator は API server と remote-node から
 webhook ポートのみ許可する。cert-manager の TCP 9402 は監視 gateway のみ許可する。
+
+webhook を持つ Namespace の移行は2段階で行う。先に許可ポリシーだけをマージし、
+実クラスタへの反映と全 API server からの admission を確認する。その後に移行除外を
+削除する。別 Application の deny が先行すると、Argo の server-side diff 自体が
+webhook 待ちになり、許可ポリシーを同期できなくなる。sync-wave では防げない。
+この状態の復旧では、マージ済みの許可ポリシーを先に直接適用して同期を再開する。
