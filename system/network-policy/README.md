@@ -51,6 +51,13 @@ Mahiron の pix-smb400 gateway は現在の設定で参照されていないた�
 TeamSpeak は外部 `world` identity から UDP 9987 と TCP 10011/30033 のみ許可する。
 ServerQuery も外部で利用し送信元を限定できないため、認証を前提とした公開例外として台帳管理する。
 
+OTel external は HAProxy から TCP 4317/4318 のみ許可する。内部 gateway は
+agent・clusteragent・external から TCP 4317、Mahiron・Sophie server/workers・Mastodon の
+アプリ/保守/デプロイ Job から TCP 4318 のみ許可する。新規の送信元は明示的に追加する。
+target allocator・kube-state-metrics の TCP 8080、DRM exporter の TCP 8081 は gateway のみ許可する。
+Collector の自己監視は Pod 内のループバックで行い、TCP 8888 の外部許可は置かない。
+node-exporter と Mackerel agent の hostNetwork は、この Pod 向け制限では保護しない。
+
 ## Git の検査
 
 Python 3、kubectl、Helm、yq v4 が必要。全 system/applications の Kustomize・Helm 生成結果を

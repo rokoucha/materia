@@ -24,6 +24,7 @@ helmCharts:
     valuesFile: ./values-node-exporter.yaml
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/mackerel-agent-sa.yaml
   - ./resources/mackerel-agent.yaml
   - ./resources/mackerel-apikey.yaml

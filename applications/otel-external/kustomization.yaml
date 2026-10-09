@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: otel-external
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/namespace.yaml
   - ./resources/otelcol-external-grpc-ingress.yaml
   - ./resources/otelcol-external-ingress.yaml
