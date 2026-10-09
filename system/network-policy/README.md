@@ -169,3 +169,9 @@ authentik は HAProxy から server の TCP 9000、監視 gateway から server/
 argocd は upstream の広い受信許可をパッチで置換する。server API は HAProxy、
 metrics は監視 gateway、repo-server/Redis は必要な同じ Namespace のクライアント
 に限定し、未公開の ApplicationSet webhook は受信を許可しない。
+
+受信の移行除外は InfluxDB のみ。HAProxy は公開 HTTP/HTTPS/QUIC と gateway の
+監視だけを許可し、kube-system はクラスタ DNS、HAProxy→Hubble UI→relay、
+API server/remote-node→Metrics Server の経路だけを許可する。CoreDNS の監視と
+未監視の補助コンポーネントには Pod からの受信許可を追加しない。
+送信の既存 Namespace の移行除外は残り、hostNetwork/ノードの保護は別段階。
