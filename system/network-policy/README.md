@@ -165,3 +165,7 @@ authentik は HAProxy から server の TCP 9000、監視 gateway から server/
 の TCP 9300 のみ許可する。PostgreSQL は server/worker と DB peer、CNPG operator
 に限定する。outpost の auth/nginx を確認する場合は X-Original-URL を必ず付ける。
 ヘッダーなしの直接アクセスは configuration_error と通知を発生させる。
+
+argocd は upstream の広い受信許可をパッチで置換する。server API は HAProxy、
+metrics は監視 gateway、repo-server/Redis は必要な同じ Namespace のクライアント
+に限定し、未公開の ApplicationSet webhook は受信を許可しない。
