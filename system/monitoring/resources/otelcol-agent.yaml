@@ -5,6 +5,8 @@ metadata:
   name: otelcol-agent
 
 spec:
+  networkPolicy:
+    enabled: false
   config:
     receivers:
       filelog:

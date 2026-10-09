@@ -5,6 +5,8 @@ metadata:
   name: otelcol-gateway
 
 spec:
+  networkPolicy:
+    enabled: false
   config:
     receivers:
       otlp:

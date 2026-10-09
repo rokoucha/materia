@@ -90,6 +90,9 @@ def risks(obj):
                         bounded = bool(rule.get("ports")) and all(port.get("port") for port in rule["ports"])
                     if broad or not bounded:
                         found["broad-" + direction] = rule_spec
+    if kind == "OpenTelemetryCollector" and spec.get("networkPolicy", {}).get("enabled") is True:
+        # The operator-generated policy opens receiver ports to every source.
+        found["operator-network-policy"] = spec["networkPolicy"]
     pod = None
     if kind == "Pod":
         pod = spec
