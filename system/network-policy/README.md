@@ -156,3 +156,7 @@ API server proxy は無効で、現在生成 proxy はない。今後 proxy/Conn
 actions-runner は外部からの受信許可を持たない。runner は GitHub への送信で
 ジョブを取得し、同じ Pod 内の localhost 通信は継続する。今後別 Pod のテスト用
 Service を追加する場合は必要な受信経路を先に許可する。
+
+HAProxy の ValidationRules を変更した際は values.yaml の
+validation-rules-revision も更新し、DaemonSet の順次更新後に実経路を確認する。
+controller はこのルールを起動時に読み込むため、CR の同期だけでは反映されない。

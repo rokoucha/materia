@@ -6,6 +6,10 @@ controller:
   # Keep ingress available through a single-node failure.
   kind: DaemonSet
 
+  # Custom validation rules are loaded when the controller starts.
+  podAnnotations: |
+    materia.ggrel.net/validation-rules-revision: "2"
+
   extraArgs:
     - --custom-validation-rules=haproxy-controller/materia-annotations
 
