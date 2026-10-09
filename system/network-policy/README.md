@@ -60,6 +60,11 @@ Collector は `spec.networkPolicy.enabled: false` とし、Operator の全送信
 CI は明示的な再有効化もリスクとして検出する。既存の生成済みポリシーは削除を確認する。
 node-exporter と Mackerel agent の hostNetwork は、この Pod 向け制限では保護しない。
 
+CloudNativePG は Cilium の `kube-apiserver` identity から TCP 9443 の webhook、
+CloudNativePG・Redis operator の TCP 8080 は OTel gateway の監視のみ許可する。
+Prometheus・Mackerel operator は現在の設定に外部からの受信経路がなく、許可を追加しない。
+ノードからのヘルスチェックと各 controller の送信・API watch は維持する。
+
 ## Git の検査
 
 Python 3、kubectl、Helm、yq v4 が必要。全 system/applications の Kustomize・Helm 生成結果を
