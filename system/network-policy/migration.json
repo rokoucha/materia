@@ -8,12 +8,9 @@
       "actions-runner",
       "argocd",
       "authentik",
-      "cert-manager",
-      "elastic-system",
       "haproxy-controller",
       "influxdb",
       "kube-system",
-      "opentelemetry-operator-system",
       "synology-csi",
       "tailscale"
     ],
