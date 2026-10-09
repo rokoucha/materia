@@ -1,0 +1,21 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: cluster-dns
+  namespace: kube-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:k8s-app: kube-dns
+  enableDefaultDeny:
+    ingress: true
+    egress: false
+  ingress:
+    - fromEntities:
+        - cluster
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
