@@ -4,7 +4,6 @@
   "exitCriteria": "Install explicit allows and verify functionality, IPv4/IPv6 connectivity and generated workloads before removing a Namespace.",
   "namespaces": {
     "ingress": [
-      "argocd",
       "haproxy-controller",
       "influxdb",
       "kube-system"
