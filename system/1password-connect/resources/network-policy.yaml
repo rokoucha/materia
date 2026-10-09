@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: connect-api
+  namespace: 1password
+spec:
+  podSelector:
+    matchLabels:
+      app: onepassword-connect
+      app.kubernetes.io/component: connect
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              name: onepassword-connect
+              app.kubernetes.io/component: operator
+      ports:
+        - port: 8080
+          protocol: TCP

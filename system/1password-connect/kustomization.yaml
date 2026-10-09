@@ -17,6 +17,7 @@ helmCharts:
         enableAnnotations: true
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/namespace.yaml
   - ./resources/onepassword-token.yaml
   - ./resources/op-credentials.yaml
