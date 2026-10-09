@@ -144,3 +144,6 @@ webhook を持つ Namespace の移行は2段階で行う。先に許可ポリシ
 削除する。別 Application の deny が先行すると、Argo の server-side diff 自体が
 webhook 待ちになり、許可ポリシーを同期できなくなる。sync-wave では防げない。
 この状態の復旧では、マージ済みの許可ポリシーを先に直接適用して同期を再開する。
+
+1password は同じ Namespace の Connect operator から Connect API の TCP 8080
+のみ許可する。sync と bus は同一 Pod 内で通信し、operator は受信許可を持たない。
