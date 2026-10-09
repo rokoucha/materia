@@ -31,7 +31,7 @@ Sophie の許可は `rokoucha/sophie` の `infrastructure/sophie` で管理す�
 
 ## 移行済みの範囲
 
-受信は nginx、Miniflux、cosense-cli-mcp、Grafana、Mastodon、Sophie、Prometheus、Loki、Tempo、apcupsd、SwitchBot exporter、Mahiron、Mirakurun、TeamSpeak、monitoring、otel-external が移行済み。送信は引き続き移行待ち。
+受信は nginx、Miniflux、cosense-cli-mcp、Grafana、Mastodon、Sophie、Prometheus、Loki、Tempo、apcupsd、SwitchBot exporter、Mahiron、Mirakurun、TeamSpeak、monitoring、otel-external、CloudNativePG・Redis・Prometheus・Mackerel operator が移行済み。送信は引き続き移行待ち。
 Cosense MCP と Grafana は HAProxy Ingress Pod から TCP 3000 のみ許可し、
 直接の監視受信は現在設定がないため許可しない。
 
@@ -60,8 +60,10 @@ Collector は `spec.networkPolicy.enabled: false` とし、Operator の全送信
 CI は明示的な再有効化もリスクとして検出する。既存の生成済みポリシーは削除を確認する。
 node-exporter と Mackerel agent の hostNetwork は、この Pod 向け制限では保護しない。
 
-CloudNativePG は Cilium の `kube-apiserver` identity から TCP 9443 の webhook、
+CloudNativePG は `kube-apiserver` / `remote-node` identity から TCP 9443 の webhook、
 CloudNativePG・Redis operator の TCP 8080 は OTel gateway の監視のみ許可する。
+API server の別ノードからの経路は `remote-node` として見えるため、ノードからの webhook を許可する。
+ノード上のプロセスの区別は、この Pod 向けポリシーでは行わない。
 Prometheus・Mackerel operator は現在の設定に外部からの受信経路がなく、許可を追加しない。
 ノードからのヘルスチェックと各 controller の送信・API watch は維持する。
 
