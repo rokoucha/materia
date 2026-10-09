@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: mahiron
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/authentik-proxy-service.yaml
   - ./resources/config.yaml
   - ./resources/ingress.yaml

@@ -46,6 +46,11 @@ OTel gateway から TCP 9162、SwitchBot exporter は同じ gateway から TCP 8
 InfluxDB は LAN の NAT 送信元 `172.16.2.1` と NodePort のノード間 SNAT を考慮して
 公開経路を整理してから移行する。SNAT 後のノードアドレスを広く許可して回避しない。
 
+Mahiron・Mirakurun は HAProxy Ingress Pod から TCP 40772 のみ許可する。
+Mahiron の pix-smb400 gateway は現在の設定で参照されていないため、受信許可を追加しない。
+TeamSpeak は外部 `world` identity から UDP 9987 と TCP 10011/30033 のみ許可する。
+ServerQuery も外部で利用し送信元を限定できないため、認証を前提とした公開例外として台帳管理する。
+
 ## Git の検査
 
 Python 3、kubectl、Helm、yq v4 が必要。全 system/applications の Kustomize・Helm 生成結果を

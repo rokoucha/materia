@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: mirakurun
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/config.yaml
   - ./resources/authentik-proxy-service.yaml
   - ./resources/statefulset.yaml
