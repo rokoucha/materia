@@ -25,8 +25,6 @@ spec:
           - influxdb
           - kube-system
           - mackerel-operator
-          - mahiron
-          - mirakurun
           - monitoring
           - opentelemetry-operator-system
           - otel-external
@@ -34,7 +32,6 @@ spec:
           - redis-operator
           - synology-csi
           - tailscale
-          - teamspeak
   enableDefaultDeny:
     ingress: true
     egress: false
