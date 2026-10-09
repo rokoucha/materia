@@ -16,8 +16,6 @@ spec:
           - haproxy-controller
           - influxdb
           - kube-system
-          - synology-csi
-          - tailscale
   enableDefaultDeny:
     ingress: true
     egress: false

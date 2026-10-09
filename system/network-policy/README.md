@@ -147,3 +147,8 @@ webhook 待ちになり、許可ポリシーを同期できなくなる。sync-w
 
 1password は同じ Namespace の Connect operator から Connect API の TCP 8080
 のみ許可する。sync と bus は同一 Pod 内で通信し、operator は受信許可を持たない。
+
+tailscale と synology-csi は通常 Pod の受信許可を持たない。Tailscale operator の
+API server proxy は無効で、現在生成 proxy はない。今後 proxy/Connector を追加する
+際は必要な経路を先に許可する。Synology CSI の全既存 Pod は hostNetwork のため
+今回の受信制限では保護されず、Host Firewall の別段階で扱う。
