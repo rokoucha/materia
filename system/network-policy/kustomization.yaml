@@ -3,3 +3,8 @@ kind: Kustomization
 resources:
   - ./resources/default-deny-ingress.yaml
   - ./resources/default-deny-egress.yaml
+  - ./resources/public-ingress.yaml
+  - ./resources/cluster-dns.yaml
+  - ./resources/metrics-api.yaml
+  - ./resources/hubble-ui.yaml
+  - ./resources/hubble-relay.yaml

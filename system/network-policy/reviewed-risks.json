@@ -1,4 +1,9 @@
 {
+  "CiliumNetworkPolicy:kube-system:cluster-dns:broad-ingress": {
+    "owner": "rokoucha",
+    "reason": "Cluster DNS must serve every Pod and node, including new Namespaces and hostNetwork clients. Only TCP/UDP 53 from cluster identities; no world access or unrestricted metrics.",
+    "sha256": "824e5af3ee4229176d502d9b540bf1568a9b19e0bc11a3ec921549782ccd4e78"
+  },
   "CiliumNetworkPolicy:teamspeak:teamspeak:broad-ingress": {
     "owner": "rokoucha",
     "reason": "Public TeamSpeak voice, file transfer and authenticated ServerQuery. Owner confirmed that ServerQuery source IPs cannot be restricted. Only external world identities on UDP 9987 and TCP 10011/30033; no blanket Pod access.",
@@ -68,6 +73,11 @@
     "owner": "rokoucha",
     "reason": "Existing infrastructure or device networking privilege; Pod policies do not protect this path.",
     "sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+  },
+  "NetworkPolicy:haproxy-controller:public-ingress:broad-ingress": {
+    "owner": "rokoucha",
+    "reason": "Public HTTP/HTTPS/QUIC entry point, also used by cluster clients via public URLs. Only TCP 8080/8443 and UDP 8443 are public; metrics 1024 are limited to the monitoring gateway.",
+    "sha256": "4f9930ecb17fc9ee3b18c89ebe9d73a2d2b0afa85f926a72d81cc60b0456085e"
   },
   "Pod:kube-system:kube-apiserver-hydrogen:host-network": {
     "owner": "rokoucha",
