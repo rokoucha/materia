@@ -1,0 +1,151 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: otelcol-gateway
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: opentelemetry-collector
+      app.kubernetes.io/instance: monitoring.otelcol-gateway
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/component: opentelemetry-collector
+            matchExpressions:
+              - key: app.kubernetes.io/instance
+                operator: In
+                values:
+                  - monitoring.otelcol-agent
+                  - monitoring.otelcol-clusteragent
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: otel-external
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/component: opentelemetry-collector
+              app.kubernetes.io/instance: otel-external.otelcol-external
+      ports:
+        - port: 4317
+          protocol: TCP
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: mahiron
+          podSelector:
+            matchLabels:
+              app: mahiron
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: sophie
+          podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - sophie-server
+                  - sophie-worker-media
+                  - sophie-worker-ml-cpu
+                  - sophie-worker-ml-gpu
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: mastodon
+          podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - web
+                  - sidekiq
+                  - streaming
+                  - maintenance
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: mastodon
+          podSelector:
+            matchExpressions:
+              - key: batch.kubernetes.io/job-name
+                operator: In
+                values:
+                  - mastodon-migration
+                  - mastodon-deploy-search
+      ports:
+        - port: 4318
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: otelcol-targetallocator
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: opentelemetry-targetallocator
+      app.kubernetes.io/instance: monitoring.otelcol-gateway
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/component: opentelemetry-collector
+              app.kubernetes.io/instance: monitoring.otelcol-gateway
+      ports:
+        - port: 8080
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kube-state-metrics
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: kube-state-metrics
+      app.kubernetes.io/instance: kube-state-metrics
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/component: opentelemetry-collector
+              app.kubernetes.io/instance: monitoring.otelcol-gateway
+      ports:
+        - port: 8080
+          protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: drm-exporter
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: drm-exporter
+      app.kubernetes.io/instance: drm-exporter
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/component: opentelemetry-collector
+              app.kubernetes.io/instance: monitoring.otelcol-gateway
+      ports:
+        - port: 8081
+          protocol: TCP
