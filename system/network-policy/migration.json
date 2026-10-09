@@ -19,16 +19,13 @@
       "influxdb",
       "kube-system",
       "mackerel-operator",
-      "mahiron",
-      "mirakurun",
       "monitoring",
       "opentelemetry-operator-system",
       "otel-external",
       "prometheus-operator",
       "redis-operator",
       "synology-csi",
-      "tailscale",
-      "teamspeak"
+      "tailscale"
     ],
     "egress": [
       "1password",
