@@ -69,31 +69,6 @@
     "reason": "Existing infrastructure or device networking privilege; Pod policies do not protect this path.",
     "sha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
   },
-  "NetworkPolicy:argocd:argocd-application-controller-network-policy:broad-ingress": {
-    "owner": "rokoucha",
-    "reason": "Existing upstream/operator-generated policy; tighten before removing its Namespace migration exclusion.",
-    "sha256": "68a7279d1d548eef72df708d95269c43e25310fc96c030955ce1b139851432a7"
-  },
-  "NetworkPolicy:argocd:argocd-applicationset-controller-network-policy:broad-ingress": {
-    "owner": "rokoucha",
-    "reason": "Existing upstream/operator-generated policy; tighten before removing its Namespace migration exclusion.",
-    "sha256": "e30c2dc4ba4df50936b6f6ab8f28ef4ef6ede4324cac21d7a79fb014f0d4a81b"
-  },
-  "NetworkPolicy:argocd:argocd-notifications-controller-network-policy:broad-ingress": {
-    "owner": "rokoucha",
-    "reason": "Existing upstream/operator-generated policy; tighten before removing its Namespace migration exclusion.",
-    "sha256": "09245efe6a92082a8791490986539acdab8383f95069a92d13e2f080f4294613"
-  },
-  "NetworkPolicy:argocd:argocd-repo-server-network-policy:broad-ingress": {
-    "owner": "rokoucha",
-    "reason": "Existing upstream/operator-generated policy; tighten before removing its Namespace migration exclusion.",
-    "sha256": "06f3fcd02c5fd349608259e28842771f8df8c5b1eee7678ba45277764ae7a794"
-  },
-  "NetworkPolicy:argocd:argocd-server-network-policy:broad-ingress": {
-    "owner": "rokoucha",
-    "reason": "Existing upstream/operator-generated policy; tighten before removing its Namespace migration exclusion.",
-    "sha256": "057d8938c78651e938f78fd5aeadbe64c2fabe8c983fcd9e2dd085d893be4c67"
-  },
   "Pod:kube-system:kube-apiserver-hydrogen:host-network": {
     "owner": "rokoucha",
     "reason": "Existing infrastructure or device networking privilege; Pod policies do not protect this path.",
