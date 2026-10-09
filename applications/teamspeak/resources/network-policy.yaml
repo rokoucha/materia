@@ -1,0 +1,22 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: teamspeak
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: teamspeak
+  enableDefaultDeny:
+    ingress: true
+    egress: false
+  ingress:
+    - fromEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "9987"
+              protocol: UDP
+            - port: "10011"
+              protocol: TCP
+            - port: "30033"
+              protocol: TCP

@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: teamspeak
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/namespace.yaml
   - ./resources/persistent-volume.yaml
   - ./resources/service-load-balancer.yaml

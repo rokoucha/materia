@@ -1,4 +1,9 @@
 {
+  "CiliumNetworkPolicy:teamspeak:teamspeak:broad-ingress": {
+    "owner": "rokoucha",
+    "reason": "Public TeamSpeak voice, file transfer and authenticated ServerQuery. Owner confirmed that ServerQuery source IPs cannot be restricted. Only external world identities on UDP 9987 and TCP 10011/30033; no blanket Pod access.",
+    "sha256": "539d69214c34c1a597a57086fc47fc6acc1189ab2ecaf8ff3389005068591c17"
+  },
   "DaemonSet:apcupsd:apcupsd:network-privileges": {
     "owner": "rokoucha",
     "reason": "Existing infrastructure or device networking privilege; Pod policies do not protect this path.",
