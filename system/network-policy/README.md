@@ -152,3 +152,7 @@ tailscale と synology-csi は通常 Pod の受信許可を持たない。Tailsc
 API server proxy は無効で、現在生成 proxy はない。今後 proxy/Connector を追加する
 際は必要な経路を先に許可する。Synology CSI の全既存 Pod は hostNetwork のため
 今回の受信制限では保護されず、Host Firewall の別段階で扱う。
+
+actions-runner は外部からの受信許可を持たない。runner は GitHub への送信で
+ジョブを取得し、同じ Pod 内の localhost 通信は継続する。今後別 Pod のテスト用
+Service を追加する場合は必要な受信経路を先に許可する。
