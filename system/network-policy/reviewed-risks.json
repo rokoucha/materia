@@ -94,11 +94,6 @@
     "reason": "Existing upstream/operator-generated policy; tighten before removing its Namespace migration exclusion.",
     "sha256": "057d8938c78651e938f78fd5aeadbe64c2fabe8c983fcd9e2dd085d893be4c67"
   },
-  "NetworkPolicy:otel-external:otelcol-external-collector-networkpolicy:broad-ingress": {
-    "owner": "rokoucha",
-    "reason": "Existing upstream/operator-generated policy; tighten before removing its Namespace migration exclusion.",
-    "sha256": "a07807da30fcb13b87b3ae54d3c0c532fbe24ac84e7ab45430198334f9a5d360"
-  },
   "Pod:kube-system:kube-apiserver-hydrogen:host-network": {
     "owner": "rokoucha",
     "reason": "Existing infrastructure or device networking privilege; Pod policies do not protect this path.",

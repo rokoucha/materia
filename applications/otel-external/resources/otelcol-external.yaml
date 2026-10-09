@@ -5,6 +5,8 @@ metadata:
   name: otelcol-external
 
 spec:
+  networkPolicy:
+    enabled: false
   config:
     extensions:
       bearertokenauth:

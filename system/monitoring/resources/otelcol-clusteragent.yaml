@@ -3,6 +3,8 @@ kind: OpenTelemetryCollector
 metadata:
   name: otelcol-clusteragent
 spec:
+  networkPolicy:
+    enabled: false
   config:
     receivers:
       k8s_events: {}

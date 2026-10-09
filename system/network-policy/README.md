@@ -56,6 +56,8 @@ agent・clusteragent・external から TCP 4317、Mahiron・Sophie server/worker
 アプリ/保守/デプロイ Job から TCP 4318 のみ許可する。新規の送信元は明示的に追加する。
 target allocator・kube-state-metrics の TCP 8080、DRM exporter の TCP 8081 は gateway のみ許可する。
 Collector の自己監視は Pod 内のループバックで行い、TCP 8888 の外部許可は置かない。
+Collector は `spec.networkPolicy.enabled: false` とし、Operator の全送信元向け許可を生成しない。
+CI は明示的な再有効化もリスクとして検出する。既存の生成済みポリシーは削除を確認する。
 node-exporter と Mackerel agent の hostNetwork は、この Pod 向け制限では保護しない。
 
 ## Git の検査

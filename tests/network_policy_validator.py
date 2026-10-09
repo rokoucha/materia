@@ -64,6 +64,15 @@ class NetworkPolicyChecks(unittest.TestCase):
         obj["spec"]["containers"][0]["securityContext"]["capabilities"]["add"].append("SYS_ADMIN")
         self.assertNotEqual(before, check.risks(obj))
 
+    def test_operator_generated_all_source_allow_is_reported(self):
+        obj = {"kind": "OpenTelemetryCollector", "metadata": {"name": "external", "namespace": "test"},
+               "spec": {"networkPolicy": {"enabled": True}}}
+        self.assertTrue(check.risks(obj))
+        obj["spec"]["networkPolicy"]["enabled"] = False
+        self.assertFalse(check.risks(obj))
+        obj["spec"].pop("networkPolicy")
+        self.assertFalse(check.risks(obj))
+
     def test_baselines_cannot_be_weakened(self):
         migration = {"owner": "test", "reason": "migration", "exitCriteria": "test allows",
                      "namespaces": {"ingress": ["legacy"], "egress": ["legacy"]}}
