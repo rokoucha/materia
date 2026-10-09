@@ -131,3 +131,7 @@ Git を修正してから同期設定を復元し、共通ポリシーが想定�
 
 Pod の基準は hostNetwork、ノード、Cilium の予約済み identity の保護を代替しない。
 Host Firewall とノードからの通信制御は別段階で設計する。
+
+cloudflare-ddns、descheduler、docker-registry-secrets は受信許可を持たず、
+external-dns は監視 gateway から TCP 7979 のみ許可する。cloudflare-ddns の
+hostNetwork DaemonSet は Pod の基準外であり、ノード保護は別段階で扱う。
