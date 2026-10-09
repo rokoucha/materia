@@ -10,7 +10,6 @@
       "authentik",
       "cert-manager",
       "cloudflare-ddns",
-      "cnpg-system",
       "descheduler",
       "docker-registry-secrets",
       "elastic-system",
@@ -18,10 +17,7 @@
       "haproxy-controller",
       "influxdb",
       "kube-system",
-      "mackerel-operator",
       "opentelemetry-operator-system",
-      "prometheus-operator",
-      "redis-operator",
       "synology-csi",
       "tailscale"
     ],
