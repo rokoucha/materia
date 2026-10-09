@@ -10,7 +10,6 @@ spec:
       - key: k8s:io.kubernetes.pod.namespace
         operator: NotIn
         values:
-          - actions-runner
           - argocd
           - authentik
           - haproxy-controller
