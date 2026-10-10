@@ -31,7 +31,7 @@ Sophie の許可は `rokoucha/sophie` の `infrastructure/sophie` で管理す�
 
 ## 移行済みの範囲
 
-受信は nginx、Miniflux、cosense-cli-mcp、Grafana、Mastodon、Sophie、Prometheus、Loki、Tempo、apcupsd、SwitchBot exporter、Mahiron、Mirakurun、TeamSpeak、monitoring、otel-external、CloudNativePG・Redis・Prometheus・Mackerel operator が移行済み。送信は nginx・Miniflux・Cosense MCP・Grafana が移行済みで、他は移行待ち。
+受信は nginx、Miniflux、cosense-cli-mcp、Grafana、Mastodon、Sophie、Prometheus、Loki、Tempo、apcupsd、SwitchBot exporter、Mahiron、Mirakurun、TeamSpeak、monitoring、otel-external、CloudNativePG・Redis・Prometheus・Mackerel operator が移行済み。送信は nginx・Miniflux・Cosense MCP・Grafana・Loki・Prometheus・Tempo が移行済みで、他は移行待ち。
 Cosense MCP と Grafana は HAProxy Ingress Pod から TCP 3000 のみ許可し、
 直接の監視受信は現在設定がないため許可しない。
 
@@ -107,15 +107,15 @@ DNS/FQDN、外部 HTTP/HTTPS、OIDC 折り返し、API server を確認して削
 Grafana のデータソース検索・ログイン、CNPG の生成 Job と復旧通信も確認する。
 2026-10-10 にこの隔離試験の 157 件がすべて成功した。制限有効化後もデータソース追加・フィード取得エラーと拒否通信を確認する。
 
-## 監視データ保存基盤の送信移行
+## 監視データ保存基盤の送信制限
 
 Prometheus は OTLP 受信専用で直接の scrape・API discovery・remote write を使わず、
 Tempo は単一 Pod・ローカル保存で外部への送信を使わない。この構成に送信許可は追加しない。
 構成を変更するときは必要な通信を確認する。
 
 Loki の送信許可は既存の `applications/loki/network-policy.yaml` にまとめる。
-まず許可を配置し、通常の書き込み・検索とルール sidecar の watch を確認してから
-Loki・Prometheus・Tempo を共通送信制限の除外一覧から削除する。
+PR #1265 で許可を先に配置し、Loki・Prometheus・Tempo は共通の送信制限を使う。
+未知の Pod・Job にも同じ拒否が適用される。
 
 | 送信元 | 許可先 | ポート |
 | --- | --- | --- |
@@ -131,6 +131,7 @@ python3 tests/network-policy-egress-cluster.py --run --apps loki prometheus temp
 
 試験は Loki の宛先・ポート・IPv4/IPv6 と TCP/UDP、DNS/API を検証し、
 Prometheus・Tempo の共通拒否も確認する。単一 Pod 内のループバックは制限しない。
+2026-10-10 にこのグループの隔離試験 106 件がすべて成功した。
 
 ## Git の検査
 
