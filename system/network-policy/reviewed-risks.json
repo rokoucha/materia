@@ -4,6 +4,11 @@
     "reason": "Cluster DNS must serve every Pod and node, including new Namespaces and hostNetwork clients. Only TCP/UDP 53 from cluster identities; no world access or unrestricted metrics.",
     "sha256": "824e5af3ee4229176d502d9b540bf1568a9b19e0bc11a3ec921549782ccd4e78"
   },
+  "CiliumNetworkPolicy:miniflux:miniflux-egress:broad-egress": {
+    "owner": "rokoucha",
+    "reason": "Miniflux fetches user-selected feeds and enclosure URLs on external TCP 80/443. Cilium world excludes cluster identities; database and OIDC hairpin destinations are allowed separately. External/LAN destinations remain reachable on these ports.",
+    "sha256": "9b78696b619ad7b7c3b7d90aa19d239943b9e34c32c53d1705e59ce40a42d2d2"
+  },
   "CiliumNetworkPolicy:teamspeak:teamspeak:broad-ingress": {
     "owner": "rokoucha",
     "reason": "Public TeamSpeak voice, file transfer and authenticated ServerQuery. Owner confirmed that ServerQuery source IPs cannot be restricted. Only external world identities on UDP 9987 and TCP 10011/30033; no blanket Pod access.",
