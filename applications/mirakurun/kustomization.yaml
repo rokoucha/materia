@@ -10,7 +10,10 @@ resources:
   - ./resources/statefulset.yaml
   - ./resources/ghcr-credentials.yaml
   - ./resources/ingress.yaml
+  - ./resources/mackerel-agent-rolebinding.yaml
+  - ./resources/mackerel-apikey.yaml
   - ./resources/namespace.yaml
   - ./resources/persistent-volume-claim.yaml
   - ./resources/service.yaml
+  - ./resources/service-account.yaml
   - ./resources/tls.yaml
