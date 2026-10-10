@@ -19,3 +19,86 @@ spec:
       ports:
         - port: 8080
           protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: operator-egress
+  namespace: 1password
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:name: onepassword-connect
+      k8s:app.kubernetes.io/component: operator
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: 1password
+            k8s:app: onepassword-connect
+            k8s:app.kubernetes.io/component: connect
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: connect-egress
+  namespace: 1password
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: onepassword-connect
+      k8s:app.kubernetes.io/component: connect
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: '*'
+    - toFQDNs:
+        - matchName: 1password.com
+        - matchPattern: '*.1password.com'
+        - matchName: 1password.ca
+        - matchPattern: '*.1password.ca'
+        - matchName: 1password.eu
+        - matchPattern: '*.1password.eu'
+        - matchName: 1passwordusercontent.com
+        - matchPattern: '*.1passwordusercontent.com'
+        - matchName: 1passwordservices.com
+        - matchPattern: '*.1passwordservices.com'
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

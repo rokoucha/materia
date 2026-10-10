@@ -17,6 +17,9 @@ spec:
       containers:
         - image: docker.io/library/influxdb:2.9.1-alpine
           name: influxdb
+          env:
+            - name: INFLUXD_REPORTING_DISABLED
+              value: "true"
           resources:
             requests:
               cpu: 100m

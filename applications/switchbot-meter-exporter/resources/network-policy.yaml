@@ -20,3 +20,36 @@ spec:
       ports:
         - port: 8888
           protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: exporter-egress
+  namespace: switchbot-meter-exporter
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: default
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: '*'
+    - toFQDNs:
+        - matchName: api.switch-bot.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

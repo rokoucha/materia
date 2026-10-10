@@ -13,6 +13,7 @@ helmCharts:
     valuesFile: ./values.yaml
 
 resources:
+  - ./resources/network-policy.yaml
   # renovate: datasource=git-refs depName=https://github.com/rokoucha/haproxy-forward-auth.git currentValue=main
   - https://github.com/rokoucha/haproxy-forward-auth//?ref=a4752667e1bfda3b1bca7436d5151b4db26a8cb2
   - ./resources/namespace.yaml

@@ -21,6 +21,7 @@ helmCharts:
         enabled: true
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/mackerel-apikey.yaml
   - ./resources/namespace.yaml
 

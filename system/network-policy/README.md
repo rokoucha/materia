@@ -241,3 +241,22 @@ metrics は監視 gateway、repo-server/Redis は必要な同じ Namespace の�
 API server/remote-node→Metrics Server の経路だけを許可する。CoreDNS の監視と
 未監視の補助コンポーネントには Pod からの受信許可を追加しない。
 送信の既存 Namespace の移行除外は残り、hostNetwork/ノードの保護は別段階。
+
+## 残りの送信移行
+
+許可は各アプリの `network-policy.yaml` に集約し、共通 deny の除外を外す前に反映する。
+API を使う controller は kube-apiserver、DNS は CoreDNS に限定する。CoreDNS の再帰先は
+Talos HostDNS の IPv4/IPv6 アドレス、監視の scrape は登録済みターゲットの selector/port に限定する。
+cert-manager は既存の再帰 DNS だけで DNS01 を検査し、InfluxDB の匿名利用報告は停止する。
+
+runner・Argo repo-server・Mastodon・Sophie の任意 URL 取得、モデル取得には外部 HTTP/HTTPS、
+Tailscale には外部 HTTPS と NAT traversal の UDP を許可する。これらの例外は所有者承認済みで
+`reviewed-risks.json` に記録する。world はクラスタ identity を含まず、内部の許可先は別途指定する。
+Sophie の許可は所有リポジトリで管理し、通信ポリシーだけを選択同期して既存 hook を再実行しない。
+
+```sh
+python3 tests/network-policy-egress-matrix.py --run <network-policy.yaml> ...
+```
+
+試験は一時 Namespace の echo listener に許可先を置き換え、IPv4/IPv6、ポート、
+Namespace 境界、API と外部接続を検証する。本番の FQDN・ノード・アプリ機能は別途確認する。

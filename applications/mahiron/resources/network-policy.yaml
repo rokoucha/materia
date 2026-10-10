@@ -20,3 +20,90 @@ spec:
       ports:
         - port: 40772
           protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: mahiron-egress
+  namespace: mahiron
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: mahiron
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: '*'
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: monitoring
+            k8s:app.kubernetes.io/component: opentelemetry-collector
+            k8s:app.kubernetes.io/instance: monitoring.otelcol-gateway
+      toPorts:
+        - ports:
+            - port: "4318"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: mahiron-api.starry.blue
+        - matchPattern: '*.mackerelio.com'
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: neon.dns.ggrel.net
+        - matchName: magnesium.dns.ggrel.net
+      toPorts:
+        - ports:
+            - port: "40772"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: pix-gateway-egress
+  namespace: mahiron
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: pix-smb400-gateway
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "1"
+              protocol: UDP
+              endPort: 65535

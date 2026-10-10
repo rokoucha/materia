@@ -18,3 +18,42 @@ spec:
         - ports:
             - port: "9443"
               protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: controller-egress
+  namespace: elastic-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: elastic-operator
+      k8s:app.kubernetes.io/instance: elastic-operator
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mastodon
+            k8s:elasticsearch.k8s.elastic.co/cluster-name: elasticsearch
+      toPorts:
+        - ports:
+            - port: "9200"
+              protocol: TCP

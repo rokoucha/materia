@@ -149,3 +149,471 @@ spec:
       ports:
         - port: 8081
           protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: agent-egress
+  namespace: monitoring
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/component: opentelemetry-collector
+      k8s:app.kubernetes.io/instance: monitoring.otelcol-agent
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "10250"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: monitoring
+            k8s:app.kubernetes.io/component: opentelemetry-collector
+            k8s:app.kubernetes.io/instance: monitoring.otelcol-gateway
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: clusteragent-egress
+  namespace: monitoring
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/component: opentelemetry-collector
+      k8s:app.kubernetes.io/instance: monitoring.otelcol-clusteragent
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: monitoring
+            k8s:app.kubernetes.io/component: opentelemetry-collector
+            k8s:app.kubernetes.io/instance: monitoring.otelcol-gateway
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: gateway-egress
+  namespace: monitoring
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/component: opentelemetry-collector
+      k8s:app.kubernetes.io/instance: monitoring.otelcol-gateway
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: '*'
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: monitoring
+            k8s:app.kubernetes.io/component: opentelemetry-targetallocator
+            k8s:app.kubernetes.io/instance: monitoring.otelcol-gateway
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: prometheus
+            k8s:app.kubernetes.io/name: prometheus
+            k8s:operator.prometheus.io/name: prometheus
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: loki
+            k8s:app.kubernetes.io/name: loki
+            k8s:app.kubernetes.io/instance: loki
+            k8s:app.kubernetes.io/component: gateway
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: tempo
+            k8s:app.kubernetes.io/name: tempo
+            k8s:app.kubernetes.io/instance: tempo
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: otlp.mackerelio.com
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: otlp-vaxila.mackerelio.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: apcupsd
+            k8s:app: apcupsd-exporter
+      toPorts:
+        - ports:
+            - port: "9162"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: argocd
+            k8s:app.kubernetes.io/name: argocd-application-controller
+      toPorts:
+        - ports:
+            - port: "8082"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: argocd
+            k8s:app.kubernetes.io/name: argocd-applicationset-controller
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: argocd
+            k8s:app.kubernetes.io/name: argocd-notifications-controller
+      toPorts:
+        - ports:
+            - port: "9001"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: argocd
+            k8s:app.kubernetes.io/name: argocd-repo-server
+      toPorts:
+        - ports:
+            - port: "8084"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: argocd
+            k8s:app.kubernetes.io/name: argocd-server
+      toPorts:
+        - ports:
+            - port: "8083"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: authentik
+            k8s:app.kubernetes.io/instance: authentik
+            k8s:app.kubernetes.io/name: authentik
+      toPorts:
+        - ports:
+            - port: "9300"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: cert-manager
+            k8s:app.kubernetes.io/component: cainjector
+            k8s:app.kubernetes.io/instance: cert-manager
+            k8s:app.kubernetes.io/name: cainjector
+      toPorts:
+        - ports:
+            - port: "9402"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: cert-manager
+            k8s:app.kubernetes.io/component: controller
+            k8s:app.kubernetes.io/instance: cert-manager
+            k8s:app.kubernetes.io/name: cert-manager
+      toPorts:
+        - ports:
+            - port: "9402"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: cert-manager
+            k8s:app.kubernetes.io/component: webhook
+            k8s:app.kubernetes.io/instance: cert-manager
+            k8s:app.kubernetes.io/name: webhook
+      toPorts:
+        - ports:
+            - port: "9402"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: cnpg-system
+            k8s:app.kubernetes.io/name: cloudnative-pg
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: external-dns
+            k8s:app.kubernetes.io/instance: external-dns
+            k8s:app.kubernetes.io/name: external-dns
+      toPorts:
+        - ports:
+            - port: "7979"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: external-dns
+            k8s:app.kubernetes.io/instance: external-dns-ingress-lb-a
+            k8s:app.kubernetes.io/name: external-dns
+      toPorts:
+        - ports:
+            - port: "7979"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: external-dns
+            k8s:app.kubernetes.io/instance: external-dns-ingress-lb-aaaa
+            k8s:app.kubernetes.io/name: external-dns
+      toPorts:
+        - ports:
+            - port: "7979"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: external-dns
+            k8s:app.kubernetes.io/instance: external-dns-teamspeak-a
+            k8s:app.kubernetes.io/name: external-dns
+      toPorts:
+        - ports:
+            - port: "7979"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: external-dns
+            k8s:app.kubernetes.io/instance: external-dns-teamspeak-aaaa
+            k8s:app.kubernetes.io/name: external-dns
+      toPorts:
+        - ports:
+            - port: "7979"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: haproxy-controller
+            k8s:app.kubernetes.io/instance: haproxy-ingress
+            k8s:app.kubernetes.io/name: kubernetes-ingress
+      toPorts:
+        - ports:
+            - port: "1024"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: influxdb
+            k8s:app: influxdb
+      toPorts:
+        - ports:
+            - port: "8086"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mastodon
+            k8s:app: elastic-exporter
+      toPorts:
+        - ports:
+            - port: "9114"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mastodon
+            k8s:app: redis
+            k8s:redis_setup_type: standalone
+            k8s:role: standalone
+      toPorts:
+        - ports:
+            - port: "9121"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mastodon
+            k8s:app: streaming
+      toPorts:
+        - ports:
+            - port: "4000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mastodon
+            k8s:cnpg.io/cluster: postgresql
+      toPorts:
+        - ports:
+            - port: "9187"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: monitoring
+            k8s:app.kubernetes.io/instance: drm-exporter
+            k8s:app.kubernetes.io/name: drm-exporter
+      toPorts:
+        - ports:
+            - port: "8081"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: monitoring
+            k8s:app.kubernetes.io/instance: kube-state-metrics
+            k8s:app.kubernetes.io/name: kube-state-metrics
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: redis-operator
+            k8s:name: redis-operator
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: switchbot-meter-exporter
+            k8s:app: default
+      toPorts:
+        - ports:
+            - port: "8888"
+              protocol: TCP
+    - toEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "9100"
+              protocol: TCP
+            - port: "9962"
+              protocol: TCP
+            - port: "9963"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: targetallocator-egress
+  namespace: monitoring
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/component: opentelemetry-targetallocator
+      k8s:app.kubernetes.io/instance: monitoring.otelcol-gateway
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: kube-state-metrics-egress
+  namespace: monitoring
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: kube-state-metrics
+      k8s:app.kubernetes.io/instance: kube-state-metrics
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP

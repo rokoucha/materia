@@ -1,33 +1,12 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: webhook
-  namespace: opentelemetry-operator-system
+  name: runner-egress
+  namespace: actions-runner
 spec:
   endpointSelector:
     matchLabels:
-      k8s:app.kubernetes.io/name: opentelemetry-operator
-  enableDefaultDeny:
-    ingress: true
-    egress: false
-  ingress:
-    - fromEntities:
-        - kube-apiserver
-        - remote-node
-      toPorts:
-        - ports:
-            - port: "9443"
-              protocol: TCP
----
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
-  name: controller-egress
-  namespace: opentelemetry-operator-system
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:app.kubernetes.io/name: opentelemetry-operator
+      k8s:app: sophie
   enableDefaultDeny:
     ingress: false
     egress: false
@@ -47,4 +26,12 @@ spec:
       toPorts:
         - ports:
             - port: "6443"
+              protocol: TCP
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+            - port: "443"
               protocol: TCP

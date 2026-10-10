@@ -23,3 +23,86 @@ spec:
           protocol: TCP
         - port: 4318
           protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: collector-egress
+  namespace: otel-external
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/component: opentelemetry-collector
+      k8s:app.kubernetes.io/instance: otel-external.otelcol-external
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: '*'
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: monitoring
+            k8s:app.kubernetes.io/component: opentelemetry-collector
+            k8s:app.kubernetes.io/instance: monitoring.otelcol-gateway
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: prometheus
+            k8s:app.kubernetes.io/name: prometheus
+            k8s:operator.prometheus.io/name: prometheus
+      toPorts:
+        - ports:
+            - port: "9090"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: loki
+            k8s:app.kubernetes.io/name: loki
+            k8s:app.kubernetes.io/instance: loki
+            k8s:app.kubernetes.io/component: gateway
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: tempo
+            k8s:app.kubernetes.io/name: tempo
+            k8s:app.kubernetes.io/instance: tempo
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: otlp.mackerelio.com
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: otlp-vaxila.mackerelio.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

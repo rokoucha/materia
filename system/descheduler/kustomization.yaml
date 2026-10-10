@@ -15,4 +15,5 @@ helmCharts:
     valuesFile: ./values.yaml
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/namespace.yaml
