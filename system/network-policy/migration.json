@@ -6,10 +6,6 @@
     "ingress": [
       "influxdb"
     ],
-    "egress": [
-      "kube-system",
-      "monitoring",
-      "otel-external"
-    ]
+    "egress": []
   }
 }

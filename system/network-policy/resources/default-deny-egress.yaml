@@ -7,12 +7,6 @@ spec:
     matchExpressions:
       - key: k8s:io.kubernetes.pod.namespace
         operator: Exists
-      - key: k8s:io.kubernetes.pod.namespace
-        operator: NotIn
-        values:
-          - kube-system
-          - monitoring
-          - otel-external
   enableDefaultDeny:
     egress: true
     ingress: false

@@ -240,7 +240,8 @@ metrics は監視 gateway、repo-server/Redis は必要な同じ Namespace の�
 監視だけを許可し、kube-system はクラスタ DNS、HAProxy→Hubble UI→relay、
 API server/remote-node→Metrics Server の経路だけを許可する。CoreDNS の監視と
 未監視の補助コンポーネントには Pod からの受信許可を追加しない。
-送信の既存 Namespace の移行除外は残り、hostNetwork/ノードの保護は別段階。
+送信の移行除外はなく、未知の Namespace を含む全通常 Pod が default-deny の対象。
+hostNetwork/ノードの保護は別段階。
 
 ## 残りの送信移行
 
@@ -265,3 +266,5 @@ FQDN 許可の移行では DNS proxy が名前解決を観測済みか確認す�
 長寿命接続だけが残る controller は順次再接続してから正常処理と拒否の解消を確認する。
 
 actions-runner の既存 workflow は Kubernetes API を使用せず、API への送信は許可しない。
+
+送信の移行除外はすべて解消済み。受信の移行除外は引き続き InfluxDB のみ。
