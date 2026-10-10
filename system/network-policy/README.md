@@ -31,7 +31,7 @@ Sophie の許可は `rokoucha/sophie` の `infrastructure/sophie` で管理す�
 
 ## 移行済みの範囲
 
-受信は nginx、Miniflux、cosense-cli-mcp、Grafana、Mastodon、Sophie、Prometheus、Loki、Tempo、apcupsd、SwitchBot exporter、Mahiron、Mirakurun、TeamSpeak、monitoring、otel-external、CloudNativePG・Redis・Prometheus・Mackerel operator が移行済み。送信は引き続き移行待ち。
+受信は nginx、Miniflux、cosense-cli-mcp、Grafana、Mastodon、Sophie、Prometheus、Loki、Tempo、apcupsd、SwitchBot exporter、Mahiron、Mirakurun、TeamSpeak、monitoring、otel-external、CloudNativePG・Redis・Prometheus・Mackerel operator が移行済み。送信は nginx・Miniflux・Cosense MCP・Grafana が移行済みで、他は移行待ち。
 Cosense MCP と Grafana は HAProxy Ingress Pod から TCP 3000 のみ許可し、
 直接の監視受信は現在設定がないため許可しない。
 
@@ -67,12 +67,12 @@ API server の別ノードからの経路は `remote-node` として見えるた
 Prometheus・Mackerel operator は現在の設定に外部からの受信経路がなく、許可を追加しない。
 ノードからのヘルスチェックと各 controller の送信・API watch は維持する。
 
-## 送信移行の第1段階
+## Web アプリの送信制限
 
 nginx・Miniflux・Cosense MCP・Grafana の許可を各アプリの `egress-policy.yaml` に置く。
-`enableDefaultDeny.egress: false` で許可を先に配置し、既存 Namespace の移行除外を残す。
-この段階では本番の送信を制限しない。隔離試験と本番の必要機能の確認後に
-`migration.json` と `default-deny-egress.yaml` の除外一覧から対象 Namespace を削除し、制限を有効にする。
+PR #1261 で `enableDefaultDeny.egress: false` の許可を先に配置した。
+4 Namespace は共通の `default-deny-egress` で送信を制限するため、許可ポリシー側は
+方向別の強制状態を変えない。新しい Pod・Job にも共通の拒否が適用される。
 nginx は送信不要なので許可なし。応答通信は stateful な追跡で許可される。
 
 | 送信元 | 許可先 | ポート |
@@ -104,7 +104,7 @@ DNS/FQDN、外部 HTTP/HTTPS、OIDC 折り返し、API server を確認して削
 模擬 DB・監視先への通信試験は、実アプリの処理・認証・CNPG 復旧試験を代替しない。
 制限有効化前に Miniflux のフィード更新・ログイン、Cosense の参照・ファイル取得、
 Grafana のデータソース検索・ログイン、CNPG の生成 Job と復旧通信も確認する。
-2026-10-10 にこの隔離試験の 157 件がすべて成功した。本番の制限有効化は未実施。
+2026-10-10 にこの隔離試験の 157 件がすべて成功した。制限有効化後もデータソース追加・フィード取得エラーと拒否通信を確認する。
 
 ## Git の検査
 
