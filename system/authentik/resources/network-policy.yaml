@@ -152,6 +152,7 @@ spec:
             - port: "8443"
               protocol: TCP
     - toFQDNs:
+        - matchName: www.gravatar.com
         - matchName: scim.mackerelio.com
         - matchName: goauthentik.io
         - matchPattern: '*.goauthentik.io'
@@ -223,6 +224,7 @@ spec:
             - port: "8443"
               protocol: TCP
     - toFQDNs:
+        - matchName: www.gravatar.com
         - matchName: scim.mackerelio.com
         - matchName: goauthentik.io
         - matchPattern: '*.goauthentik.io'
