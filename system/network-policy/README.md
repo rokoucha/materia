@@ -263,3 +263,5 @@ Namespace 境界、API と外部接続を検証する。本番の FQDN・ノー�
 
 FQDN 許可の移行では DNS proxy が名前解決を観測済みか確認する。導入前からの
 長寿命接続だけが残る controller は順次再接続してから正常処理と拒否の解消を確認する。
+
+actions-runner の既存 workflow は Kubernetes API を使用せず、API への送信は許可しない。
