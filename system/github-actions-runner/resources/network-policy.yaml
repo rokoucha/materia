@@ -22,12 +22,6 @@ spec:
             - port: "53"
               protocol: UDP
     - toEntities:
-        - kube-apiserver
-      toPorts:
-        - ports:
-            - port: "6443"
-              protocol: TCP
-    - toEntities:
         - world
       toPorts:
         - ports:
