@@ -6,6 +6,9 @@ global:
 loki:
   auth_enabled: false
 
+  analytics:
+    reporting_enabled: false
+
   commonConfig:
     path_prefix: /var/loki
     replication_factor: 1

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the first egress migration in isolated Namespaces on the current context."""
+"""Test application egress migrations in isolated Namespaces on the current context."""
 import argparse
 import copy
 import json
@@ -9,12 +9,14 @@ import uuid
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--run', action='store_true', required=True)
-parser.parse_args()
+parser.add_argument("--apps", nargs="+", choices=("nginx", "miniflux", "cosense-cli-mcp", "grafana", "loki", "prometheus", "tempo"),
+                    default=("nginx", "miniflux", "cosense-cli-mcp", "grafana"))
+args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 prefix = 'egress-test-' + uuid.uuid4().hex[:8]
 created = []
 checks = 0
-ports = [80, 443, 3200, 5432, 8000, 8080, 8086, 8443, 9090, 9099]
+ports = [80, 443, 3100, 3200, 5432, 7946, 8000, 8080, 8086, 8443, 9090, 9095, 9099]
 security = {'allowPrivilegeEscalation': False, 'capabilities': {'drop': ['ALL']},
             'runAsNonRoot': True, 'runAsUser': 65534, 'seccompProfile': {'type': 'RuntimeDefault'}}
 
@@ -31,7 +33,7 @@ def apply(obj):
     kubectl('apply', '-f', '-', obj=obj)
 
 
-def pod(ns, name, labels, server=False):
+def pod(ns, name, labels, server=False, udp=False):
     container = {'name': 'probe', 'image': 'docker.io/library/nginx:1.31.6',
                  'securityContext': security, 'command': ['sleep', '1800']}
     spec = {'containers': [container], 'restartPolicy': 'Never', 'automountServiceAccountToken': False}
@@ -39,6 +41,21 @@ def pod(ns, name, labels, server=False):
         container['command'] = ['nginx', '-c', '/tmp/listener.conf', '-e', '/dev/stderr', '-g', 'daemon off;']
         container['volumeMounts'] = [{'name': 'config', 'mountPath': '/tmp/listener.conf', 'subPath': 'nginx.conf'}]
         spec['volumes'] = [{'name': 'config', 'configMap': {'name': 'listener'}}]
+    if udp:
+        code = "import time; time.sleep(1800)"
+        if server:
+            code = """import socket, threading
+def serve(port):
+    s=socket.socket(socket.AF_INET6,socket.SOCK_DGRAM)
+    s.setsockopt(socket.IPPROTO_IPV6,socket.IPV6_V6ONLY,0)
+    s.bind(('::',port))
+    while True:
+        data,addr=s.recvfrom(1024)
+        s.sendto(data,addr)
+for port in (7946,9099): threading.Thread(target=serve,args=(port,)).start()
+"""
+        spec['containers'].append({'name': 'udp', 'image': 'docker.io/library/python:3.14-alpine',
+                                   'securityContext': security, 'command': ['python', '-c', code]})
     apply({'apiVersion': 'v1', 'kind': 'Pod', 'metadata': {'name': name, 'namespace': ns, 'labels': labels}, 'spec': spec})
 
 
@@ -50,6 +67,24 @@ def connect(ns, source, url, allowed):
     expected = 0 if allowed else 28
     if result.returncode != expected:
         raise AssertionError(f'{ns}/{source} -> {url}: {result.returncode}, expected {expected}: {result.stderr}')
+    checks += 1
+
+
+def udp_connect(ns, source, ip, port, allowed):
+    global checks
+    code = """import socket,sys
+s=socket.socket(socket.AF_INET6 if ':' in sys.argv[1] else socket.AF_INET,socket.SOCK_DGRAM)
+s.settimeout(2)
+s.sendto(b'policy-test',(sys.argv[1],int(sys.argv[2])))
+try:
+ assert s.recv(1024)==b'policy-test'
+except TimeoutError:
+ sys.exit(28)
+"""
+    result = subprocess.run(['kubectl', '-n', ns, 'exec', source, '-c', 'udp', '--',
+                             'python', '-c', code, ip, str(port)], capture_output=True, text=True, timeout=15)
+    if result.returncode != (0 if allowed else 28):
+        raise AssertionError(f'{source} -> {ip}:{port}/UDP: {result.stderr}')
     checks += 1
 
 
@@ -67,7 +102,7 @@ def url(ip, port):
 
 try:
     print('Context:', kubectl('config', 'current-context').strip(), 'test prefix:', prefix, flush=True)
-    for app in ('nginx', 'miniflux', 'cosense-cli-mcp', 'grafana'):
+    for app in args.apps:
         ns = prefix + '-' + app
         kubectl('create', 'namespace', ns)
         created.append(ns)
@@ -77,8 +112,18 @@ try:
             f"server {{ listen {p}; listen [::]:{p}; return 200 'ok'; }}" for p in ports) + ' }'
         apply({'apiVersion': 'v1', 'kind': 'ConfigMap', 'metadata': {'name': 'listener', 'namespace': ns},
                'data': {'nginx.conf': config}})
+        policy_path = root / f'applications/{app}/resources/network-policy.yaml'
+        if not policy_path.exists():
+            policy_path = root / f'applications/{app}/network-policy.yaml'
         docs = json.loads(subprocess.check_output(['yq', 'eval-all', '-o=json', '[.]',
-                          str(root / f'applications/{app}/resources/network-policy.yaml')], text=True))
+                          str(policy_path)], text=True))
+        if app in ("prometheus", "tempo"):
+            # These workloads rely on the shared deny baseline and have no egress allows.
+            labels = docs[0]["spec"]["podSelector"]["matchLabels"]
+            docs = [{"kind": "CiliumNetworkPolicy", "apiVersion": "cilium.io/v2",
+                     "metadata": {"name": "no-egress"}, "spec": {
+                         "endpointSelector": {"matchLabels": {"k8s:" + k: v for k, v in labels.items()}},
+                         "enableDefaultDeny": {"ingress": False, "egress": False}, "egress": [{}]}}]
         docs = [d for d in docs if d.get("kind") == "CiliumNetworkPolicy" and "egress" in d.get("spec", {})]
         targets = {}
         sources = []
@@ -99,38 +144,52 @@ try:
                                      if k != 'k8s:io.kubernetes.pod.namespace'}
                     key = json.dumps(target_labels, sort_keys=True)
                     target = targets.setdefault(key, ('target-' + str(len(targets)), target_labels))[0]
-                    expected.append((target, [int(p['port']) for entry in rule['toPorts'] for p in entry['ports']]))
+                    expected.append((target, [(int(p['port']), p['protocol']) for entry in rule['toPorts'] for p in entry['ports']]))
             apply(doc)
-            pod(ns, source, source_labels)
+            pod(ns, source, source_labels, udp=(app == 'loki'))
             sources.append((source, expected))
         for name, labels in targets.values():
-            pod(ns, name, labels, True)
-        pod(ns, 'wrong-target', {'test-role': 'wrong-target'}, True)
+            pod(ns, name, labels, True, udp=(app == 'loki'))
+        pod(ns, 'wrong-target', {'test-role': 'wrong-target'}, True, udp=(app == 'loki'))
         # Only test listeners accept ingress. Real default-deny egress remains in force.
         apply({'apiVersion': 'networking.k8s.io/v1', 'kind': 'NetworkPolicy',
                'metadata': {'name': 'test-listeners', 'namespace': ns}, 'spec': {
                    'podSelector': {}, 'policyTypes': ['Ingress'], 'ingress': [{
                        'from': [{'podSelector': {'matchLabels': labels}} for labels in
                                 [{k.removeprefix('k8s:'): v for k, v in d['spec']['endpointSelector']['matchLabels'].items()} for d in docs]],
-                       'ports': [{'port': p, 'protocol': 'TCP'} for p in ports]}]}})
+                       'ports': [{'port': p, 'protocol': 'TCP'} for p in ports] +
+                                ([{'port': p, 'protocol': 'UDP'} for p in (7946, 9099)] if app == 'loki' else [])}]}})
         kubectl('-n', ns, 'wait', '--for=condition=Ready', 'pod', '--all', '--timeout=60s')
         # Prove all listeners are actually up before using timeouts as policy evidence.
         for name, _ in [*targets.values(), ('wrong-target', {})]:
+            if app == 'loki':
+                for port in (7946, 9099):
+                    udp_connect(ns, name, '127.0.0.1', port, True)
             for port in ports:
                 connect(ns, name, f'http://127.0.0.1:{port}/', True)
         for source, expected in sources:
             for target, allowed_ports in expected:
                 for ip in addresses(ns, target):
-                    for port in allowed_ports:
-                        connect(ns, source, url(ip, port), True)
+                    for port, protocol in allowed_ports:
+                        if protocol == 'UDP':
+                            udp_connect(ns, source, ip, port, True)
+                        else:
+                            connect(ns, source, url(ip, port), True)
+                    if any(protocol == 'UDP' for _, protocol in allowed_ports):
+                        udp_connect(ns, source, ip, 9099, False)
                     connect(ns, source, url(ip, 9099), False)
             for ip in addresses(ns, 'wrong-target'):
+                if app == 'loki':
+                    udp_connect(ns, source, ip, 7946, False)
                 for port in (80, 443, 5432):
                     connect(ns, source, url(ip, port), False)
-            if app == 'nginx':
+            if app in ('nginx', 'prometheus', 'tempo'):
                 connect(ns, source, 'https://1.1.1.1/', False)
             elif app == 'miniflux' and source == 'source-1':
                 connect(ns, source, 'https://kubernetes.default.svc:443/', True)
+                connect(ns, source, 'https://example.com/', False)
+            elif app == 'loki':
+                connect(ns, source, 'https://kubernetes.default.svc:443/', source == 'source-1')
                 connect(ns, source, 'https://example.com/', False)
             elif app == 'cosense-cli-mcp':
                 for endpoint in ('https://scrapbox.io/api/pages/help-jp?limit=1',
