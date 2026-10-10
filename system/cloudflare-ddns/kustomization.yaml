@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: cloudflare-ddns
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/cloudflare-ddns-apitoken.yaml
   - ./resources/cloudflare-ddns-external.yaml
   - ./resources/cloudflare-ddns.yaml

@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: actions-runner
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/namespace.yaml
   - ./resources/priority-class.yaml
   - ./resources/runner-state.yaml

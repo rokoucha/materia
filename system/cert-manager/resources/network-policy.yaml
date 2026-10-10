@@ -42,3 +42,77 @@ spec:
         - ports:
             - port: "10250"
               protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: controller-egress
+  namespace: cert-manager
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: cert-manager
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: '*'
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: acme-v02.api.letsencrypt.org
+        - matchName: api.cloudflare.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: support-egress
+  namespace: cert-manager
+spec:
+  endpointSelector:
+    matchExpressions:
+      - key: k8s:app
+        operator: In
+        values:
+          - cainjector
+          - webhook
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP

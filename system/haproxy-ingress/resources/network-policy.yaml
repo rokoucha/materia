@@ -1,0 +1,169 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-controller-egress
+  namespace: haproxy-controller
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: kubernetes-ingress
+      k8s:app.kubernetes.io/instance: haproxy-ingress
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: argocd
+            k8s:app.kubernetes.io/name: argocd-server
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: authentik
+            k8s:app.kubernetes.io/component: server
+            k8s:app.kubernetes.io/instance: authentik
+            k8s:app.kubernetes.io/name: authentik
+      toPorts:
+        - ports:
+            - port: "9000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: authentik
+            k8s:app.kubernetes.io/component: server
+            k8s:app.kubernetes.io/name: authentik
+      toPorts:
+        - ports:
+            - port: "9000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: cosense-cli-mcp
+            k8s:app: cosense-cli-mcp
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: grafana
+            k8s:app.kubernetes.io/instance: grafana
+            k8s:app.kubernetes.io/name: grafana
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: hubble-ui
+      toPorts:
+        - ports:
+            - port: "8081"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mahiron
+            k8s:app: mahiron
+      toPorts:
+        - ports:
+            - port: "40772"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mastodon
+            k8s:app: streaming
+      toPorts:
+        - ports:
+            - port: "4000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mastodon
+            k8s:app: web
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: miniflux
+            k8s:app: default
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: mirakurun
+            k8s:app: mirakurun
+      toPorts:
+        - ports:
+            - port: "40772"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: nginx
+            k8s:app: default
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: otel-external
+            k8s:app.kubernetes.io/component: opentelemetry-collector
+            k8s:app.kubernetes.io/instance: otel-external.otelcol-external
+            k8s:app.kubernetes.io/managed-by: opentelemetry-operator
+            k8s:app.kubernetes.io/part-of: opentelemetry
+      toPorts:
+        - ports:
+            - port: "4317"
+              protocol: TCP
+            - port: "4318"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: sophie
+            k8s:app: sophie-server
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: sophie
+            k8s:app: sophie-web
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: authentik
+            k8s:app.kubernetes.io/name: authentik
+            k8s:app.kubernetes.io/instance: authentik
+            k8s:app.kubernetes.io/component: server
+      toPorts:
+        - ports:
+            - port: "9000"
+              protocol: TCP

@@ -1,0 +1,205 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: reflector-egress
+  namespace: kube-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: reflector
+      k8s:app.kubernetes.io/instance: reflector
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: csr-approver-egress
+  namespace: kube-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: kubelet-csr-approver
+      k8s:app.kubernetes.io/instance: kubelet-csr-approver
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: metrics-server-egress
+  namespace: kube-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: metrics-server
+      k8s:app.kubernetes.io/instance: metrics-server
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "10250"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: hubble-relay-egress
+  namespace: kube-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:k8s-app: hubble-relay
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - host
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "4244"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: hubble-ui-egress
+  namespace: kube-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:k8s-app: hubble-ui
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: hubble-relay
+      toPorts:
+        - ports:
+            - port: "4245"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: coredns-egress
+  namespace: kube-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:k8s-app: kube-dns
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toCIDR:
+        - 169.254.116.108/32
+        - fd54:616c:6f73:0:204f:5320:444e:531/128
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - host
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP

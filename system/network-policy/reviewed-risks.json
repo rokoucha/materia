@@ -1,13 +1,53 @@
 {
+  "CiliumNetworkPolicy:actions-runner:runner-egress:broad-egress": {
+    "owner": "rokoucha",
+    "reason": "Owner approved external TCP 80/443 for existing arbitrary provider, federation, repository, build or model downloads; Cilium world excludes managed cluster identities and internal peers are allowed separately.",
+    "sha256": "02e9273e37c912f82ea8e7852c11fc8d94701c7ce4b3c3e7e855520c0cf6d8fb"
+  },
+  "CiliumNetworkPolicy:argocd:argocd-repo-server-egress:broad-egress": {
+    "owner": "rokoucha",
+    "reason": "Owner approved external TCP 80/443 for existing arbitrary provider, federation, repository, build or model downloads; Cilium world excludes managed cluster identities and internal peers are allowed separately.",
+    "sha256": "a8123e853e0cb9e8307903629521192e171ccd44f32b38b6daf42437e0312b87"
+  },
   "CiliumNetworkPolicy:kube-system:cluster-dns:broad-ingress": {
     "owner": "rokoucha",
     "reason": "Cluster DNS must serve every Pod and node, including new Namespaces and hostNetwork clients. Only TCP/UDP 53 from cluster identities; no world access or unrestricted metrics.",
     "sha256": "824e5af3ee4229176d502d9b540bf1568a9b19e0bc11a3ec921549782ccd4e78"
   },
+  "CiliumNetworkPolicy:mahiron:pix-gateway-egress:broad-egress": {
+    "owner": "rokoucha",
+    "reason": "Owner approved external TCP 80/443 for existing arbitrary provider, federation, repository, build or model downloads; Cilium world excludes managed cluster identities and internal peers are allowed separately.",
+    "sha256": "7263553cb736c9f0e9efe87dad1eb363d4b1314a728dc2aa9199e53a6c7ebe54"
+  },
+  "CiliumNetworkPolicy:mastodon:application-egress:broad-egress": {
+    "owner": "rokoucha",
+    "reason": "Owner approved external TCP 80/443 for existing arbitrary provider, federation, repository, build or model downloads; Cilium world excludes managed cluster identities and internal peers are allowed separately.",
+    "sha256": "e1297f6728242db161cf5d9a6f0493e7af7dddcf73be420abb8fe5a982a9177d"
+  },
+  "CiliumNetworkPolicy:mastodon:deployment-job-egress:broad-egress": {
+    "owner": "rokoucha",
+    "reason": "Owner approved external TCP 80/443 for existing arbitrary provider, federation, repository, build or model downloads; Cilium world excludes managed cluster identities and internal peers are allowed separately.",
+    "sha256": "e8e4cfcdeb2ac054c050a33304721257739c204c53be3aaa6d28f75a4839ecba"
+  },
   "CiliumNetworkPolicy:miniflux:miniflux-egress:broad-egress": {
     "owner": "rokoucha",
     "reason": "Miniflux fetches user-selected feeds and enclosure URLs on external TCP 80/443. Cilium world excludes cluster identities; database and OIDC hairpin destinations are allowed separately. External/LAN destinations remain reachable on these ports.",
     "sha256": "9b78696b619ad7b7c3b7d90aa19d239943b9e34c32c53d1705e59ce40a42d2d2"
+  },
+  "CiliumNetworkPolicy:sophie:application-egress:broad-egress": {
+    "owner": "rokoucha",
+    "reason": "Owner approved external TCP 80/443 for existing arbitrary provider, federation, repository, build or model downloads; Cilium world excludes managed cluster identities and internal peers are allowed separately.",
+    "sha256": "6a6a823da971fb6427cb554dac5c81fe9f1822506524a335f88feb664f08e844"
+  },
+  "CiliumNetworkPolicy:sophie:model-preparation-egress:broad-egress": {
+    "owner": "rokoucha",
+    "reason": "Owner approved external TCP 80/443 for existing arbitrary provider, federation, repository, build or model downloads; Cilium world excludes managed cluster identities and internal peers are allowed separately.",
+    "sha256": "f916d3f6c5d716f2dc4a47b6137109d81039f086f9831e2d9db1b82515c7cc10"
+  },
+  "CiliumNetworkPolicy:tailscale:operator-egress:broad-egress": {
+    "owner": "rokoucha",
+    "reason": "Owner approved external TCP 443 and UDP 1-65535 for existing Tailscale control, DERP and direct NAT traversal; world excludes managed cluster identities.",
+    "sha256": "108263dd64f28b2d629539c69ebcd6be25b1b654b5b7ec43e844e707ce792d46"
   },
   "CiliumNetworkPolicy:teamspeak:teamspeak:broad-ingress": {
     "owner": "rokoucha",

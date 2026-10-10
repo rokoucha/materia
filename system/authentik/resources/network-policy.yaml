@@ -95,3 +95,191 @@ spec:
           protocol: TCP
         - port: 8000
           protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: server-egress
+  namespace: authentik
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: authentik
+      k8s:app.kubernetes.io/instance: authentik
+      k8s:app.kubernetes.io/component: server
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: '*'
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: authentik
+            k8s:cnpg.io/cluster: postgresql
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: authentik
+            k8s:app.kubernetes.io/name: authentik
+            k8s:app.kubernetes.io/instance: authentik
+            k8s:app.kubernetes.io/component: server
+      toPorts:
+        - ports:
+            - port: "9000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: haproxy-controller
+            k8s:app.kubernetes.io/name: kubernetes-ingress
+            k8s:app.kubernetes.io/instance: haproxy-ingress
+      toPorts:
+        - ports:
+            - port: "8443"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: scim.mackerelio.com
+        - matchName: goauthentik.io
+        - matchPattern: '*.goauthentik.io'
+        - matchName: authentik.error-reporting.a7k.io
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: smtp.mail.me.com
+      toPorts:
+        - ports:
+            - port: "587"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: worker-egress
+  namespace: authentik
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: authentik
+      k8s:app.kubernetes.io/instance: authentik
+      k8s:app.kubernetes.io/component: worker
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: '*'
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: authentik
+            k8s:cnpg.io/cluster: postgresql
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: authentik
+            k8s:app.kubernetes.io/name: authentik
+            k8s:app.kubernetes.io/instance: authentik
+            k8s:app.kubernetes.io/component: server
+      toPorts:
+        - ports:
+            - port: "9000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: haproxy-controller
+            k8s:app.kubernetes.io/name: kubernetes-ingress
+            k8s:app.kubernetes.io/instance: haproxy-ingress
+      toPorts:
+        - ports:
+            - port: "8443"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: scim.mackerelio.com
+        - matchName: goauthentik.io
+        - matchPattern: '*.goauthentik.io'
+        - matchName: authentik.error-reporting.a7k.io
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: smtp.mail.me.com
+      toPorts:
+        - ports:
+            - port: "587"
+              protocol: TCP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: postgresql-egress
+  namespace: authentik
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:cnpg.io/cluster: postgresql
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: authentik
+            k8s:cnpg.io/cluster: postgresql
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+            - port: "8000"
+              protocol: TCP

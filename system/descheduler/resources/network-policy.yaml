@@ -1,33 +1,13 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: webhook
-  namespace: opentelemetry-operator-system
-spec:
-  endpointSelector:
-    matchLabels:
-      k8s:app.kubernetes.io/name: opentelemetry-operator
-  enableDefaultDeny:
-    ingress: true
-    egress: false
-  ingress:
-    - fromEntities:
-        - kube-apiserver
-        - remote-node
-      toPorts:
-        - ports:
-            - port: "9443"
-              protocol: TCP
----
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
-metadata:
   name: controller-egress
-  namespace: opentelemetry-operator-system
+  namespace: descheduler
 spec:
   endpointSelector:
     matchLabels:
-      k8s:app.kubernetes.io/name: opentelemetry-operator
+      k8s:app.kubernetes.io/name: descheduler
+      k8s:app.kubernetes.io/instance: descheduler
   enableDefaultDeny:
     ingress: false
     egress: false

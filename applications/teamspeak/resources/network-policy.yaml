@@ -20,3 +20,44 @@ spec:
               protocol: TCP
             - port: "30033"
               protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: teamspeak-egress
+  namespace: teamspeak
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: teamspeak
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+          rules:
+            dns:
+              - matchPattern: '*'
+    - toFQDNs:
+        - matchPattern: '*.teamspeak.com'
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "2008"
+              protocol: TCP
+    - toFQDNs:
+        - matchPattern: '*.teamspeak.com'
+      toPorts:
+        - ports:
+            - port: "2010"
+              protocol: UDP

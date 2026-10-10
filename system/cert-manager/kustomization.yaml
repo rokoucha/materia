@@ -7,3 +7,12 @@ resources:
   - ./resources/cloudflare-api-token.yaml
   - ./resources/cluster-issuer.yaml
   - ./resources/monitor.yaml
+
+patches:
+  - target:
+      kind: Deployment
+      name: cert-manager
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --dns01-recursive-nameservers-only

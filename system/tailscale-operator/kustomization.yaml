@@ -12,5 +12,6 @@ helmCharts:
     includeCRDs: true
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/namespace.yaml
   - ./resources/operator-oauth.yaml

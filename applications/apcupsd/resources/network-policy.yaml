@@ -42,3 +42,35 @@ spec:
       ports:
         - port: 9162
           protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: exporter-egress
+  namespace: apcupsd
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: apcupsd-exporter
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "53"
+              protocol: UDP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: apcupsd
+            k8s:app: apcupsd
+      toPorts:
+        - ports:
+            - port: "3551"
+              protocol: TCP

@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: argocd
 
 resources:
+  - ./resources/network-policy.yaml
   - ./resources/argocd-notifications-secret.yaml
   - ./resources/argocd-redis.yaml
   - ./resources/argocd-secret.yaml
