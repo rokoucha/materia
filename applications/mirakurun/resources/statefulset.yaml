@@ -17,7 +17,12 @@ spec:
     metadata:
       labels:
         app: mirakurun
+        agent.mackerel.starry.blue/inject: "true"
+      annotations:
+        agent.mackerel.starry.blue/apikey-secret-name: mackerel-apikey
+        agent.mackerel.starry.blue/roles: Ggrel-DTV:mirakurun
     spec:
+      serviceAccountName: mirakurun
       imagePullSecrets:
         - name: ghcr-credentials
       containers:

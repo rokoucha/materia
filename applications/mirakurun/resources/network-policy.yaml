@@ -49,9 +49,16 @@ spec:
               - matchPattern: '*'
     - toFQDNs:
         - matchName: mirakurun.ggrel.net
+        - matchPattern: '*.mackerelio.com'
       toPorts:
         - ports:
             - port: "443"
+              protocol: TCP
+    - toEntities:
+        - host
+      toPorts:
+        - ports:
+            - port: "10250"
               protocol: TCP
     - toEndpoints:
         - matchLabels:
