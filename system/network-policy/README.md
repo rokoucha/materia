@@ -107,6 +107,31 @@ DNS/FQDN、外部 HTTP/HTTPS、OIDC 折り返し、API server を確認して削
 Grafana のデータソース検索・ログイン、CNPG の生成 Job と復旧通信も確認する。
 2026-10-10 にこの隔離試験の 157 件がすべて成功した。制限有効化後もデータソース追加・フィード取得エラーと拒否通信を確認する。
 
+## 監視データ保存基盤の送信移行
+
+Prometheus は OTLP 受信専用で直接の scrape・API discovery・remote write を使わず、
+Tempo は単一 Pod・ローカル保存で外部への送信を使わない。この構成に送信許可は追加しない。
+構成を変更するときは必要な通信を確認する。
+
+Loki の送信許可は既存の `applications/loki/network-policy.yaml` にまとめる。
+まず許可を配置し、通常の書き込み・検索とルール sidecar の watch を確認してから
+Loki・Prometheus・Tempo を共通送信制限の除外一覧から削除する。
+
+| 送信元 | 許可先 | ポート |
+| --- | --- | --- |
+| Loki gateway | CoreDNS、同じ Namespace の single-binary Pod | TCP/UDP 53、TCP 3100 |
+| Loki single-binary / rules sidecar | CoreDNS、同じ single-binary Pod、API server | TCP/UDP 53、TCP 3100・9095・7946、UDP 7946、TCP 6443 |
+
+API はルール ConfigMap/Secret の watch に必要。PV の iSCSI はノードからの通信であり、
+Pod の送信許可を追加しない。Loki の匿名利用統計は無効にし、外部 HTTPS は開かない。
+
+```sh
+python3 tests/network-policy-egress-cluster.py --run --apps loki prometheus tempo
+```
+
+試験は Loki の宛先・ポート・IPv4/IPv6 と TCP/UDP、DNS/API を検証し、
+Prometheus・Tempo の共通拒否も確認する。単一 Pod 内のループバックは制限しない。
+
 ## Git の検査
 
 Python 3、kubectl、Helm、yq v4 が必要。全 system/applications の Kustomize・Helm 生成結果を
