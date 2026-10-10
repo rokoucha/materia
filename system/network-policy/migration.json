@@ -22,7 +22,6 @@
       "haproxy-controller",
       "influxdb",
       "kube-system",
-      "loki",
       "mackerel-operator",
       "mahiron",
       "mastodon",
@@ -30,15 +29,13 @@
       "monitoring",
       "opentelemetry-operator-system",
       "otel-external",
-      "prometheus",
       "prometheus-operator",
       "redis-operator",
       "sophie",
       "switchbot-meter-exporter",
       "synology-csi",
       "tailscale",
-      "teamspeak",
-      "tempo"
+      "teamspeak"
     ]
   }
 }
