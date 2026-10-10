@@ -12,7 +12,6 @@ helmCharts:
     valuesFile: ./values.yaml
 
 resources:
-  - ./resources/egress-policy.yaml
   - ./resources/grafana-secrets.yaml
   - ./resources/namespace.yaml
   - ./resources/network-policy.yaml

@@ -69,7 +69,8 @@ Prometheus・Mackerel operator は現在の設定に外部からの受信経路�
 
 ## Web アプリの送信制限
 
-nginx・Miniflux・Cosense MCP・Grafana の許可を各アプリの `egress-policy.yaml` に置く。
+nginx・Miniflux・Cosense MCP・Grafana の許可を各アプリの `network-policy.yaml` に受信ルールとまとめて置く。
+Kubernetes NetworkPolicy と CiliumNetworkPolicy は必要な機能に応じて使い分ける。
 PR #1261 で `enableDefaultDeny.egress: false` の許可を先に配置した。
 4 Namespace は共通の `default-deny-egress` で送信を制限するため、許可ポリシー側は
 方向別の強制状態を変えない。新しい Pod・Job にも共通の拒否が適用される。

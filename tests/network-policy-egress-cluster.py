@@ -78,7 +78,8 @@ try:
         apply({'apiVersion': 'v1', 'kind': 'ConfigMap', 'metadata': {'name': 'listener', 'namespace': ns},
                'data': {'nginx.conf': config}})
         docs = json.loads(subprocess.check_output(['yq', 'eval-all', '-o=json', '[.]',
-                          str(root / f'applications/{app}/resources/egress-policy.yaml')], text=True))
+                          str(root / f'applications/{app}/resources/network-policy.yaml')], text=True))
+        docs = [d for d in docs if d.get("kind") == "CiliumNetworkPolicy" and "egress" in d.get("spec", {})]
         targets = {}
         sources = []
         for index, original in enumerate(docs):

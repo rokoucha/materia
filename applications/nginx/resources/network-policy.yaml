@@ -22,3 +22,17 @@ spec:
       ports:
         - port: 80
           protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: nginx-egress
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: default
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - {}
