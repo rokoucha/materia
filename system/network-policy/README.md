@@ -260,3 +260,6 @@ python3 tests/network-policy-egress-matrix.py --run <network-policy.yaml> ...
 
 試験は一時 Namespace の echo listener に許可先を置き換え、IPv4/IPv6、ポート、
 Namespace 境界、API と外部接続を検証する。本番の FQDN・ノード・アプリ機能は別途確認する。
+
+FQDN 許可の移行では DNS proxy が名前解決を観測済みか確認する。導入前からの
+長寿命接続だけが残る controller は順次再接続してから正常処理と拒否の解消を確認する。
