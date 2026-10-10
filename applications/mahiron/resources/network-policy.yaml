@@ -56,6 +56,12 @@ spec:
         - ports:
             - port: "4318"
               protocol: TCP
+    - toEntities:
+        - host
+      toPorts:
+        - ports:
+            - port: "10250"
+              protocol: TCP
     - toFQDNs:
         - matchName: mahiron-api.starry.blue
         - matchPattern: '*.mackerelio.com'
