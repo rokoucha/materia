@@ -10,19 +10,9 @@ spec:
       - key: k8s:io.kubernetes.pod.namespace
         operator: NotIn
         values:
-          - actions-runner
-          - argocd
-          - authentik
-          - haproxy-controller
           - kube-system
-          - mahiron
-          - mastodon
-          - mirakurun
           - monitoring
           - otel-external
-          - sophie
-          - tailscale
-          - teamspeak
   enableDefaultDeny:
     egress: true
     ingress: false

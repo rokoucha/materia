@@ -1,8 +1,8 @@
 {
   "CiliumNetworkPolicy:actions-runner:runner-egress:broad-egress": {
     "owner": "rokoucha",
-    "reason": "Owner approved external TCP 80/443 for existing arbitrary provider, federation, repository, build or model downloads; Cilium world excludes managed cluster identities and internal peers are allowed separately.",
-    "sha256": "02e9273e37c912f82ea8e7852c11fc8d94701c7ce4b3c3e7e855520c0cf6d8fb"
+    "reason": "Owner approved external TCP 80/443 for existing GitHub jobs, build toolchains, package registries and artifacts. Internal API access is unnecessary and not allowed; world excludes managed cluster identities.",
+    "sha256": "bb0273cdc4298c48c9baff44986544568d5a9b05ff42eaa016fed859f3cef27d"
   },
   "CiliumNetworkPolicy:argocd:argocd-repo-server-egress:broad-egress": {
     "owner": "rokoucha",

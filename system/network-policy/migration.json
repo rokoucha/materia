@@ -7,19 +7,9 @@
       "influxdb"
     ],
     "egress": [
-      "actions-runner",
-      "argocd",
-      "authentik",
-      "haproxy-controller",
       "kube-system",
-      "mahiron",
-      "mastodon",
-      "mirakurun",
       "monitoring",
-      "otel-external",
-      "sophie",
-      "tailscale",
-      "teamspeak"
+      "otel-external"
     ]
   }
 }
