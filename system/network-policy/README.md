@@ -67,6 +67,45 @@ API server の別ノードからの経路は `remote-node` として見えるた
 Prometheus・Mackerel operator は現在の設定に外部からの受信経路がなく、許可を追加しない。
 ノードからのヘルスチェックと各 controller の送信・API watch は維持する。
 
+## 送信移行の第1段階
+
+nginx・Miniflux・Cosense MCP・Grafana の許可を各アプリの `egress-policy.yaml` に置く。
+`enableDefaultDeny.egress: false` で許可を先に配置し、既存 Namespace の移行除外を残す。
+この段階では本番の送信を制限しない。隔離試験と本番の必要機能の確認後に
+`migration.json` と `default-deny-egress.yaml` の除外一覧から対象 Namespace を削除し、制限を有効にする。
+nginx は送信不要なので許可なし。応答通信は stateful な追跡で許可される。
+
+| 送信元 | 許可先 | ポート |
+| --- | --- | --- |
+| Miniflux | CoreDNS、同じ CNPG クラスタ、HAProxy の OIDC 折り返し | UDP/TCP 53、TCP 5432、8443 |
+| Miniflux | 外部のフィード・添付ファイル (`world`) | TCP 80、443 |
+| Miniflux の CNPG Pod / join・復旧 Job | CoreDNS、同じ CNPG クラスタ、API server | UDP/TCP 53、TCP 5432・8000、6443 |
+| Cosense MCP | CoreDNS、scrapbox.io、storage.googleapis.com、api.gyazo.com | UDP/TCP 53、TCP 443 |
+| Grafana | CoreDNS、Loki gateway、Tempo、Prometheus、InfluxDB、HAProxy の OIDC 折り返し | UDP/TCP 53、TCP 8080、3200、9090、8086、8443 |
+
+送信のポートは Service の公開ポートではなく DNAT 後の Pod ポートを使う。
+Grafana のデータソースは UI で追加されたものも確認する。既存 Redis データソースの
+Argo CD / Mastodon は受信側で Grafana を許可していないため、送信許可も追加しない。
+新規データソースやプラグイン取得先には、必要な両方向の許可を別途追加する。
+
+Miniflux の任意フィード取得は固定 FQDN に絞れないため `world` の HTTP/HTTPS を
+リスク台帳に記録する。クラスタの Pod・ノード identity は許可しないが、外部/LAN への
+HTTP/HTTPS は利用できる。FQDN の許可は DNS 応答の IP に作用し、URL・バケットの
+制限を代替しない。HAProxy への許可も共有された TLS 入口への許可になる。
+Cosense のファイルは GCS にリダイレクトされ、ページ内の Gyazo 展開は oEmbed API を使う。
+
+```sh
+python3 tests/network-policy-egress-cluster.py --run
+```
+
+試験は固有名の Namespace に実際の送信ポリシーと模擬宛先を配置する。
+実クラスタの共通 default-deny、IPv4/IPv6、宛先ラベル・ポートの拒否、
+DNS/FQDN、外部 HTTP/HTTPS、OIDC 折り返し、API server を確認して削除する。
+模擬 DB・監視先への通信試験は、実アプリの処理・認証・CNPG 復旧試験を代替しない。
+制限有効化前に Miniflux のフィード更新・ログイン、Cosense の参照・ファイル取得、
+Grafana のデータソース検索・ログイン、CNPG の生成 Job と復旧通信も確認する。
+2026-10-10 にこの隔離試験の 157 件がすべて成功した。本番の制限有効化は未実施。
+
 ## Git の検査
 
 Python 3、kubectl、Helm、yq v4 が必要。全 system/applications の Kustomize・Helm 生成結果を

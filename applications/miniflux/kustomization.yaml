@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: miniflux
 
 resources:
+  - ./resources/egress-policy.yaml
   - ./resources/deployment.yaml
   - ./resources/ingress.yaml
   - ./resources/miniflux-secrets.yaml

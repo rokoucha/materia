@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: nginx
 
 resources:
+  - ./resources/egress-policy.yaml
   - ./resources/deployment.yaml
   - ./resources/external-monitors.yaml
   - ./resources/ggrel-net-tls.yaml
