@@ -8,3 +8,7 @@ Mahiron と PIX SMB400 gateway は UID/GID 10001、RuntimeDefault seccomp、
 既存の DB / Tailscale state は PVC に保持し、CSI の fsGroup 10001 でアクセスする。
 更新後は services / programs / job-schedules の API と gateway 経由の接続を確認する。
 Tailscale CLI は `tailscale --socket=/tmp/tailscaled.sock` を使う。
+
+Tailscale state は `/var/lib/tailscale/state` に置く。Tailscale はディレクトリの
+chmod を要求するため、fsGroup に加えて state ディレクトリ自体を UID 10001 所有にする。
+初回移行では既存 `tailscaled.state` をこのディレクトリにコピーして identity を維持した。
