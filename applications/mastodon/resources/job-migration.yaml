@@ -14,9 +14,18 @@ spec:
   completions: 1
   template:
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 991
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - image: ghcr.io/mastodon/mastodon:v4.7.3
           name: mastodon-migration
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
           command: ["bundle", "exec", "rails", "db:migrate"]
           env:
             - name: SKIP_POST_DEPLOYMENT_MIGRATIONS
