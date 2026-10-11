@@ -46,7 +46,7 @@ spec:
             - name: TS_SOCKET
               value: /tmp/tailscaled.sock
             - name: TS_STATE_DIR
-              value: /var/lib/tailscale
+              value: /var/lib/tailscale/state
             - name: TS_USERSPACE
               value: "true"
             - name: TS_EXTRA_ARGS
