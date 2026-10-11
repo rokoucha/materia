@@ -24,3 +24,17 @@ Redis の生成 `init-config` は `spec.initContainer.securityContext` を使う
 
 migration は通常の Sync hook として実行される。定期 maintenance / 検索再構築は
 検証目的では実行せず、Pod template の server-side dry-run で Admission を確認する。
+
+## Redis 再作成後のタイムライン復旧
+
+現在の Redis は永続ボリュームを持たず、Pod 再作成でホーム / リストフィードと
+Sidekiq の Redis 内状態が失われる。HTTP 200 や Ready だけではフィード復旧を確認できない。
+Redis 再作成後は DB からフィードを再構築し、ログイン済みのホーム表示も確認する。
+
+```sh
+kubectl exec -n mastodon deployment/mastodon-web -- \
+  bin/tootctl feeds build --all --concurrency 1
+```
+
+この操作は投稿を変更せず、既存 DB から Redis のフィードを再生成する。
+失われた Sidekiq ジョブを復元するものではない。Redis 永続化は別途設計する。
