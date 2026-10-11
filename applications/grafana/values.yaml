@@ -34,6 +34,10 @@ resources:
     cpu: 250m
     memory: 750Mi
 
+# The existing PVC is owned and writable by Grafana's UID/GID 472.
+initChownData:
+  enabled: false
+
 persistence:
   enabled: true
   existingClaim: data
