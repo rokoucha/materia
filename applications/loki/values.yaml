@@ -35,6 +35,8 @@ loki:
           period: 24h
 
   podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
     fsGroup: 2000
     fsGroupChangePolicy: OnRootMismatch
     runAsGroup: 2000
@@ -57,6 +59,8 @@ singleBinary:
     storageClass: beryllium-iscsi
     size: 10Gi
   podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
     fsGroup: 2000
     fsGroupChangePolicy: OnRootMismatch
     runAsGroup: 2000
@@ -80,3 +84,8 @@ test:
 
 lokiCanary:
   enabled: false
+
+gateway:
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault

@@ -8,6 +8,10 @@ helmCharts:
     version: 3.5.0
     repo: https://helm.elastic.co
     includeCRDs: true
+    valuesInline:
+      podSecurityContext:
+        seccompProfile:
+          type: RuntimeDefault
 
 resources:
   - ./resources/network-policy.yaml
