@@ -61,12 +61,16 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
           volumeMounts:
+            - name: run
+              mountPath: /var/run
             - name: config
               mountPath: /etc/mirakurun
               readOnly: true
             - name: data
               mountPath: /var/db/mirakurun
       volumes:
+        - name: run
+          emptyDir: {}
         - name: config
           secret:
             secretName: mirakurun-config
