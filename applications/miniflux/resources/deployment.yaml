@@ -14,9 +14,18 @@ spec:
       labels:
         app: default
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - image: docker.io/miniflux/miniflux:2.3.3
           name: miniflux
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
           ports:
             - name: http
               containerPort: 8080

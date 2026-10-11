@@ -16,12 +16,21 @@ spec:
       labels:
         app: default
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 998
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - args:
             - --port
             - "8888"
           image: ghcr.io/rokoucha/switchbot-meter-exporter:latest
           name: switchbot-meter-exporter
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
           ports:
             - containerPort: 8888
           envFrom:

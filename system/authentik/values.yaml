@@ -1,4 +1,9 @@
 global:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
   env:
     - name: AUTHENTIK_POSTGRESQL__HOST
       valueFrom:
@@ -26,6 +31,10 @@ authentik:
     secretName: authentik
 
 server:
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: [ALL]
   resources:
     requests:
       cpu: 200m
@@ -43,6 +52,10 @@ server:
           - auth.ggrel.net
 
 worker:
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: [ALL]
   resources:
     requests:
       cpu: 150m

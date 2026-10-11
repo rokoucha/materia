@@ -8,6 +8,8 @@
 - cosense-cli-mcp、descheduler、external-dns、haproxy-controller
 - mackerel-operator、prometheus-operator、elastic-system、loki、prometheus
 - default、kube-public、kube-node-lease、cilium-secrets、docker-registry-secrets
+- authentik、miniflux、opentelemetry-operator-system、otel-external
+- redis-operator、switchbot-meter-exporter、tempo
 - sophie（Namespace の管理元は Sophie リポジトリ）
 
 Namespace ラベルは各ワークロードの Kustomization で管理する。
