@@ -44,3 +44,12 @@ kubectl -n kube-system exec <cilium-pod> -c cilium-agent -- \
 同期・prune して NetworkPolicy を削除したことを確認する。
 緊急の手動削除は先に nginx Application の自動同期を停止してから行い、
 Git の修正後に自動同期を復元する。自動同期を残すと selfHeal で再作成される。
+
+## Pod Security
+
+Restricted `v1.37` を強制し、master / worker とも UID/GID 101 で起動する。
+root master のユーザー切り替え指示は削除する。cache と PID は fsGroup 101 の
+emptyDir に保存する。権限昇格は禁止し、Capabilities は ALL を削除して
+既存の TCP 80/81 用に Restricted で許可される NET_BIND_SERVICE だけを追加する。
+
+更新後は公開ホストの応答・Location と `/webauth.html` の内容を確認する。
