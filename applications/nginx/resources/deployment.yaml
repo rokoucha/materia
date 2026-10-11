@@ -14,17 +14,41 @@ spec:
       labels:
         app: default
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - image: docker.io/library/nginx:1.31.6
           name: nginx
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+              add: [NET_BIND_SERVICE]
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
           ports:
             - containerPort: 80
           volumeMounts:
+            - name: cache
+              mountPath: /var/cache/nginx
+            - name: run
+              mountPath: /var/run
             - name: config
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
               readOnly: true
       volumes:
+        - name: cache
+          emptyDir: {}
+        - name: run
+          emptyDir: {}
         - name: config
           configMap:
             name: config
