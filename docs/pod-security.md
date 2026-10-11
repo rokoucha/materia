@@ -11,6 +11,7 @@
 - authentik、miniflux、opentelemetry-operator-system、otel-external
 - redis-operator、switchbot-meter-exporter、tempo
 - mastodon（Web / Sidekiq / Streaming / Job / CronJob と Redis / Exporter を含む）
+- grafana（既存 PVC の UID/GID 472 所有を確認し、root の initChownData は無効）
 - sophie（Namespace の管理元は Sophie リポジトリ）
 
 Namespace ラベルは各ワークロードの Kustomization で管理する。
