@@ -16,6 +16,7 @@
 - mahiron（PIX gateway を含め UID/GID 10001 と fsGroup 10001 で実行）
 - mirakurun（UID/GID 1000 と fsGroup 1000、Node サーバーを直接起動）
 - nginx（UID/GID 101、cache / PID は emptyDir、低ポート用 NET_BIND_SERVICE のみ追加）
+- tailscale（Operator を UID/GID 65532 で実行。現在 Proxy / Connector は未使用）
 - sophie（Namespace の管理元は Sophie リポジトリ）
 
 Namespace ラベルは各ワークロードの Kustomization で管理する。
