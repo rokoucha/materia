@@ -2,6 +2,10 @@ global:
   clusterDomain: materia-cluster.ggrel.net
 
 tempo:
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: [ALL]
   reportingEnabled: false
   retention: 168h
   memBallastSizeMbs: 0
@@ -33,3 +37,7 @@ persistence:
 
 service:
   type: ClusterIP
+
+securityContext:
+  seccompProfile:
+    type: RuntimeDefault
