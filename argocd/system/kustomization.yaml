@@ -23,6 +23,7 @@ resources:
   - ./metrics-server.yaml
   - ./monitoring.yaml
   - ./network-policy.yaml
+  - ./pod-security.yaml
   - ./opentelemetry-operator.yaml
   - ./prometheus-operator.yaml
   - ./redis-operator.yaml

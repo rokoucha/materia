@@ -7,9 +7,13 @@
 - 1password、actions-runner、argocd、cert-manager、cnpg-system
 - cosense-cli-mcp、descheduler、external-dns、haproxy-controller
 - mackerel-operator、prometheus-operator、elastic-system、loki、prometheus
+- default、kube-public、kube-node-lease、cilium-secrets、docker-registry-secrets
 - sophie（Namespace の管理元は Sophie リポジトリ）
 
 Namespace ラベルは各ワークロードの Kustomization で管理する。
+組み込みの default / kube-public / kube-node-lease は `system/pod-security` で管理し、
+Argo CD による prune / Application 削除時の Namespace 削除を無効にする。
+Cilium の Secret 用 Namespace は Helm の `secretsNamespaceLabels` で指定する。
 ECK / Loki は Helm 設定、Prometheus は CR の Pod securityContext に
 `seccompProfile: {type: RuntimeDefault}` を指定する。
 
