@@ -3,6 +3,7 @@
 Pod Security Restricted `v1.37` を強制し、UID/GID 1000、RuntimeDefault seccomp、
 権限昇格禁止・drop ALL で Node サーバーを直接起動する。
 既存 EPG / services / logo キャッシュは PVC に保持し、fsGroup 1000 でアクセスする。
+既定 Unix socket `/var/run/mirakurun.sock` は fsGroup 付き emptyDir 上に作る。
 チューナーはネットワーク接続の mirakurun-client を使用する。
 
 イメージ既定の root crond は起動しない。唯一の有効 cron エントリーの
