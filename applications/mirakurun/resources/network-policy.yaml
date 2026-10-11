@@ -49,6 +49,7 @@ spec:
               - matchPattern: '*'
     - toFQDNs:
         - matchName: mirakurun.ggrel.net
+        - matchName: mahiron-api.starry.blue
         - matchPattern: '*.mackerelio.com'
       toPorts:
         - ports:
