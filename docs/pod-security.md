@@ -13,6 +13,7 @@
 - mastodon（Web / Sidekiq / Streaming / Job / CronJob と Redis / Exporter を含む）
 - grafana（既存 PVC の UID/GID 472 所有を確認し、root の initChownData は無効）
 - influxdb（entrypoint の実行 UID/GID 1000 を起動時から指定し、既存 PVC を維持）
+- mahiron（PIX gateway を含め UID/GID 10001 と fsGroup 10001 で実行）
 - sophie（Namespace の管理元は Sophie リポジトリ）
 
 Namespace ラベルは各ワークロードの Kustomization で管理する。
