@@ -7,9 +7,28 @@ metadata:
 spec:
   kubernetesConfig:
     image: quay.io/opstree/redis:v8.10.1
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: [ALL]
+  # The generated init-config consumes this context even when custom init is disabled.
+  initContainer:
+    enabled: false
+    image: quay.io/opstree/redis-operator:v0.27.0
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: [ALL]
   redisExporter:
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: [ALL]
     enabled: true
     image: quay.io/opstree/redis-exporter:v1.89.0
   podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
     runAsUser: 1000
     fsGroup: 1000

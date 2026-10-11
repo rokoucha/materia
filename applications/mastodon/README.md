@@ -14,3 +14,13 @@ OTel gateway の監視は PostgreSQL 9187、Redis exporter 9121、Elasticsearch 
 反映は許可ポリシーと CronJob の Pod template を先に選択同期し、機能・監視・operator を
 確認してから共通 ingress の移行除外を外す。Sync hook の migration は今回の同期対象に
 含めず、既存 Job の UID を前後で確認する。定期処理や検索再構築の実行は試験に使わない。
+
+## Pod Security
+
+Namespace は Restricted `v1.37` を強制する。Mastodon の全 Pod template は UID 991、
+Redis は UID 1000 を維持し、権限昇格禁止・drop ALL・RuntimeDefault seccomp を指定する。
+Redis の生成 `init-config` は `spec.initContainer.securityContext` を使う。
+追加の custom init は無効にし、必須の image フィールドだけ指定する。
+
+migration は通常の Sync hook として実行される。定期 maintenance / 検索再構築は
+検証目的では実行せず、Pod template の server-side dry-run で Admission を確認する。

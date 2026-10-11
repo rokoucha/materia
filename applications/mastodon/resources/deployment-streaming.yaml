@@ -16,9 +16,18 @@ spec:
       labels:
         app: streaming
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 991
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - image: ghcr.io/mastodon/mastodon-streaming:v4.7.3
           name: mastodon-streaming
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
           ports:
             - name: streaming
               containerPort: 4000
