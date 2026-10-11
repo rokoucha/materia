@@ -10,6 +10,23 @@ helmCharts:
     version: "1.102.4"
     repo: https://pkgs.tailscale.com/helmcharts
     includeCRDs: true
+    valuesInline:
+      operatorConfig:
+        podSecurityContext:
+          runAsNonRoot: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          seccompProfile:
+            type: RuntimeDefault
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: [ALL]
+        extraEnv:
+          - name: XDG_CONFIG_HOME
+            value: /tmp
+          - name: XDG_CACHE_HOME
+            value: /tmp
 
 resources:
   - ./resources/network-policy.yaml
