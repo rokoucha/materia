@@ -22,12 +22,26 @@ spec:
         agent.mackerel.starry.blue/apikey-secret-name: mackerel-apikey
         agent.mackerel.starry.blue/roles: Ggrel-DTV:mirakurun
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: mirakurun
       imagePullSecrets:
         - name: ghcr-credentials
       containers:
         - name: mirakurun
           image: ghcr.io/starrybluesky/mirakurun-custom:2026.9.19
+          command: [node]
+          args: [-r, source-map-support/register, lib/server.js]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
           resources:
             requests:
               cpu: 100m
