@@ -38,6 +38,8 @@ spec:
           requests:
             storage: 30Gi
   securityContext:
+    seccompProfile:
+      type: RuntimeDefault
     fsGroup: 2000
     runAsNonRoot: true
     runAsUser: 1000

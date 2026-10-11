@@ -6,3 +6,20 @@ resources:
   - ./resources/cloudnative-pg-monitor.yaml
   # renovate: datasource=github-releases depName=cloudnative-pg/cloudnative-pg
   - https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/v1.30.1/releases/cnpg-1.30.1.yaml
+
+patches:
+  - target:
+      kind: Namespace
+      name: cnpg-system
+    patch: |-
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: cnpg-system
+        labels:
+          pod-security.kubernetes.io/enforce: restricted
+          pod-security.kubernetes.io/enforce-version: v1.37
+          pod-security.kubernetes.io/warn: restricted
+          pod-security.kubernetes.io/warn-version: v1.37
+          pod-security.kubernetes.io/audit: restricted
+          pod-security.kubernetes.io/audit-version: v1.37
