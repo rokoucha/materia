@@ -17,6 +17,7 @@
 - mirakurun（UID/GID 1000 と fsGroup 1000、Node サーバーを直接起動）
 - nginx（UID/GID 101、cache / PID は emptyDir、低ポート用 NET_BIND_SERVICE のみ追加）
 - tailscale（Operator を UID/GID 65532 で実行。現在 Proxy / Connector は未使用）
+- teamspeak（entrypoint と同じ UID/GID 9987、既存データ所有権を維持）
 - sophie（Namespace の管理元は Sophie リポジトリ）
 
 Namespace ラベルは各ワークロードの Kustomization で管理する。
