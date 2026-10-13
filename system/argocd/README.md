@@ -13,7 +13,7 @@ and the Project destinations. This shared Project permits access between its
 listed namespaces; workload and operator privileges are separate from this boundary.
 
 `system` permits only the materia repository and the local cluster. Its cluster
-resource whitelist contains the 18 kinds used by the foundation and operators;
+resource whitelist contains the 20 kinds used by the foundation and operators;
 [kind ownership](../../docs/argocd-system-cluster-permissions.tsv) was checked
 against all 27 system Applications on 2026-10-13. Namespace destinations remain
 unrestricted because system manages cluster-wide namespace configuration.
@@ -52,3 +52,7 @@ credentials otherwise override the shared template.
 `apcupsd` is a system Application because it requires a privileged UPS Pod. Its
 namespace is excluded from applications destinations. The system Project now has
 28 Applications; this move adds no cluster resource kinds to its whitelist.
+
+The 1Password reference policies add ValidatingAdmissionPolicy and
+ValidatingAdmissionPolicyBinding to system permissions. See
+[reference restrictions](../1password-connect/README.md).

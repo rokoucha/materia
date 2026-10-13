@@ -12,6 +12,10 @@ applications の配備先から除外し、ワークロードと Application の
 2026-10-13: Loki は自 namespace の ConfigMap 読み取りだけに縮小し、
 gateway の API token 自動マウントを停止。
 
+2026-10-13: 1Password の既存28参照を namespace/name/itemPath で限定。
+Deployment 注釈参照と Secret 注釈の偽装を Admission で拒否。Operator
+自体のクラスタ権限・Connect token は維持し、侵害時の分離は今後の検討対象。
+
 ## 優先する調整
 
 | 順 | 対象 | 確認事項と調整案 |

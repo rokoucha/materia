@@ -17,3 +17,5 @@ rbac.authorization.k8s.io	ClusterRoleBinding	1password-connect,application-found
 scheduling.k8s.io	PriorityClass	github-actions-runner
 storage.k8s.io	CSIDriver	synology-csi
 storage.k8s.io	StorageClass	synology-csi
+admissionregistration.k8s.io	ValidatingAdmissionPolicy	1password-connect
+admissionregistration.k8s.io	ValidatingAdmissionPolicyBinding	1password-connect
