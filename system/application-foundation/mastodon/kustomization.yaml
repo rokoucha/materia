@@ -1,0 +1,7 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- "./namespace-mastodon.yaml"
+- "./persistentvolume-pvc-686eee23-9be9-40cc-a564-978445ab0be3.yaml"
+- "./persistentvolume-pvc-7c391557-b7b8-4ea2-b21a-582c3b2c6c79.yaml"

@@ -12,33 +12,26 @@ helmCharts:
     valuesFile: ./values.yaml
 
 resources:
-  - ./namespace.yaml
   - ./network-policy.yaml
 
-transformers:
-  - |-
-    apiVersion: builtin
-    kind: AnnotationsTransformer
-    metadata:
-      name: transfer-protection
-    annotations:
-      argocd.argoproj.io/sync-options: Prune=false,Delete=false
-    fieldSpecs:
-      - kind: Namespace
-        path: metadata/annotations
-        create: true
-      - kind: PersistentVolume
-        path: metadata/annotations
-        create: true
-      - kind: ClusterRole
-        path: metadata/annotations
-        create: true
-      - kind: ClusterRoleBinding
-        path: metadata/annotations
-        create: true
-      - kind: Role
-        path: metadata/annotations
-        create: true
-      - kind: RoleBinding
-        path: metadata/annotations
-        create: true
+patches:
+  - target:
+      group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: loki-clusterrole
+    patch: |-
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      metadata:
+        name: loki-clusterrole
+      $patch: delete
+  - target:
+      group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: loki-clusterrolebinding
+    patch: |-
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: loki-clusterrolebinding
+      $patch: delete

@@ -13,7 +13,6 @@ helmCharts:
 
 resources:
   - ./resources/grafana-secrets.yaml
-  - ./resources/namespace.yaml
   - ./resources/network-policy.yaml
   - ./resources/persistent-volume-claim.yaml
   - ./resources/tls.yaml
@@ -23,30 +22,44 @@ configMapGenerator:
     envs:
       - ./config/config.env
 
-transformers:
-  - |-
-    apiVersion: builtin
-    kind: AnnotationsTransformer
-    metadata:
-      name: transfer-protection
-    annotations:
-      argocd.argoproj.io/sync-options: Prune=false,Delete=false
-    fieldSpecs:
-      - kind: Namespace
-        path: metadata/annotations
-        create: true
-      - kind: PersistentVolume
-        path: metadata/annotations
-        create: true
-      - kind: ClusterRole
-        path: metadata/annotations
-        create: true
-      - kind: ClusterRoleBinding
-        path: metadata/annotations
-        create: true
-      - kind: Role
-        path: metadata/annotations
-        create: true
-      - kind: RoleBinding
-        path: metadata/annotations
-        create: true
+patches:
+  - target:
+      group: rbac.authorization.k8s.io
+      kind: Role
+      name: grafana
+    patch: |-
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: Role
+      metadata:
+        name: grafana
+      $patch: delete
+  - target:
+      group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: grafana-clusterrole
+    patch: |-
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      metadata:
+        name: grafana-clusterrole
+      $patch: delete
+  - target:
+      group: rbac.authorization.k8s.io
+      kind: RoleBinding
+      name: grafana
+    patch: |-
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: grafana
+      $patch: delete
+  - target:
+      group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      name: grafana-clusterrolebinding
+    patch: |-
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: grafana-clusterrolebinding
+      $patch: delete

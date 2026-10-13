@@ -1,0 +1,20 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- "./apcupsd"
+- "./cosense-cli-mcp"
+- "./grafana"
+- "./influxdb"
+- "./loki"
+- "./mahiron"
+- "./mastodon"
+- "./miniflux"
+- "./mirakurun"
+- "./nginx"
+- "./otel-external"
+- "./prometheus"
+- "./sophie"
+- "./switchbot-meter-exporter"
+- "./teamspeak"
+- "./tempo"

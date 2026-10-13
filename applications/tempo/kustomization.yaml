@@ -13,38 +13,9 @@ helmCharts:
 
 resources:
   - ./network-policy.yaml
-  - ./namespace.yaml
 
 patches:
   - path: ./patches/service-dual-stack.yaml
     target:
       kind: Service
       name: tempo
-
-transformers:
-  - |-
-    apiVersion: builtin
-    kind: AnnotationsTransformer
-    metadata:
-      name: transfer-protection
-    annotations:
-      argocd.argoproj.io/sync-options: Prune=false,Delete=false
-    fieldSpecs:
-      - kind: Namespace
-        path: metadata/annotations
-        create: true
-      - kind: PersistentVolume
-        path: metadata/annotations
-        create: true
-      - kind: ClusterRole
-        path: metadata/annotations
-        create: true
-      - kind: ClusterRoleBinding
-        path: metadata/annotations
-        create: true
-      - kind: Role
-        path: metadata/annotations
-        create: true
-      - kind: RoleBinding
-        path: metadata/annotations
-        create: true

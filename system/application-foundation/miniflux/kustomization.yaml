@@ -1,0 +1,6 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- "./namespace-miniflux.yaml"
+- "./persistentvolume-pvc-5a02e06b-2e7b-45fe-9873-5a4629412ee3.yaml"

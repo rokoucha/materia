@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: argocd
 
 resources:
+  - ./application-foundation.yaml
   - ./1password-connect.yaml
   - ./argocd.yaml
   - ./authentik.yaml
