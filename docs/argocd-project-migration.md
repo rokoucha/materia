@@ -5,7 +5,11 @@
 
 2026-10-13: 30対象を `application-foundation` へ移管済み。UID、Namespace
 ラベル、静的 PV の spec、RBAC 内容を維持した。旧所有者の出力から対象を除去し、
-Operator 生成物と動的 PV は移管していない。以下は実施手順と今後の移管用手順。
+Operator 生成物と動的 PV は移管していない。既存の Running Pod 33個も UID を
+維持し、PVC の UID・spec・状態は変化していない。
+TeamSpeak は移管前から実クラスタで自動同期が停止していたため、その状態を
+Git に明記して維持する。他のアプリと基盤 Application は自動同期に戻した。
+以下は実施手順と今後の移管用手順。
 直接管理する全リソースの識別子は [棚卸し TSV](argocd-application-resources.tsv) に記録する。
 これは観測時点の一覧であり、移管直前に再取得する。Secret の内容は含まない。
 
