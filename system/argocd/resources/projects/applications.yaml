@@ -7,13 +7,47 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 
 spec:
-  clusterResourceWhitelist:
-    - group: "*"
+  clusterResourceWhitelist: []
+  namespaceResourceBlacklist:
+    - group: rbac.authorization.k8s.io
+      kind: "*"
+    - group: argoproj.io
       kind: "*"
   destinations:
-    - namespace: "*"
-      server: "*"
+    - namespace: apcupsd
+      server: https://kubernetes.default.svc
+    - namespace: cosense-cli-mcp
+      server: https://kubernetes.default.svc
+    - namespace: grafana
+      server: https://kubernetes.default.svc
+    - namespace: influxdb
+      server: https://kubernetes.default.svc
+    - namespace: loki
+      server: https://kubernetes.default.svc
+    - namespace: mahiron
+      server: https://kubernetes.default.svc
+    - namespace: mastodon
+      server: https://kubernetes.default.svc
+    - namespace: miniflux
+      server: https://kubernetes.default.svc
+    - namespace: mirakurun
+      server: https://kubernetes.default.svc
+    - namespace: nginx
+      server: https://kubernetes.default.svc
+    - namespace: otel-external
+      server: https://kubernetes.default.svc
+    - namespace: prometheus
+      server: https://kubernetes.default.svc
+    - namespace: sophie
+      server: https://kubernetes.default.svc
+    - namespace: switchbot-meter-exporter
+      server: https://kubernetes.default.svc
+    - namespace: teamspeak
+      server: https://kubernetes.default.svc
+    - namespace: tempo
+      server: https://kubernetes.default.svc
   orphanedResources:
     warn: false
   sourceRepos:
-    - "*"
+    - https://github.com/rokoucha/materia.git
+    - https://github.com/rokoucha/sophie.git

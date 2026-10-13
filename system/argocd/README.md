@@ -5,6 +5,13 @@
 Application resources are namespaced, so their permission belongs in
 `namespaceResourceWhitelist`, not `clusterResourceWhitelist`.
 
+`applications` permits only the materia and Sophie repositories, the local cluster,
+and the listed application namespaces. It cannot deploy cluster-scoped resources,
+RBAC, or Argo CD resources. Namespace, static PV, and RBAC ownership belongs to
+`application-foundation`. Add a new application namespace to both the foundation
+and the Project destinations. This shared Project permits access between its
+listed namespaces; workload and operator privileges are separate from this boundary.
+
 When first adopting `default`, its permission fields are owned by `argocd-server`.
 Server-side apply must take ownership of those fields to replace the old wildcard
 permissions. Check the resulting Project and all three root Applications after sync.
