@@ -1,3 +1,14 @@
+# Project boundaries
+
+`default` is managed here with no permitted sources, destinations, or resources.
+`root` permits only Applications in the `argocd` namespace on the local cluster.
+Application resources are namespaced, so their permission belongs in
+`namespaceResourceWhitelist`, not `clusterResourceWhitelist`.
+
+When first adopting `default`, its permission fields are owned by `argocd-server`.
+Server-side apply must take ownership of those fields to replace the old wildcard
+permissions. Check the resulting Project and all three root Applications after sync.
+
 # Repository authentication
 
 GitHub App credentials are stored once in the materia 1Password vault as

@@ -15,6 +15,7 @@ resources:
   - ./resources/monitor.yaml
   - ./resources/namespace.yaml
   - ./resources/projects/applications.yaml
+  - ./resources/projects/default.yaml
   - ./resources/projects/root.yaml
   - ./resources/projects/system.yaml
   - https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.4/manifests/install.yaml
