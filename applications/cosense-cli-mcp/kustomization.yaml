@@ -17,3 +17,31 @@ configMapGenerator:
     literals:
       - ISSUER=https://ccm.ggrel.net
       - OAUTH_CLIENTS_JSON=[{"id":"chatgpt","redirectUris":["https://chatgpt.com/connector/oauth/c6997YKGPl-u","https://chatgpt.com/connector_platform_oauth_redirect"]},{"id":"claude","redirectUris":["https://claude.ai/api/mcp/auth_callback"]}]
+
+transformers:
+  - |-
+    apiVersion: builtin
+    kind: AnnotationsTransformer
+    metadata:
+      name: transfer-protection
+    annotations:
+      argocd.argoproj.io/sync-options: Prune=false,Delete=false
+    fieldSpecs:
+      - kind: Namespace
+        path: metadata/annotations
+        create: true
+      - kind: PersistentVolume
+        path: metadata/annotations
+        create: true
+      - kind: ClusterRole
+        path: metadata/annotations
+        create: true
+      - kind: ClusterRoleBinding
+        path: metadata/annotations
+        create: true
+      - kind: Role
+        path: metadata/annotations
+        create: true
+      - kind: RoleBinding
+        path: metadata/annotations
+        create: true
