@@ -89,3 +89,8 @@ gateway:
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
+
+sidecar:
+  rules:
+    resource: configmap
+    searchNamespace: loki

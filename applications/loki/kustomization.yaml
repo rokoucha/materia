@@ -35,3 +35,13 @@ patches:
       metadata:
         name: loki-clusterrolebinding
       $patch: delete
+  - target:
+      kind: Deployment
+      name: loki-gateway
+    patch: |-
+      - op: add
+        path: /spec/template/spec/automountServiceAccountToken
+        value: false
+      - op: replace
+        path: /spec/template/spec/serviceAccountName
+        value: default

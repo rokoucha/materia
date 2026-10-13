@@ -5,3 +5,5 @@ resources:
 - "./namespace-loki.yaml"
 - "./clusterrole-loki-clusterrole.yaml"
 - "./clusterrolebinding-loki-clusterrolebinding.yaml"
+- ./role-loki.yaml
+- ./rolebinding-loki.yaml
