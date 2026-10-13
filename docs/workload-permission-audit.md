@@ -18,7 +18,10 @@ Deployment 注釈参照と Secret 注釈の偽装を Admission で拒否。Opera
 
 2026-10-13: API を使用しない名前付きアプリワークロードと apcupsd の
 自動 token マウントを停止。Redis/外部 OTel は専用 SA、Prometheus は CR
-で停止。CNPG/Loki sidecar と Mackerel/Google の明示投影を維持する。
+で停止。Running Pod 33個中29個には自動 API token がなく、
+例外は CNPG 3個と Loki 1個。Mackerel/Google の明示投影を維持し、
+CNPG Pod は再作成していない。Mackerel の更新、UPS メトリクス、
+Loki のログ取り込み、Sophie API と全46 Application の正常を確認した。
 
 ## 優先する調整
 
