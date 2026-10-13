@@ -9,6 +9,9 @@ CR の悪用や他 namespace への Secret 取り出し実験は実施してい�
 2026-10-13: 項目1の apcupsd は system Project / system-root へ移管済み。
 applications の配備先から除外し、ワークロードと Application の UID は維持した。
 
+2026-10-13: Loki は自 namespace の ConfigMap 読み取りだけに縮小し、
+gateway の API token 自動マウントを停止。
+
 ## 優先する調整
 
 | 順 | 対象 | 確認事項と調整案 |

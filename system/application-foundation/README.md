@@ -14,5 +14,6 @@ Their application Kustomizations delete only those rendered RBAC objects. On cha
 upgrades, compare RBAC output and update the foundation definitions and deletion
 patches together. Do not let a new chart RBAC name become application-owned.
 
-Loki's cluster-wide ConfigMap/Secret read permission is unchanged. Moving ownership
+Loki reads only ConfigMaps in its own namespace through Role/RoleBinding; Secret
+access and its former cluster-wide binding are removed. Moving ownership
 does not reduce workload or operator privileges; permission hardening is subsequent work.
