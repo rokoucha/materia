@@ -12,6 +12,15 @@ RBAC, or Argo CD resources. Namespace, static PV, and RBAC ownership belongs to
 and the Project destinations. This shared Project permits access between its
 listed namespaces; workload and operator privileges are separate from this boundary.
 
+`system` permits only the materia repository and the local cluster. Its cluster
+resource whitelist contains the 18 kinds used by the foundation and operators;
+[kind ownership](../../docs/argocd-system-cluster-permissions.tsv) was checked
+against all 27 system Applications on 2026-10-13. Namespace destinations remain
+unrestricted because system manages cluster-wide namespace configuration.
+On operator or chart upgrades, check rendered cluster kinds before adding permissions.
+System remains a trusted administrative Project: allowed RBAC, CRDs and admission
+resources can grant broad privileges. This whitelist is not isolation from system code.
+
 When first adopting `default`, its permission fields are owned by `argocd-server`.
 Server-side apply must take ownership of those fields to replace the old wildcard
 permissions. Check the resulting Project and all three root Applications after sync.
