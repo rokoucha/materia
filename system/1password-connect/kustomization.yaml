@@ -21,3 +21,6 @@ resources:
   - ./resources/namespace.yaml
   - ./resources/onepassword-token.yaml
   - ./resources/op-credentials.yaml
+  - ./resources/onepassword-item-references.yaml
+  - ./resources/onepassword-no-deployment-references.yaml
+  - ./resources/onepassword-secret-references.yaml

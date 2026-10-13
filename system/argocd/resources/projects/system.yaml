@@ -13,6 +13,10 @@ spec:
     - group: ""
       kind: PersistentVolume
     - group: admissionregistration.k8s.io
+      kind: ValidatingAdmissionPolicy
+    - group: admissionregistration.k8s.io
+      kind: ValidatingAdmissionPolicyBinding
+    - group: admissionregistration.k8s.io
       kind: MutatingAdmissionPolicy
     - group: admissionregistration.k8s.io
       kind: MutatingAdmissionPolicyBinding
