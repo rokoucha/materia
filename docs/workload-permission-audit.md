@@ -16,6 +16,10 @@ gateway の API token 自動マウントを停止。
 Deployment 注釈参照と Secret 注釈の偽装を Admission で拒否。Operator
 自体のクラスタ権限・Connect token は維持し、侵害時の分離は今後の検討対象。
 
+2026-10-13: API を使用しない名前付きアプリワークロードと apcupsd の
+自動 token マウントを停止。Redis/外部 OTel は専用 SA、Prometheus は CR
+で停止。CNPG/Loki sidecar と Mackerel/Google の明示投影を維持する。
+
 ## 優先する調整
 
 | 順 | 対象 | 確認事項と調整案 |

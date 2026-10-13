@@ -14,6 +14,7 @@ spec:
       labels:
         app: teamspeak
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 9987

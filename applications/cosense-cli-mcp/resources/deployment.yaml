@@ -14,6 +14,7 @@ spec:
       labels:
         app: cosense-cli-mcp
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: cosense-cli-mcp
           image: ghcr.io/rokoucha/cosense-cli-mcp:20261013.132845

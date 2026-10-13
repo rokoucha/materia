@@ -22,6 +22,7 @@ spec:
         agent.mackerel.starry.blue/apikey-secret-name: mackerel-apikey
         agent.mackerel.starry.blue/roles: Ggrel-DTV:mahiron
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 10001

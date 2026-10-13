@@ -31,6 +31,7 @@ spec:
       labels:
         app: elastic-exporter
     spec:
+      automountServiceAccountToken: false
       containers:
         - command:
             - /bin/elasticsearch_exporter

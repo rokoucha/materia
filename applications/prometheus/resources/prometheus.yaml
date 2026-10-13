@@ -5,6 +5,7 @@ metadata:
   name: prometheus
 
 spec:
+  automountServiceAccountToken: false
   image: quay.io/prometheus/prometheus:v3.15.0
   enableOTLPReceiver: true
   enableFeatures:

@@ -78,3 +78,5 @@ envFromConfigMaps:
 
 testFramework:
   enabled: false
+
+automountServiceAccountToken: false

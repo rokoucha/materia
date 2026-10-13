@@ -5,6 +5,7 @@ metadata:
   name: otelcol-external
 
 spec:
+  serviceAccount: otel-external
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 10001

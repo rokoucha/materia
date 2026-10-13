@@ -13,6 +13,7 @@ spec:
       labels:
         app: apcupsd
     spec:
+      automountServiceAccountToken: false
       nodeSelector:
         kubernetes.io/hostname: hydrogen
       containers:

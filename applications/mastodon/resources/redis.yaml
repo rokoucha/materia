@@ -5,6 +5,7 @@ metadata:
   name: redis
 
 spec:
+  serviceAccountName: redis
   kubernetesConfig:
     image: quay.io/opstree/redis:v8.10.1
   securityContext:

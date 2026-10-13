@@ -16,6 +16,7 @@ spec:
       labels:
         app: pix-smb400-gateway
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 10001

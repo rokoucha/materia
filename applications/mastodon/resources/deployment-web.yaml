@@ -16,6 +16,7 @@ spec:
       labels:
         app: web
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 991

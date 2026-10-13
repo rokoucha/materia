@@ -41,3 +41,6 @@ service:
 securityContext:
   seccompProfile:
     type: RuntimeDefault
+
+serviceAccount:
+  automountServiceAccountToken: false

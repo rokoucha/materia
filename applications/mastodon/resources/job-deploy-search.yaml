@@ -10,6 +10,7 @@ spec:
   completions: 1
   template:
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 991
