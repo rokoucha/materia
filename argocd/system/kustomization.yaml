@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: argocd
 
 resources:
+  - ./apcupsd.yaml
   - ./application-foundation.yaml
   - ./1password-connect.yaml
   - ./argocd.yaml

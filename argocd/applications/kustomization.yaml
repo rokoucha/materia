@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: argocd
 
 resources:
-  - ./apcupsd.yaml
   - ./cosense-cli-mcp.yaml
   - ./grafana.yaml
   - ./influxdb.yaml
