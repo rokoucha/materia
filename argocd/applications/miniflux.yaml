@@ -30,5 +30,6 @@ spec:
     targetRevision: HEAD
   syncPolicy:
     automated:
+      enabled: false
       prune: true
       selfHeal: true
