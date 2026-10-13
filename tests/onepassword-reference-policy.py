@@ -12,8 +12,12 @@ for key in ['item-path','item-name']:
 d={'apiVersion':'v1','kind':'Secret','metadata':{'name':'onepassword-admission-probe','namespace':'mahiron','annotations':{'operator.1password.io/item-path':'vaults/materia/items/argocd-secret','operator.1password.io/item-version':'0'}}};cases.append(('Secret poller injection',d,False))
 x=copy.deepcopy(d);x['metadata']['name']='mahiron-config';cases.append(('approved Secret annotation rewrite',x,False))
 x={'apiVersion':'v1','kind':'Secret','metadata':{'name':'onepassword-admission-probe','namespace':'mahiron'}};cases.append(('ordinary Secret',x,True))
+x={'apiVersion':'v1','kind':'Secret','metadata':{'name':'mahiron-config','namespace':'mahiron'}};cases.append(('ordinary managed Secret update',x,True))
+x=copy.deepcopy(d);x['metadata']['name']='mahiron-config';x['metadata']['annotations']['operator.1password.io/item-path']='vaults/materia/items/mahiron-config';cases.append(('Operator Secret annotation update',x,True))
 for label,d,allowed in cases:
- r=subprocess.run(['kubectl','apply','--server-side','--dry-run=server','--force-conflicts','--field-manager=onepassword-admission-check','-f','-','-o','name'],input=json.dumps(d),text=True,capture_output=True)
+ cmd=['kubectl','apply','--server-side','--dry-run=server','--force-conflicts','--field-manager=onepassword-admission-check','-f','-','-o','name']
+ if label=='Operator Secret annotation update':cmd+=['--as=system:serviceaccount:1password:onepassword-connect-operator']
+ r=subprocess.run(cmd,input=json.dumps(d),text=True,capture_output=True)
  matched="ValidatingAdmissionPolicy 'onepassword-" in r.stderr
  if allowed:assert r.returncode==0 and not matched,(label,r.stderr)
  elif mode=='audit':assert r.returncode==0 and matched,(label,r.returncode,r.stderr)

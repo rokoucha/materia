@@ -14,7 +14,7 @@ The Secret's canonical ID path is maintained by the Operator; it may differ from
 the approved OnePasswordItem's title path. `enableAnnotations` remains enabled.
 
 Policies first ran in Warn/Audit with 36 dry-run cases and no CEL type warnings,
-then switched to Deny. Run `python3 tests/onepassword-reference-policy.py` from the
+then switched to Deny and passed 38 cases including managed Secret and Operator updates. Run `python3 tests/onepassword-reference-policy.py` from the
 repository root with cluster access. Tests use server dry-run only and create no
 probe resources. Verify Operator-managed Secret updates and Application health too.
 
