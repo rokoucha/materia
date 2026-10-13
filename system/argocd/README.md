@@ -48,3 +48,7 @@ from the two old registrations. Do not delete the whole repository Secrets:
 Argo CD now tracks them through this Kustomization. Verify that each registration
 has only `type` and `url`, and both connections still succeed. Repository-specific
 credentials otherwise override the shared template.
+
+`apcupsd` is a system Application because it requires a privileged UPS Pod. Its
+namespace is excluded from applications destinations. The system Project now has
+28 Applications; this move adds no cluster resource kinds to its whitelist.

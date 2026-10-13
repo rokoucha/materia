@@ -14,8 +14,6 @@ spec:
     - group: argoproj.io
       kind: "*"
   destinations:
-    - namespace: apcupsd
-      server: https://kubernetes.default.svc
     - namespace: cosense-cli-mcp
       server: https://kubernetes.default.svc
     - namespace: grafana
