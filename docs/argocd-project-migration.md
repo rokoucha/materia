@@ -2,6 +2,10 @@
 
 2026-10-13 に実クラスタと materia / Sophie の定義を確認した。
 対象は `applications` Project の 16 Application。確認時はすべて Synced。
+
+2026-10-13: 30対象を `application-foundation` へ移管済み。UID、Namespace
+ラベル、静的 PV の spec、RBAC 内容を維持した。旧所有者の出力から対象を除去し、
+Operator 生成物と動的 PV は移管していない。以下は実施手順と今後の移管用手順。
 直接管理する全リソースの識別子は [棚卸し TSV](argocd-application-resources.tsv) に記録する。
 これは観測時点の一覧であり、移管直前に再取得する。Secret の内容は含まない。
 

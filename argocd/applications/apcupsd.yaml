@@ -8,6 +8,7 @@ metadata:
 
 spec:
   destination:
+    namespace: apcupsd
     server: https://kubernetes.default.svc
   project: applications
   source:
@@ -16,6 +17,5 @@ spec:
     targetRevision: HEAD
   syncPolicy:
     automated:
-      enabled: false
       prune: true
       selfHeal: true

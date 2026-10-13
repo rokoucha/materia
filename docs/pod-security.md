@@ -18,9 +18,10 @@
 - nginx（UID/GID 101、cache / PID は emptyDir、低ポート用 NET_BIND_SERVICE のみ追加）
 - tailscale（Operator を UID/GID 65532 で実行。現在 Proxy / Connector は未使用）
 - teamspeak（entrypoint と同じ UID/GID 9987、既存データ所有権を維持）
-- sophie（Namespace の管理元は Sophie リポジトリ）
+- sophie（Namespace の管理元は materia の application-foundation）
 
-Namespace ラベルは各ワークロードの Kustomization で管理する。
+アプリ Namespace のラベルは `system/application-foundation` で管理する。
+基盤 Namespace のラベルは各基盤ワークロードの Kustomization で管理する。
 組み込みの default / kube-public / kube-node-lease は `system/pod-security` で管理し、
 Argo CD による prune / Application 削除時の Namespace 削除を無効にする。
 Cilium の Secret 用 Namespace は Helm の `secretsNamespaceLabels` で指定する。

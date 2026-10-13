@@ -8,6 +8,7 @@ metadata:
 
 spec:
   destination:
+    namespace: miniflux
     server: https://kubernetes.default.svc
   ignoreDifferences:
     - jsonPointers:
@@ -30,6 +31,5 @@ spec:
     targetRevision: HEAD
   syncPolicy:
     automated:
-      enabled: false
       prune: true
       selfHeal: true

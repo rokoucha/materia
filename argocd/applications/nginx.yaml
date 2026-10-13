@@ -8,6 +8,7 @@ metadata:
 
 spec:
   destination:
+    namespace: nginx
     server: https://kubernetes.default.svc
   ignoreDifferences:
     - jsonPointers:
@@ -45,6 +46,5 @@ spec:
     targetRevision: HEAD
   syncPolicy:
     automated:
-      enabled: false
       prune: true
       selfHeal: true
