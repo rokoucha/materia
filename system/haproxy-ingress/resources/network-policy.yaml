@@ -167,3 +167,25 @@ spec:
         - ports:
             - port: "9000"
               protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: crd-job-egress
+  namespace: haproxy-controller
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: haproxy-ingress-kubernetes-ingress-proxy
+      k8s:app.kubernetes.io/instance: haproxy-ingress
+      k8s:batch.kubernetes.io/job-name: haproxy-ingress-kubernetes-ingress-crdjob
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
