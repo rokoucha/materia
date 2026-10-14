@@ -31,7 +31,7 @@ spec:
             allowPrivilegeEscalation: false
             capabilities:
               drop: [ALL]
-          image: ghcr.io/tailscale/tailscale:v1.102.5
+          image: ghcr.io/tailscale/tailscale:v1.104.1
           env:
             - name: TS_AUTHKEY
               valueFrom:
