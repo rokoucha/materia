@@ -7,6 +7,7 @@ resources:
   - ./apcupsd.yaml
   - ./application-foundation.yaml
   - ./1password-connect.yaml
+  - ./1password-applications.yaml
   - ./argocd.yaml
   - ./authentik.yaml
   - ./cert-manager.yaml

@@ -1,0 +1,33 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: 1password-applications
+helmCharts:
+- name: connect
+  releaseName: connect
+  namespace: 1password-applications
+  version: 2.4.2
+  repo: https://1password.github.io/connect-helm-charts
+  includeCRDs: false
+  valuesInline:
+    operator:
+      autoRestart: true
+      create: true
+      enableAnnotations: true
+      replicas: 0
+      watchNamespace:
+      - cosense-cli-mcp
+      - grafana
+      - mahiron
+      - mastodon
+      - miniflux
+      - mirakurun
+      - otel-external
+      - sophie
+      - switchbot-meter-exporter
+      roleBinding:
+        create: false
+      clusterRole:
+        create: false
+      clusterRoleBinding:
+        name: onepassword-applications-operator
