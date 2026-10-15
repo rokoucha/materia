@@ -38,7 +38,7 @@ spec:
             allowPrivilegeEscalation: false
             capabilities:
               drop: [ALL]
-          image: ghcr.io/rokoucha/mahiron:2026.1013.153620-nightly
+          image: ghcr.io/rokoucha/mahiron:2026.1014.220828-nightly
           resources:
             requests:
               cpu: 400m
