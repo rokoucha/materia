@@ -51,3 +51,22 @@ patches:
           pod-security.kubernetes.io/warn-version: v1.37
           pod-security.kubernetes.io/audit: restricted
           pod-security.kubernetes.io/audit-version: v1.37
+  - target:
+      kind: ClusterRole
+      name: opentelemetry-operator-manager-role
+    patch: |-
+      - op: replace
+        path: /rules
+        value:
+          - nonResourceURLs: [/version]
+            verbs: [get]
+          - apiGroups: [""]
+            resources: [namespaces]
+            verbs: [get, list, watch]
+  - target:
+      kind: Deployment
+      name: opentelemetry-operator-controller-manager
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --watch-namespace=monitoring,otel-external
