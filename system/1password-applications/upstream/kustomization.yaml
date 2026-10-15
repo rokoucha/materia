@@ -16,6 +16,14 @@ helmCharts:
       enableAnnotations: true
       replicas: 1
       watchNamespace:
+      - cosense-cli-mcp
+      - grafana
+      - mahiron
+      - mastodon
+      - miniflux
+      - mirakurun
+      - otel-external
+      - sophie
       - switchbot-meter-exporter
       roleBinding:
         create: false

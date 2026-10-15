@@ -5,4 +5,4 @@ metadata:
   name: cloudflare-ddns-apitoken
 
 spec:
-  itemPath: vaults/materia/items/cloudflare-ddns
+  itemPath: vaults/materia-system/items/cloudflare-ddns

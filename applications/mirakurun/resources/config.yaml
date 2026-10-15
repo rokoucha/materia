@@ -5,4 +5,4 @@ metadata:
   name: mirakurun-config
 
 spec:
-  itemPath: vaults/materia/items/mirakurun-config
+  itemPath: vaults/materia-applications/items/mirakurun-config

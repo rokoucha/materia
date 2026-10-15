@@ -6,4 +6,4 @@ metadata:
   namespace: cert-manager
 
 spec:
-  itemPath: vaults/materia/items/certbot-cloudflare
+  itemPath: vaults/materia-system/items/certbot-cloudflare

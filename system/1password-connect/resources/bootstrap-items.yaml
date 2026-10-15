@@ -1,0 +1,32 @@
+---
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+metadata:
+  name: op-credentials-system
+  namespace: 1password
+spec:
+  itemPath: vaults/materia-system/items/onepassword-system-credentials
+---
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+metadata:
+  name: onepassword-token-system
+  namespace: 1password
+spec:
+  itemPath: vaults/materia-system/items/onepassword-system-token
+---
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+metadata:
+  name: op-credentials
+  namespace: 1password-applications
+spec:
+  itemPath: vaults/materia-system/items/onepassword-applications-credentials
+---
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+metadata:
+  name: onepassword-token
+  namespace: 1password-applications
+spec:
+  itemPath: vaults/materia-system/items/onepassword-applications-token

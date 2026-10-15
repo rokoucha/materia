@@ -6,4 +6,4 @@ metadata:
   namespace: external-dns
 
 spec:
-  itemPath: vaults/materia/items/external-dns-secrets
+  itemPath: vaults/materia-system/items/external-dns-secrets

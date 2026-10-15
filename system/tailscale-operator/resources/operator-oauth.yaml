@@ -5,4 +5,4 @@ metadata:
   name: operator-oauth
 
 spec:
-  itemPath: vaults/materia/items/tailscale-operator-oauth
+  itemPath: vaults/materia-system/items/tailscale-operator-oauth

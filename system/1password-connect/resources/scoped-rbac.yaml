@@ -19,8 +19,10 @@ rules:
   resources:
   - secrets
   resourceNames:
-  - onepassword-token
+  - op-credentials-system
+  - onepassword-token-system
   - op-credentials
+  - onepassword-token
   verbs:
   - update
   - patch
@@ -48,8 +50,10 @@ rules:
   - onepassworditems/status
   - onepassworditems/finalizers
   resourceNames:
-  - onepassword-token
+  - op-credentials-system
+  - onepassword-token-system
   - op-credentials
+  - onepassword-token
   verbs:
   - update
   - patch
@@ -417,88 +421,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: onepassword-connect-operator
-  namespace: cosense-cli-mcp
-rules:
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  resourceNames:
-  - cosense-cli-mcp-secrets
-  verbs:
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  - onepassworditems/status
-  - onepassworditems/finalizers
-  resourceNames:
-  - cosense-cli-mcp-secrets
-  verbs:
-  - update
-  - patch
-- apiGroups:
-  - ''
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  resourceNames:
-  - deployment
-  verbs:
-  - update
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: onepassword-connect-operator
-  namespace: cosense-cli-mcp
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: onepassword-connect-operator
-subjects:
-- kind: ServiceAccount
-  name: onepassword-connect-operator
-  namespace: 1password
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: onepassword-connect-operator
   namespace: docker-registry-secrets
 rules:
 - apiGroups:
@@ -659,88 +581,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: onepassword-connect-operator
-  namespace: grafana
-rules:
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  resourceNames:
-  - grafana-secrets
-  verbs:
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  - onepassworditems/status
-  - onepassworditems/finalizers
-  resourceNames:
-  - grafana-secrets
-  verbs:
-  - update
-  - patch
-- apiGroups:
-  - ''
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  resourceNames:
-  - grafana
-  verbs:
-  - update
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: onepassword-connect-operator
-  namespace: grafana
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: onepassword-connect-operator
-subjects:
-- kind: ServiceAccount
-  name: onepassword-connect-operator
-  namespace: 1password
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: onepassword-connect-operator
   namespace: mackerel-operator
 rules:
 - apiGroups:
@@ -823,334 +663,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: onepassword-connect-operator
-  namespace: mahiron
-rules:
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  resourceNames:
-  - mackerel-apikey
-  - mahiron-config
-  - pix-smb400-gateway-auth
-  verbs:
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  - onepassworditems/status
-  - onepassworditems/finalizers
-  resourceNames:
-  - mackerel-apikey
-  - mahiron-config
-  - pix-smb400-gateway-auth
-  verbs:
-  - update
-  - patch
-- apiGroups:
-  - ''
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  resourceNames:
-  - pix-smb400-gateway
-  verbs:
-  - update
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: onepassword-connect-operator
-  namespace: mahiron
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: onepassword-connect-operator
-subjects:
-- kind: ServiceAccount
-  name: onepassword-connect-operator
-  namespace: 1password
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: onepassword-connect-operator
-  namespace: mastodon
-rules:
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  resourceNames:
-  - mastodon-secrets
-  verbs:
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  - onepassworditems/status
-  - onepassworditems/finalizers
-  resourceNames:
-  - mastodon-secrets
-  verbs:
-  - update
-  - patch
-- apiGroups:
-  - ''
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  resourceNames:
-  - mastodon-sidekiq
-  - mastodon-streaming
-  - mastodon-web
-  verbs:
-  - update
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: onepassword-connect-operator
-  namespace: mastodon
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: onepassword-connect-operator
-subjects:
-- kind: ServiceAccount
-  name: onepassword-connect-operator
-  namespace: 1password
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: onepassword-connect-operator
-  namespace: miniflux
-rules:
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  resourceNames:
-  - miniflux-secrets
-  verbs:
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  - onepassworditems/status
-  - onepassworditems/finalizers
-  resourceNames:
-  - miniflux-secrets
-  verbs:
-  - update
-  - patch
-- apiGroups:
-  - ''
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  resourceNames:
-  - deployment
-  verbs:
-  - update
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: onepassword-connect-operator
-  namespace: miniflux
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: onepassword-connect-operator
-subjects:
-- kind: ServiceAccount
-  name: onepassword-connect-operator
-  namespace: 1password
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: onepassword-connect-operator
-  namespace: mirakurun
-rules:
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  resourceNames:
-  - mackerel-apikey
-  - mirakurun-config
-  verbs:
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  - onepassworditems/status
-  - onepassworditems/finalizers
-  resourceNames:
-  - mackerel-apikey
-  - mirakurun-config
-  verbs:
-  - update
-  - patch
-- apiGroups:
-  - ''
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: onepassword-connect-operator
-  namespace: mirakurun
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: onepassword-connect-operator
-subjects:
-- kind: ServiceAccount
-  name: onepassword-connect-operator
-  namespace: 1password
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: onepassword-connect-operator
   namespace: monitoring
 rules:
 - apiGroups:
@@ -1212,175 +724,6 @@ kind: RoleBinding
 metadata:
   name: onepassword-connect-operator
   namespace: monitoring
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: onepassword-connect-operator
-subjects:
-- kind: ServiceAccount
-  name: onepassword-connect-operator
-  namespace: 1password
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: onepassword-connect-operator
-  namespace: otel-external
-rules:
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  resourceNames:
-  - mackerel-apikey
-  - otelcol-external-token
-  verbs:
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  - onepassworditems/status
-  - onepassworditems/finalizers
-  resourceNames:
-  - mackerel-apikey
-  - otelcol-external-token
-  verbs:
-  - update
-  - patch
-- apiGroups:
-  - ''
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  resourceNames:
-  - otelcol-external-collector
-  verbs:
-  - update
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: onepassword-connect-operator
-  namespace: otel-external
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: onepassword-connect-operator
-subjects:
-- kind: ServiceAccount
-  name: onepassword-connect-operator
-  namespace: 1password
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: onepassword-connect-operator
-  namespace: sophie
-rules:
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-- apiGroups:
-  - ''
-  resources:
-  - secrets
-  resourceNames:
-  - sophie-secrets
-  verbs:
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - onepassword.com
-  resources:
-  - onepassworditems
-  - onepassworditems/status
-  - onepassworditems/finalizers
-  resourceNames:
-  - sophie-secrets
-  verbs:
-  - update
-  - patch
-- apiGroups:
-  - ''
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  resourceNames:
-  - server
-  - worker-media
-  - worker-ml-cpu
-  - worker-ml-gpu
-  verbs:
-  - update
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: onepassword-connect-operator
-  namespace: sophie
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -1537,6 +880,91 @@ kind: RoleBinding
 metadata:
   name: onepassword-connect-operator
   namespace: tailscale
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: onepassword-connect-operator
+subjects:
+- kind: ServiceAccount
+  name: onepassword-connect-operator
+  namespace: 1password
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: onepassword-connect-operator
+  namespace: 1password-applications
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  resourceNames:
+  - op-credentials
+  - onepassword-token
+  verbs:
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - onepassword.com
+  resources:
+  - onepassworditems
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - onepassword.com
+  resources:
+  - onepassworditems
+  - onepassworditems/status
+  - onepassworditems/finalizers
+  resourceNames:
+  - op-credentials
+  - onepassword-token
+  verbs:
+  - update
+  - patch
+- apiGroups:
+  - ''
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  resourceNames:
+  - onepassword-connect
+  - onepassword-connect-operator
+  verbs:
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: onepassword-connect-operator
+  namespace: 1password-applications
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

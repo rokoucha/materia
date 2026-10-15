@@ -5,4 +5,4 @@ metadata:
   name: otelcol-external-token
 
 spec:
-  itemPath: vaults/materia/items/otelcol-external-token
+  itemPath: vaults/materia-applications/items/otelcol-external-token

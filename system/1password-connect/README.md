@@ -1,36 +1,47 @@
 # 1Password reference boundary
 
-Native ValidatingAdmissionPolicy rules restrict OnePasswordItem CREATE/UPDATE to
-28 explicit namespace/name/itemPath references. New names, namespaces, alternate
-paths and aliases fail closed. Add approved references to both the item policy
-and Secret target policy before adding or changing a OnePasswordItem.
+`materia-system` and `materia-applications` are separate vaults with separate
+Connect servers and read-only API tokens. The system stack runs in `1password`;
+the application stack runs in `1password-applications`. Each Connect server and
+token is granted only its own vault. The old `materia` vault is retained for rollback.
 
-Deployment `operator.1password.io/item-path` and `item-name` references are denied.
-The Operator also polls annotated Secrets, so Secret reference/version annotations
-can only be set by `system:serviceaccount:1password:onepassword-connect-operator`
-on approved namespace/name targets. Existing references may remain unchanged during
-ordinary updates. Ordinary Secrets without reference annotations are unaffected.
-The Secret's canonical ID path is maintained by the Operator; it may differ from
-the approved OnePasswordItem's title path. `enableAnnotations` remains enabled.
+The application Operator watches only the nine application namespaces. It cannot
+read system Secrets or either Connect control namespace. The system Operator
+watches system namespaces and delivers both stacks' bootstrap credentials from
+`materia-system`. Bootstrap items are `onepassword-{system,applications}-{credentials,token}`.
+The system stack uses Secrets `op-credentials-system` and `onepassword-token-system`;
+the application stack uses `op-credentials` and `onepassword-token` in its namespace.
 
-Policies first ran in Warn/Audit with 36 dry-run cases and no CEL type warnings,
-then switched to Deny and passed 38 cases including managed Secret and Operator updates. Run `python3 tests/onepassword-reference-policy.py` from the
-repository root with cluster access. Tests use server dry-run only and create no
-probe resources. Verify Operator-managed Secret updates and Application health too.
+Native ValidatingAdmissionPolicy rules permit only explicit namespace/name/itemPath
+references. Deployment item annotations are denied. Secret reference annotations
+may only be set by the Operator assigned to that target; ordinary updates may
+preserve existing annotations. Canonical Secret ID paths differ from CR title paths.
+Operator Secret creation is restricted to approved names and cannot issue ServiceAccount
+tokens. Secret updates and CR mutations use named RBAC; Deployment restart permission
+is limited to existing consumers. Caches can still read Secrets within each watch namespace.
 
-This boundary restricts application authors, not a compromised Operator/Connect
-credential or cluster administrator. The Operator's Kubernetes RBAC is scoped to 20 namespaces. Secret mutations and
-Deployment restarts use explicit resource names. Secret creation is also restricted
-to approved targets by Admission; ServiceAccount token Secrets are denied for this
-Operator. The cache still reads Secrets within those namespaces. Vault access and
-credential partitioning remain separate work. See `docs/operator-namespace-permissions.md`.
+Add a reference to the item and Secret policies, scoped Role, and watch list together.
+Add new Deployment consumers to the restart names. `enableAnnotations`, automatic
+restart and the 600-second polling interval remain enabled. Mackerel's application
+and system vault entries temporarily share the same provider API key; splitting
+that key is separate work.
 
-To roll back enforcement, change the bindings to Warn/Audit through Git, keeping
-the policy definitions for diagnosis. Do not delete OnePasswordItems or Secrets.
+Workload items were copied before switching references; old items remain intact.
+Copies get new IDs and item versions. An attachment sharing a field's name is kept
+in an `Original attachments` section so the CLI preserves both. Empty Date values
+may be normalized to zero by the CLI; credential values and attachment bytes must
+still match. No credential values belong in Git.
 
-Source: [Operator implementation](https://github.com/1Password/onepassword-operator),
-[Kubernetes policy semantics](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/).
+For recovery, restore Connect credentials/token from `materia-system` through an
+administrator before starting the stacks: each stack cannot bootstrap its own API
+from an unavailable Connect. Keep the generated credentials in 1Password. To revert
+a vault switch, restore the old watch/RBAC and reference permissions before reverting
+CR paths; use the old Connect credentials retained in `materia`. Do not rotate or
+revoke Mackerel's shared key during this rollback.
 
-Current verification: 88 RBAC cases and 68 Admission dry-run cases. Keep the
-Secret reference policies, scoped Roles, restart Deployment names and WATCH_NAMESPACE
-in sync when adding a reference or consumer.
+Run `python3 tests/operator-namespace-permissions.py` and
+`python3 tests/onepassword-reference-policy.py` with cluster access. The latter uses
+server dry-run only. Verify both Connect APIs reject the opposite and old vault,
+all OnePasswordItems are Ready, Secret data and UIDs are preserved, and applications
+and provider integrations remain healthy. This boundary does not constrain cluster
+administrators or other privileged Operators with independent Secret access.

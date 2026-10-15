@@ -10,7 +10,7 @@ Mackerel Operator は 0.4.1 ベースの fork で Secret watch を無効化し�
 | CNPG | authentik / mastodon / miniflux / sophie | 4 namespace は管理権限、cnpg-system はキャッシュの読み取りと設定・証明書・Lease・Events 管理 | Node / ClusterImageCatalog の読み取りと mutating / validating webhook の取得・更新 |
 | OTel | monitoring / otel-external | 2 namespace の Collector・関連リソース管理、自身のリーダー選出、default の API server EndpointSlice 読み取り | Namespace 読み取り・/version、メトリクス認証用 TokenReview / SubjectAccessReview |
 | Prometheus | prometheus | workload と Secret・ConfigMap・StatefulSet 管理、kube-system の kubelet Service/Endpoints 管理 | 全 namespace の監視定義参照・status 更新・Events、Node / Namespace 読み取り・StorageClass 取得 |
-| 1Password | 承認済み28参照の20 namespace | Secret 同期・OnePasswordItem 更新と28 Deployment の再起動。Secret 更新・削除は名前限定 | 対象20 Namespace の get のみ |
+| 1Password | system は基盤12 namespace、applications はアプリ9 namespace | 分離した Connect/vault と SA。Secret 同期・CR 更新・Deployment 再起動は対象 realm 内の既存名に限定 | 各 watch 対象 Namespace の get のみ |
 | Mackerel | argocd / authentik / mastodon / nginx の6 ExternalMonitor | 既存6名の CR patch・finalizer/status 更新、自身の Lease/Events | 全 ExternalMonitor の get/list/watch のみ |
 
 ECK の標準 createClusterScopedResources=false は webhook / StorageClass 検証を
@@ -79,7 +79,7 @@ Connect 管理は引き続き Helm、AUTO_RESTART と600秒の poll は維持。
 確認: RBAC 全88ケース、Admission 全68ケース、28 OnePasswordItem Ready と
 起動時の全28 Secret 再調整、Secret UID・データハッシュ・item version の維持。
 共通 Connect token / vault と、対象 namespace 内の Secret 読み取り権限は残る。
-Connect 資格情報のアプリ・基盤間分離は未実施。
+Connect 資格情報は下記の2 realm に分離する。
 
 ## Mackerel Secret watch 対応
 
@@ -108,4 +108,13 @@ namespace 制限は実 API server の metadata informer テストでも確認し
 
 Mackerel の ExternalMonitor 参照はクラスタ全体に残る。更新先は既存6名に限定している。
 新規監視を追加するときは scoped-rbac.yaml の名前制約も更新する。agent の kubelet 参照と
-明示 token 投影は維持する。1Password の共通 Connect/vault 資格情報分離も未実施。
+明示 token 投影は維持する。Mackerel API key は当面 realm 間で共有を許す。
+
+## 1Password vault 分離
+
+`materia-system` と `materia-applications` を新規作成し、各 vault 専用の Connect と
+read-only token を発行する。既存 `materia` はリネームせず切り戻し用に保持する。
+アプリ側 Operator は基盤 namespace と両 Connect の control namespace を watch しない。
+基盤側 Operator が両 Connect の bootstrap Secret を同期する。
+参照・Secret 書き込みの Admission と各 realm の RBAC も対応させる。
+[構成と復旧手順](../system/1password-connect/README.md)を参照。

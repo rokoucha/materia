@@ -5,4 +5,4 @@ metadata:
   name: mackerel-apikey
 
 spec:
-  itemPath: vaults/materia/items/mackerel-apikey
+  itemPath: vaults/materia-system/items/mackerel-apikey

@@ -27,9 +27,9 @@ permissions. Check the resulting Project and all three root Applications after s
 
 # Repository authentication
 
-GitHub App credentials are stored once in the materia 1Password vault as
+GitHub App credentials are stored once in the `materia-system` 1Password vault as
 `argocd-github-app`. `resources/github-app-credentials.yaml` references that
-item by stable ID; the existing Operator creates the `repo-creds` Secret and
+item by its approved title; the existing Operator creates the `repo-creds` Secret and
 preserves its label. The item fields are `type=git`,
 `url=https://github.com/rokoucha/`, `githubAppID`, `githubAppInstallationID`,
 and concealed `githubAppPrivateKey`. The trailing slash limits prefix matching
