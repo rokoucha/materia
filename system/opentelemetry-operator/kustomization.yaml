@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - ./resources/network-policy.yaml
-  - https://github.com/open-telemetry/opentelemetry-operator/releases/download/v0.160.0/opentelemetry-operator.yaml
+  - https://github.com/open-telemetry/opentelemetry-operator/releases/download/v0.161.0/opentelemetry-operator.yaml
 
 patches:
   - target:
