@@ -14,16 +14,8 @@ helmCharts:
       autoRestart: true
       create: true
       enableAnnotations: true
-      replicas: 0
+      replicas: 1
       watchNamespace:
-      - cosense-cli-mcp
-      - grafana
-      - mahiron
-      - mastodon
-      - miniflux
-      - mirakurun
-      - otel-external
-      - sophie
       - switchbot-meter-exporter
       roleBinding:
         create: false

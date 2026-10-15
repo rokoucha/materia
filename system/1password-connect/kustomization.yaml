@@ -22,7 +22,7 @@ patches:
         value:
           - apiGroups: [""]
             resources: [namespaces]
-            resourceNames: ["1password", "argocd", "authentik", "cert-manager", "cloudflare-ddns", "cosense-cli-mcp", "docker-registry-secrets", "external-dns", "grafana", "mackerel-operator", "mahiron", "mastodon", "miniflux", "mirakurun", "monitoring", "otel-external", "sophie", "switchbot-meter-exporter", "synology-csi", "tailscale"]
+            resourceNames: ["1password", "argocd", "authentik", "cert-manager", "cloudflare-ddns", "cosense-cli-mcp", "docker-registry-secrets", "external-dns", "grafana", "mackerel-operator", "mahiron", "mastodon", "miniflux", "mirakurun", "monitoring", "otel-external", "sophie", "synology-csi", "tailscale"]
             verbs: [get]
   - target:
       kind: Deployment
@@ -39,4 +39,4 @@ patches:
               - name: onepassword-connect
                 env:
                   - name: WATCH_NAMESPACE
-                    value: 1password,argocd,authentik,cert-manager,cloudflare-ddns,cosense-cli-mcp,docker-registry-secrets,external-dns,grafana,mackerel-operator,mahiron,mastodon,miniflux,mirakurun,monitoring,otel-external,sophie,switchbot-meter-exporter,synology-csi,tailscale
+                    value: 1password,argocd,authentik,cert-manager,cloudflare-ddns,cosense-cli-mcp,docker-registry-secrets,external-dns,grafana,mackerel-operator,mahiron,mastodon,miniflux,mirakurun,monitoring,otel-external,sophie,synology-csi,tailscale

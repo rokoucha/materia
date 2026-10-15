@@ -5,4 +5,4 @@ metadata:
   name: switchbot-token
 
 spec:
-  itemPath: vaults/materia/items/switchbot-token
+  itemPath: vaults/materia-applications/items/switchbot-token
