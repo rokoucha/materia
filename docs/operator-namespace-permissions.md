@@ -1,6 +1,6 @@
 # Operator の namespace 権限
 
-2026-10-15: ECK 3.5.0 / Redis Operator 0.27.0 / CNPG 1.30.1 / OTel Operator 0.161.0 は watch と RBAC の双方を限定した。
+2026-10-15: ECK 3.5.0 / Redis Operator 0.27.0 / CNPG 1.30.1 / OTel Operator 0.161.0 / Prometheus Operator 0.94.1 は watch と RBAC の双方を限定した。
 
 | Operator | 管理対象 | namespace 内の権限 | 残すクラスタ権限 |
 | --- | --- | --- | --- |
@@ -8,6 +8,7 @@
 | Redis | mastodon | mastodon の管理権限と redis-operator 内のチャート標準 Role | Operator SA の cluster binding なし |
 | CNPG | authentik / mastodon / miniflux / sophie | 4 namespace は管理権限、cnpg-system はキャッシュの読み取りと設定・証明書・Lease・Events 管理 | Node / ClusterImageCatalog の読み取りと mutating / validating webhook の取得・更新 |
 | OTel | monitoring / otel-external | 2 namespace の Collector・関連リソース管理、自身のリーダー選出、default の API server EndpointSlice 読み取り | Namespace 読み取り・/version、メトリクス認証用 TokenReview / SubjectAccessReview |
+| Prometheus | prometheus | workload と Secret・ConfigMap・StatefulSet 管理、kube-system の kubelet Service/Endpoints 管理 | 全 namespace の監視定義参照・status 更新・Events、Node / Namespace 読み取り・StorageClass 取得 |
 
 ECK の標準 createClusterScopedResources=false は webhook / StorageClass 検証を
 無効にするため使わない。managedNamespaces は mastodon に固定し、ClusterRole の
@@ -47,10 +48,21 @@ PodMonitor 探索とデータ収集の権限は維持する。23 監視ジョブ
 ターゲット割り当て、メトリクス・ログ・トレース転送数の増加、Loki の新着ログを確認。
 Collector / Target Allocator の7 Pod の UID を維持し、権限テストは合計54ケース。
 
+Prometheus は各 *-instance-namespaces と alertmanager-config-namespaces を prometheus
+に限定し、watch-referenced-objects-in-all-namespaces=false とする。管理用 Role と
+kubelet 用 Role を分離し、対象外の Secret・StatefulSet 操作を拒否する。
+ServiceMonitor / PodMonitor / Probe / ScrapeConfig / PrometheusRule は引き続き
+全 namespace を参照し、status 更新とイベント記録を許可する。別 namespace の監視定義で
+Secret / ConfigMap を参照する場合は、対象を精査して追加の読み取り権限を設計する。
+
+namespace 変換は upstream サブディレクトリだけに適用する。固定リリース更新時は
+upstream と config-reloader のバージョン、管理用 Role と ClusterRole パッチを照合する。
+再調整成功・kubelet 同期成功・失敗数0、Pod/PVC UID 維持、全70権限ケース通過を確認。
+Prometheus の直接 scrape 対象は変更前後とも0件で、OTel 経由の受信構成を維持する。
+TSDB の最新時刻・サンプルを確認し、全46 Application が Synced / Healthy。
+
 ## 他の Operator の残作業
 
-- Prometheus: operand は prometheus。全 namespace の参照監視と Secret/StatefulSet
-  管理の依存を分け、Operator の参照対象オプションと併せて検証する。
 - 1Password: 既存28参照の Admission 制約を維持。共通 Connect/vault の分離と
   cluster-wide Kubernetes RBAC の縮小は別途必要。
 - Mackerel: namespace 横断の監視・注入で使用する Secret の集合を先に固定する。
