@@ -70,3 +70,13 @@ patches:
       - op: add
         path: /spec/template/spec/containers/0/args/-
         value: --watch-namespace=monitoring,otel-external
+  - target:
+      kind: Role
+      name: opentelemetry-operator-leader-election-role
+    patch: |-
+      - op: add
+        path: /rules/-
+        value:
+          apiGroups: [coordination.k8s.io]
+          resources: [leases]
+          verbs: [create, get, list, update]
