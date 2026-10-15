@@ -12,7 +12,16 @@ for target in ['monitoring','otel-external']:
   cases.append(('opentelemetry-operator-system','opentelemetry-operator-controller-manager',verb,res,target,True))
 for verb,res,target,want in [('get','secrets','argocd',False),('create','deployments.apps','sophie',False),('create','servicemonitors.monitoring.coreos.com','sophie',False),('list','secrets','default',False),('list','endpointslices.discovery.k8s.io','default',True),('update','leases.coordination.k8s.io','opentelemetry-operator-system',True),('patch','namespaces',None,False),('create','clusterrolebindings.rbac.authorization.k8s.io',None,False)]:
  cases.append(('opentelemetry-operator-system','opentelemetry-operator-controller-manager',verb,res,target,want))
+for verb,res,target,want in [('get','secrets','prometheus',True),('list','secrets','prometheus',True),('create','statefulsets.apps','prometheus',True),('patch','prometheuses.monitoring.coreos.com','prometheus',True),('get','secrets','argocd',False),('list','secrets','monitoring',False),('create','statefulsets.apps','sophie',False),('delete','pods','kube-system',False),('update','endpoints','kube-system',True),('update','services','kube-system',True),('create','endpoints','monitoring',False),('list','servicemonitors.monitoring.coreos.com','sophie',True),('list','prometheusrules.monitoring.coreos.com','monitoring',True),('update','servicemonitors/status.monitoring.coreos.com','sophie',True),('patch','namespaces',None,False),('create','clusterrolebindings.rbac.authorization.k8s.io',None,False)]:
+ cases.append(('prometheus-operator','prometheus-operator',verb,res,target,want))
 for ns,sa,verb,res,target,want in cases:
- cmd=['kubectl','auth','can-i',verb,res,'--as=system:serviceaccount:'+ns+':'+sa,'--as-group=system:serviceaccounts','--as-group=system:serviceaccounts:'+ns,'--as-group=system:authenticated']
+ resource=res
+ subresource=None
+ if '/' in res:
+  resource,sub=res.split('/',1)
+  subresource,sep,group=sub.partition('.')
+  if sep:resource+='.'+group
+ cmd=['kubectl','auth','can-i',verb,resource,'--as=system:serviceaccount:'+ns+':'+sa,'--as-group=system:serviceaccounts','--as-group=system:serviceaccounts:'+ns,'--as-group=system:authenticated']
+ if subresource:cmd+=['--subresource',subresource]
  if target:cmd+=['-n',target]
  r=subprocess.run(cmd,capture_output=True,text=True);got=r.stdout.strip()=='yes';assert got==want,(cmd,r.stdout,r.stderr);print(ns,verb,res,target or 'cluster',r.stdout.strip())
