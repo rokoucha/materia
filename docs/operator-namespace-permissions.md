@@ -118,3 +118,10 @@ read-only token を発行する。既存 `materia` はリネームせず切り�
 基盤側 Operator が両 Connect の bootstrap Secret を同期する。
 参照・Secret 書き込みの Admission と各 realm の RBAC も対応させる。
 [構成と復旧手順](../system/1password-connect/README.md)を参照。
+
+確認: 全29 OnePasswordItem Ready、全47 Application Synced / Healthy、両 Connect の
+反対 realm と旧 vault へのアクセス403、RBAC 114ケース・Admission 73ケースを確認。既存25 Secret の
+UID・type は維持し、24件は元データハッシュが一致（cosense の空Date 2項目の
+0正規化による追加キーを除く）。argocd-secret は旧・新 vault の4値が一致し、
+実Secretがその値へ再同期されたため移行前の実データハッシュとは異なる。
+通常workload Pod UID は維持し、Sophie API・Mackerel host・Prometheus 収集を確認した。

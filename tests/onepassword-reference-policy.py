@@ -19,12 +19,20 @@ x={'apiVersion':'v1','kind':'Secret','metadata':{'name':'onepassword-admission-p
 x={'apiVersion':'v1','kind':'Secret','metadata':{'name':'mackerel-apikey','namespace':'mahiron','annotations':{'kubernetes.io/service-account.name':'default'}},'type':'kubernetes.io/service-account-token'};cases.append(('Operator ServiceAccount token',x,False))
 for i in items:
  m=i['metadata'];d={'apiVersion':'v1','kind':'Secret','metadata':{'name':m['name'],'namespace':m['namespace'],'annotations':{'operator.1password.io/item-path':i['spec']['itemPath'],'operator.1password.io/item-version':'0'}}};cases.append(('Operator managed Secret '+m['namespace']+'/'+m['name'],d,True))
+x=copy.deepcopy(cases[0][1]);x['spec']['itemPath']='vaults/materia/items/onepassword-token';cases.append(('old vault reference',x,False))
+for ns,name in [('argocd','argocd-secret'),('mahiron','mackerel-apikey')]:
+ x={'apiVersion':'v1','kind':'Secret','metadata':{'name':name,'namespace':ns}}
+ cases.append(('Operator wrong realm '+ns,x,False))
 for label,d,allowed in cases:
  cmd=['kubectl','apply','--server-side','--dry-run=server','--force-conflicts','--field-manager=onepassword-admission-check','-f','-','-o','name']
  if label in {'Operator unknown Secret','Operator ServiceAccount token'}:cmd=['kubectl','create','--dry-run=server','-f','-','-o','name']
  if label.startswith('Operator '):
   system_namespaces={'1password','1password-applications','argocd','authentik','cert-manager','cloudflare-ddns','docker-registry-secrets','external-dns','mackerel-operator','monitoring','synology-csi','tailscale'}
   operator_namespace='1password' if d['metadata']['namespace'] in system_namespaces else '1password-applications'
+  if label.startswith('Operator wrong realm '):
+   operator_namespace='1password-applications' if operator_namespace=='1password' else '1password'
+   # Isolate Admission from RBAC without changing bindings or creating resources.
+   cmd+=['--as-group=system:masters']
   cmd+=['--as=system:serviceaccount:'+operator_namespace+':onepassword-connect-operator']
  r=subprocess.run(cmd,input=json.dumps(d),text=True,capture_output=True)
  matched="ValidatingAdmissionPolicy 'onepassword-" in r.stderr
