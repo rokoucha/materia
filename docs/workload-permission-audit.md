@@ -158,3 +158,8 @@ Deployment 再起動先を名前で制限。不要な Pod・Service・PVC・Stat
 get と不要な ConfigMap 管理を除去。注入 Policy・agent 権限は維持。全 Secret の
 list/watch は現行版の制約で残り、本文取得も可能。完全分離には本体対応が必要。
 詳細は `operator-namespace-permissions.md`。
+
+2026-10-15: Mackerel 本体 fork に Secret watch の namespace 制限・無効化を追加。
+現環境は Secret-backed header がないため watch を無効化し、manager の Secret
+get/list/watch をすべて除去。以前の全 Secret list/watch 残存は解消した。
+詳細は `operator-namespace-permissions.md`。
