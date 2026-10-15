@@ -21,7 +21,7 @@ spec:
   project: applications
   source:
     path: applications/mahiron
-    repoURL: https://github.com/rokoucha/materia.git
+    repoURL: https://github.com/rokoucha/materia-arcanum.git
     targetRevision: HEAD
   syncPolicy:
     automated:

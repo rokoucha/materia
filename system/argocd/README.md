@@ -5,7 +5,7 @@
 Application resources are namespaced, so their permission belongs in
 `namespaceResourceWhitelist`, not `clusterResourceWhitelist`.
 
-`applications` permits only the materia and Sophie repositories, the local cluster,
+`applications` permits only the materia, materia-arcanum and Sophie repositories, the local cluster,
 and the listed application namespaces. It cannot deploy cluster-scoped resources,
 RBAC, or Argo CD resources. Namespace, static PV, and RBAC ownership belongs to
 `application-foundation`. Add a new application namespace to both the foundation
@@ -56,3 +56,8 @@ namespace is excluded from applications destinations. The system Project now has
 The 1Password reference policies add ValidatingAdmissionPolicy and
 ValidatingAdmissionPolicyBinding to system permissions. See
 [reference restrictions](../1password-connect/README.md).
+
+Mahiron の定義と設定は private の `materia-arcanum/applications/mahiron` に置く。
+GitHub App installation に materia-arcanum の Contents read アクセスを付与する。
+設定は ConfigMap として生成し、1Password には API キーと認証キーを残す。
+Namespace とクラスタ RBAC は application-foundation で管理する。
