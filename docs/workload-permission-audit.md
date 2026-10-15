@@ -136,3 +136,8 @@ Operator RBAC は起動成功だけで判定せず、既存 CR の再調整時�
 [sidecar の検索範囲](https://github.com/kiwigrid/k8s-sidecar)、
 [ECK RBAC](https://www.elastic.co/docs/deploy-manage/deploy/cloud-on-k8s/required-rbac-permissions)、
 [Prometheus CR](https://prometheus-operator.dev/docs/api-reference/api/)。
+
+2026-10-15: CNPG は watch / 管理 RBAC を authentik・mastodon・miniflux・sophie に
+限定した。cnpg-system の自己管理とキャッシュ読み取り、必要なクラスタ権限を分離し、
+生成 DB SA/RBAC は維持。4 DB の SQL・Healthy と Pod/PVC の維持を確認済み。
+詳細は `operator-namespace-permissions.md`。

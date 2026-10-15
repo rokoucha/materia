@@ -1,11 +1,12 @@
 # Operator の namespace 権限
 
-2026-10-15: ECK 3.5.0 / Redis Operator 0.27.0 は watch と RBAC の双方を限定した。
+2026-10-15: ECK 3.5.0 / Redis Operator 0.27.0 / CNPG 1.30.1 は watch と RBAC の双方を限定した。
 
 | Operator | 管理対象 | namespace 内の権限 | 残すクラスタ権限 |
 | --- | --- | --- | --- |
 | ECK | mastodon | mastodon は従来の管理権限、elastic-system はキャッシュの読み取りと自身の Secret/ConfigMap/Lease/Events 管理 | Namespace・Node・StorageClass の読み取りと validating webhook 管理 |
 | Redis | mastodon | mastodon の管理権限と redis-operator 内のチャート標準 Role | Operator SA の cluster binding なし |
+| CNPG | authentik / mastodon / miniflux / sophie | 4 namespace は管理権限、cnpg-system はキャッシュの読み取りと設定・証明書・Lease・Events 管理 | Node / ClusterImageCatalog の読み取りと mutating / validating webhook の取得・更新 |
 
 ECK の標準 createClusterScopedResources=false は webhook / StorageClass 検証を
 無効にするため使わない。managedNamespaces は mastodon に固定し、ClusterRole の
@@ -25,10 +26,17 @@ scoped-rbac.yaml の管理用 rules は各固定バージョンの chart 出力�
 許可/拒否を確認する。再調整の完了、Elasticsearch green、Redis PONG、エラーログと
 Pod/PVC の維持も確認する。ECK の webhook と CRD を削除して限定モードへ切り替えない。
 
+CNPG は WATCH_NAMESPACE と cnpg-manager-namespaced ClusterRole の RoleBinding を
+4 namespace に限定する。cnpg-manager の cluster binding はクラスタリソースのみを
+許可する。DB の生成 SA/Role/RoleBinding と API token は維持する。固定リリースの
+rules 更新時は scoped-rbac.yaml とクラスタ権限パッチを再照合する。
+
+確認: RBAC 38 ケース、4 DB の SQL 応答と Healthy、DB Pod/PVC・生成 RBAC の UID
+維持、Operator のリーダー取得と各 namespace の再調整、全46 Application の
+Synced / Healthy を確認した。CNPG の拒否・エラーログはなかった。
+
 ## 他の Operator の残作業
 
-- CNPG: 管理先は authentik/mastodon/miniflux/sophie。監視設定とその4 namespace・
-  cnpg-system の Role への分離を次の候補とする。生成 DB SA/RBAC は維持する。
 - OTel: operand は monitoring/otel-external。全 namespace の ServiceMonitor/PodMonitor
   discovery と operand 生成権限を分けて評価する。収集権限を一括で狭めない。
 - Prometheus: operand は prometheus。全 namespace の参照監視と Secret/StatefulSet
