@@ -141,3 +141,7 @@ Operator RBAC は起動成功だけで判定せず、既存 CR の再調整時�
 限定した。cnpg-system の自己管理とキャッシュ読み取り、必要なクラスタ権限を分離し、
 生成 DB SA/RBAC は維持。4 DB の SQL・Healthy と Pod/PVC の維持を確認済み。
 詳細は `operator-namespace-permissions.md`。
+
+2026-10-15: OTel Operator の管理権限と watch を monitoring / otel-external に限定。
+Target Allocator / Collector の収集権限は維持し、namespace 横断の監視と転送継続を確認。
+詳細は `operator-namespace-permissions.md`。
