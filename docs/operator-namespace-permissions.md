@@ -108,7 +108,8 @@ namespace 制限は実 API server の metadata informer テストでも確認し
 
 Mackerel の ExternalMonitor 参照はクラスタ全体に残る。更新先は既存6名に限定している。
 新規監視を追加するときは scoped-rbac.yaml の名前制約も更新する。agent の kubelet 参照と
-明示 token 投影は維持する。Mackerel API key は当面 realm 間で共有を許す。
+明示 token 投影は維持する。Mackerel API key は基盤・アプリ・Operator で分けるが、
+同一 organization の Read/Write 権限のため API 操作先の分離にはならない。
 
 ## 1Password vault 分離
 
@@ -125,3 +126,21 @@ UID・type は維持し、24件は元データハッシュが一致（cosense �
 0正規化による追加キーを除く）。argocd-secret は旧・新 vault の4値が一致し、
 実Secretがその値へ再同期されたため移行前の実データハッシュとは異なる。
 通常workload Pod UID は維持し、Sophie API・Mackerel host・Prometheus 収集を確認した。
+
+## Mackerel API key 分離
+
+2026-10-15: 両 vault の `mackerel-apikey` を異なるキーへ更新し、基盤 monitoring と
+アプリ mahiron / mirakurun / otel-external の4 Secret の一致を確認した。
+Mackerel Operator の専用キーは維持する。新キー2本は同じ organization で認証成功。
+
+環境変数の更新にはプロセス再起動が必要。基盤 Agent 3 Pod と Collector 2 Pod を
+再作成し、Mahiron / Mirakurun は native sidecar の PID 1 へ SIGTERM を送った。
+アプリ Pod UID とアプリ本体の再起動数は維持し、sidecar だけ再起動・新キー取得を確認。
+container-agent のホストは再登録され、両アプリと3ノードの新着メトリクスを確認した。
+両 Collector の Mackerel 向け送信成功カウンターも増加した。
+旧共有キーはクラスタ外の利用先確認前には失効しない。
+
+確認中に OTel Gateway の Mackerel metric count rate limit と Prometheus OTLP HTTP 400
+による一部送信破棄を観測した。Loki の切り替え前13:32 JSTの旧インスタンスにも
+両エラーがあり、今回のキー更新による認証失敗とは区別する。送信成功も継続しているが、
+この送信量・拒否原因の調整は未実施。

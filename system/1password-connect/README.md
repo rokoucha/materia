@@ -22,9 +22,10 @@ is limited to existing consumers. Caches can still read Secrets within each watc
 
 Add a reference to the item and Secret policies, scoped Role, and watch list together.
 Add new Deployment consumers to the restart names. `enableAnnotations`, automatic
-restart and the 600-second polling interval remain enabled. Mackerel's application
-and system vault entries temporarily share the same provider API key; splitting
-that key is separate work.
+restart and the 600-second polling interval remain enabled. Mackerel uses separate
+provider API keys in each vault's `mackerel-apikey` item. The Operator retains its
+separate `materia-system/mackerel-operator-apikey` item. These Read/Write keys are
+organization-scoped; separating credentials does not restrict API targets by service.
 
 Workload items were copied before switching references; old items remain intact.
 Copies get new IDs and item versions. An attachment sharing a field's name is kept
@@ -37,7 +38,8 @@ administrator before starting the stacks: each stack cannot bootstrap its own AP
 from an unavailable Connect. Keep the generated credentials in 1Password. To revert
 a vault switch, restore the old watch/RBAC and reference permissions before reverting
 CR paths; use the old Connect credentials retained in `materia`. Do not rotate or
-revoke Mackerel's shared key during this rollback.
+revoke the old Mackerel key until its remaining consumers outside this cluster
+have been checked.
 
 Run `python3 tests/operator-namespace-permissions.py` and
 `python3 tests/onepassword-reference-policy.py` with cluster access. The latter uses
