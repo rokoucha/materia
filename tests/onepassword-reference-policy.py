@@ -20,7 +20,7 @@ for i in items:
  m=i['metadata'];d={'apiVersion':'v1','kind':'Secret','metadata':{'name':m['name'],'namespace':m['namespace'],'annotations':{'operator.1password.io/item-path':i['spec']['itemPath'],'operator.1password.io/item-version':'0'}}};cases.append(('Operator managed Secret '+m['namespace']+'/'+m['name'],d,True))
 for label,d,allowed in cases:
  cmd=['kubectl','apply','--server-side','--dry-run=server','--force-conflicts','--field-manager=onepassword-admission-check','-f','-','-o','name']
- if label=='Operator unknown Secret':cmd=['kubectl','create','--dry-run=server','-f','-','-o','name']
+ if label in {'Operator unknown Secret','Operator ServiceAccount token'}:cmd=['kubectl','create','--dry-run=server','-f','-','-o','name']
  if label.startswith('Operator '):cmd+=['--as=system:serviceaccount:1password:onepassword-connect-operator']
  r=subprocess.run(cmd,input=json.dumps(d),text=True,capture_output=True)
  matched="ValidatingAdmissionPolicy 'onepassword-" in r.stderr
