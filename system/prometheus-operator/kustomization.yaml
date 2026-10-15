@@ -6,3 +6,46 @@ resources:
   - ./resources/namespace.yaml
   - ./resources/scoped-rbac.yaml
   - ./upstream
+patches:
+  - target:
+      kind: ClusterRole
+      name: prometheus-operator
+    patch: |-
+      - op: replace
+        path: /rules
+        value:
+          - apiGroups: [monitoring.coreos.com]
+            resources: [podmonitors, probes, prometheusrules, servicemonitors, scrapeconfigs]
+            verbs: [get, list, watch]
+          - apiGroups: [monitoring.coreos.com]
+            resources: [podmonitors/status, probes/status, prometheusrules/status, servicemonitors/status, scrapeconfigs/status]
+            verbs: [create, update, patch, delete]
+          - apiGroups: [""]
+            resources: [nodes]
+            verbs: [list, watch]
+          - apiGroups: [""]
+            resources: [namespaces]
+            verbs: [get, list, watch]
+          - apiGroups: [storage.k8s.io]
+            resources: [storageclasses]
+            verbs: [get]
+          - apiGroups: [events.k8s.io]
+            resources: [events]
+            verbs: [patch, create]
+  - target:
+      kind: Deployment
+      name: prometheus-operator
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args
+        value:
+          - --kubelet-service=kube-system/kubelet
+          - --prometheus-config-reloader=quay.io/prometheus-operator/prometheus-config-reloader:v0.94.1
+          - --watch-referenced-objects-in-all-namespaces=false
+          - --prometheus-instance-namespaces=prometheus
+          - --alertmanager-instance-namespaces=prometheus
+          - --alertmanager-config-namespaces=prometheus
+          - --thanos-ruler-instance-namespaces=prometheus
+          - --disable-unmanaged-prometheus-configuration=true
+          - --kubelet-endpoints=true
+          - --kubelet-endpointslice=false
