@@ -20,3 +20,14 @@ type: Opaque
 stringData:
   type: git
   url: https://github.com/rokoucha/sophie.git
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: repo-1978987
+  labels:
+    argocd.argoproj.io/secret-type: repository
+type: Opaque
+stringData:
+  type: git
+  url: https://github.com/rokoucha/materia-arcanum.git
