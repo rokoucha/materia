@@ -14,10 +14,12 @@ for verb,res,target,want in [('get','secrets','argocd',False),('create','deploym
  cases.append(('opentelemetry-operator-system','opentelemetry-operator-controller-manager',verb,res,target,want))
 for verb,res,target,want in [('get','secrets','prometheus',True),('list','secrets','prometheus',True),('create','statefulsets.apps','prometheus',True),('patch','prometheuses.monitoring.coreos.com','prometheus',True),('get','secrets','argocd',False),('list','secrets','monitoring',False),('create','statefulsets.apps','sophie',False),('delete','pods','kube-system',False),('update','endpoints','kube-system',True),('update','services','kube-system',True),('create','endpoints','monitoring',False),('list','servicemonitors.monitoring.coreos.com','sophie',True),('list','prometheusrules.monitoring.coreos.com','monitoring',True),('update','servicemonitors/status.monitoring.coreos.com','sophie',True),('patch','namespaces',None,False),('create','clusterrolebindings.rbac.authorization.k8s.io',None,False)]:
  cases.append(('prometheus-operator','prometheus-operator',verb,res,target,want))
+for verb,res,target,want in [('get','secrets/mahiron-config','mahiron',True),('update','secrets/mahiron-config','mahiron',True),('delete','secrets/mahiron-config','mahiron',True),('update','secrets/unapproved-secret','mahiron',False),('list','secrets','mahiron',True),('list','secrets','prometheus',False),('list','onepassworditems.onepassword.com','prometheus',False),('update','deployments.apps/pix-smb400-gateway','mahiron',True),('update','deployments.apps/unapproved-deployment','mahiron',False),('create','deployments.apps','mahiron',False),('delete','pods','mahiron',False),('update','statefulsets.apps','mahiron',False),('create','services','mahiron',False),('get','namespaces/mahiron',None,True),('get','namespaces/prometheus',None,False),('list','namespaces',None,False),('patch','namespaces/mahiron',None,False),('create','clusterrolebindings.rbac.authorization.k8s.io',None,False)]:
+ cases.append(('1password','onepassword-connect-operator',verb,res,target,want))
 for ns,sa,verb,res,target,want in cases:
  resource=res
  subresource=None
- if '/' in res:
+ if '/' in res and res.split('/',1)[1].split('.',1)[0] in {'status','exec'}:
   resource,sub=res.split('/',1)
   subresource,sep,group=sub.partition('.')
   if sep:resource+='.'+group

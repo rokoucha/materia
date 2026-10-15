@@ -1,6 +1,6 @@
 # Operator の namespace 権限
 
-2026-10-15: ECK 3.5.0 / Redis Operator 0.27.0 / CNPG 1.30.1 / OTel Operator 0.161.0 / Prometheus Operator 0.94.1 は watch と RBAC の双方を限定した。
+2026-10-15: ECK 3.5.0 / Redis Operator 0.27.0 / CNPG 1.30.1 / OTel Operator 0.161.0 / Prometheus Operator 0.94.1 / 1Password Operator 1.12.0 は watch と RBAC の双方を限定した。
 
 | Operator | 管理対象 | namespace 内の権限 | 残すクラスタ権限 |
 | --- | --- | --- | --- |
@@ -9,6 +9,7 @@
 | CNPG | authentik / mastodon / miniflux / sophie | 4 namespace は管理権限、cnpg-system はキャッシュの読み取りと設定・証明書・Lease・Events 管理 | Node / ClusterImageCatalog の読み取りと mutating / validating webhook の取得・更新 |
 | OTel | monitoring / otel-external | 2 namespace の Collector・関連リソース管理、自身のリーダー選出、default の API server EndpointSlice 読み取り | Namespace 読み取り・/version、メトリクス認証用 TokenReview / SubjectAccessReview |
 | Prometheus | prometheus | workload と Secret・ConfigMap・StatefulSet 管理、kube-system の kubelet Service/Endpoints 管理 | 全 namespace の監視定義参照・status 更新・Events、Node / Namespace 読み取り・StorageClass 取得 |
+| 1Password | 承認済み28参照の20 namespace | Secret 同期・OnePasswordItem 更新と28 Deployment の再起動。Secret 更新・削除は名前限定 | 対象20 Namespace の get のみ |
 
 ECK の標準 createClusterScopedResources=false は webhook / StorageClass 検証を
 無効にするため使わない。managedNamespaces は mastodon に固定し、ClusterRole の
@@ -61,10 +62,25 @@ upstream と config-reloader のバージョン、管理用 Role と ClusterRole
 Prometheus の直接 scrape 対象は変更前後とも0件で、OTel 経由の受信構成を維持する。
 TSDB の最新時刻・サンプルを確認し、全46 Application が Synced / Healthy。
 
+1Password は WATCH_NAMESPACE と20 namespace の Role/RoleBinding を対応させる。
+Secret / Deployment / OnePasswordItem のキャッシュ読み取りは対象 namespace 内に残る。
+Secret の update / patch / delete と CR 更新は既存28名、Deployment の update は
+既存 Secret を参照する28 Deployment に限定する。Pod・Service・PVC・ConfigMap・
+ReplicaSet・DaemonSet・StatefulSet の操作、Namespace の更新・一覧権限は除去した。
+
+Secret CREATE は RBAC の resourceNames では制限できないため、既存 Admission Policy
+で Operator による書き込みを承認済み28対象に限定し、SA token Secret を禁止する。
+参照追加時は item / Secret policy・Role の名前・watch namespace を合わせて更新する。
+Secret を参照する新しい Deployment を追加する場合は、再起動用 resourceNames も更新する。
+Connect 管理は引き続き Helm、AUTO_RESTART と600秒の poll は維持。
+
+確認: RBAC 全88ケース、Admission 全68ケース、28 OnePasswordItem Ready と
+起動時の全28 Secret 再調整、Secret UID・データハッシュ・item version の維持。
+共通 Connect token / vault と、対象 namespace 内の Secret 読み取り権限は残る。
+Connect 資格情報のアプリ・基盤間分離は未実施。
+
 ## 他の Operator の残作業
 
-- 1Password: 既存28参照の Admission 制約を維持。共通 Connect/vault の分離と
-  cluster-wide Kubernetes RBAC の縮小は別途必要。
 - Mackerel: namespace 横断の監視・注入で使用する Secret の集合を先に固定する。
   Pod 注入と manager の API 権限は別に制約する。
 

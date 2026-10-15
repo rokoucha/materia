@@ -19,11 +19,18 @@ repository root with cluster access. Tests use server dry-run only and create no
 probe resources. Verify Operator-managed Secret updates and Application health too.
 
 This boundary restricts application authors, not a compromised Operator/Connect
-credential or cluster administrator. The Operator's cluster RBAC and vault access
-are unchanged. Credential partitioning remains separate work.
+credential or cluster administrator. The Operator's Kubernetes RBAC is scoped to 20 namespaces. Secret mutations and
+Deployment restarts use explicit resource names. Secret creation is also restricted
+to approved targets by Admission; ServiceAccount token Secrets are denied for this
+Operator. The cache still reads Secrets within those namespaces. Vault access and
+credential partitioning remain separate work. See `docs/operator-namespace-permissions.md`.
 
 To roll back enforcement, change the bindings to Warn/Audit through Git, keeping
 the policy definitions for diagnosis. Do not delete OnePasswordItems or Secrets.
 
 Source: [Operator implementation](https://github.com/1Password/onepassword-operator),
 [Kubernetes policy semantics](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/).
+
+Current verification: 88 RBAC cases and 68 Admission dry-run cases. Keep the
+Secret reference policies, scoped Roles, restart Deployment names and WATCH_NAMESPACE
+in sync when adding a reference or consumer.

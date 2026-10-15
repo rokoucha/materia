@@ -149,3 +149,7 @@ Target Allocator / Collector の収集権限は維持し、namespace 横断の�
 2026-10-15: Prometheus Operator の workload 管理・Secret 参照を prometheus に限定。
 全 namespace の監視定義参照と kubelet 同期を維持。再調整・TSDB 新着データ・Pod/PVC
 維持を確認。詳細は `operator-namespace-permissions.md`。
+
+2026-10-15: 1Password Operator を20 namespace に限定し、Secret 書き込み対象と
+Deployment 再起動先を名前で制限。不要な Pod・Service・PVC・StatefulSet 等の操作権限を
+除去。共通 Connect/vault の分離は別途。詳細は `operator-namespace-permissions.md`。
