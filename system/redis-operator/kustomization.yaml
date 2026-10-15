@@ -25,3 +25,4 @@ resources:
   - ./resources/network-policy.yaml
   - ./resources/namespace.yaml
   - ./resources/redis-operator-monitor.yaml
+  - ./resources/scoped-rbac.yaml

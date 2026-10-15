@@ -16,3 +16,4 @@ helmCharts:
 resources:
   - ./resources/network-policy.yaml
   - ./resources/namespace.yaml
+  - ./resources/scoped-rbac.yaml
