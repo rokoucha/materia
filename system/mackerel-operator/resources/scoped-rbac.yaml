@@ -1,0 +1,194 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mackerel-operator-monitors
+  namespace: argocd
+rules:
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors
+  resourceNames:
+  - argocd
+  verbs:
+  - patch
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors/finalizers
+  resourceNames:
+  - argocd
+  verbs:
+  - update
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors/status
+  resourceNames:
+  - argocd
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mackerel-operator-monitors
+  namespace: argocd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: mackerel-operator-monitors
+subjects:
+- kind: ServiceAccount
+  name: mackerel-operator
+  namespace: mackerel-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mackerel-operator-monitors
+  namespace: authentik
+rules:
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors
+  resourceNames:
+  - authentik
+  verbs:
+  - patch
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors/finalizers
+  resourceNames:
+  - authentik
+  verbs:
+  - update
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors/status
+  resourceNames:
+  - authentik
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mackerel-operator-monitors
+  namespace: authentik
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: mackerel-operator-monitors
+subjects:
+- kind: ServiceAccount
+  name: mackerel-operator
+  namespace: mackerel-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mackerel-operator-monitors
+  namespace: mastodon
+rules:
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors
+  resourceNames:
+  - mastodon
+  verbs:
+  - patch
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors/finalizers
+  resourceNames:
+  - mastodon
+  verbs:
+  - update
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors/status
+  resourceNames:
+  - mastodon
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mackerel-operator-monitors
+  namespace: mastodon
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: mackerel-operator-monitors
+subjects:
+- kind: ServiceAccount
+  name: mackerel-operator
+  namespace: mackerel-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mackerel-operator-monitors
+  namespace: nginx
+rules:
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors
+  resourceNames:
+  - ggrel-net
+  - heinrike-prinzessin-zu-sayn-wittgenste-in
+  - noa-pp-ua
+  verbs:
+  - patch
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors/finalizers
+  resourceNames:
+  - ggrel-net
+  - heinrike-prinzessin-zu-sayn-wittgenste-in
+  - noa-pp-ua
+  verbs:
+  - update
+- apiGroups:
+  - mackerel.starry.blue
+  resources:
+  - externalmonitors/status
+  resourceNames:
+  - ggrel-net
+  - heinrike-prinzessin-zu-sayn-wittgenste-in
+  - noa-pp-ua
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mackerel-operator-monitors
+  namespace: nginx
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: mackerel-operator-monitors
+subjects:
+- kind: ServiceAccount
+  name: mackerel-operator
+  namespace: mackerel-operator
