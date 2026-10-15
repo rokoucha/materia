@@ -42,3 +42,13 @@ patches:
           - apiGroups: [""]
             resources: [events]
             verbs: [create, patch]
+  - target:
+      kind: ClusterRole
+      name: mackerel-operator-manager
+    patch: |-
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      metadata:
+        name: mackerel-operator-manager
+        annotations:
+          argocd.argoproj.io/sync-wave: "1"
