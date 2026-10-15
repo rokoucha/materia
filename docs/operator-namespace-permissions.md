@@ -1,7 +1,7 @@
 # Operator の namespace 権限
 
 2026-10-15: ECK 3.5.0 / Redis Operator 0.27.0 / CNPG 1.30.1 / OTel Operator 0.161.0 / Prometheus Operator 0.94.1 / 1Password Operator 1.12.0 は watch と RBAC の双方を限定した。
-Mackerel Operator は 0.4.1 ベースの fork で Secret watch を無効化し、Secret 権限を除去した。
+Mackerel Operator は正式版 0.5.0 で Secret watch を無効化し、Secret 権限を除去した。
 
 | Operator | 管理対象 | namespace 内の権限 | 残すクラスタ権限 |
 | --- | --- | --- | --- |
@@ -144,3 +144,11 @@ container-agent のホストは再登録され、両アプリと3ノードの新
 による一部送信破棄を観測した。Loki の切り替え前13:32 JSTの旧インスタンスにも
 両エラーがあり、今回のキー更新による認証失敗とは区別する。送信成功も継続しているが、
 この送信量・拒否原因の調整は未実施。
+
+## Mackerel Operator 正式版
+
+upstream PR #379 が採用され、正式 chart / image 0.5.0 へ切り替える。
+`secretWatch.disabled: true` が watch 無効化フラグと Secret RBAC 除外を提供するため、
+独自イメージと起動フラグの追加パッチを外す。公式イメージは digest で固定する。
+既存6監視の名前制約・status/finalizer 用 Role と Namespace の境界は維持する。
+前節の fork 運用は切り替え前の履歴として残す。
