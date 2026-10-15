@@ -23,6 +23,11 @@ Deployment 注釈参照と Secret 注釈の偽装を Admission で拒否。Opera
 CNPG Pod は再作成していない。Mackerel の更新、UPS メトリクス、
 Loki のログ取り込み、Sophie API と全46 Application の正常を確認した。
 
+2026-10-15: ECK/Redis の監視対象を mastodon に限定し、ワークロード・
+Secret 権限を mastodon と各 Operator 自身の namespace に分離した。
+ECK はクラスタの読み取りと webhook 管理を維持。Redis の cluster binding
+と Namespace 更新権限は削除。その他 Operator の権限は今回変更していない。
+
 ## 優先する調整
 
 | 順 | 対象 | 確認事項と調整案 |
