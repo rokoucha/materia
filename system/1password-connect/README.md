@@ -41,8 +41,8 @@ from `materia-system/talos-machine-secrets`; never generate replacement cluster 
 when rebuilding an existing cluster. Legacy items without live consumers are retained
 in their corresponding new vault, without adding Operator references.
 The obsolete Connect server has been deleted; its credentials and all tokens are
-invalid. The old vault and its items are left for manual deletion. Deleting the
-old vault is separate from revoking provider credentials such as the previous
+invalid. The old vault was deleted manually after the remaining required items
+were migrated. Vault deletion is separate from revoking provider credentials such as the previous
 Mackerel key, whose consumers outside this cluster still need checking.
 
 Run `python3 tests/operator-namespace-permissions.py` and

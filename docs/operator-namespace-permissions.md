@@ -186,3 +186,10 @@ render、新 vault の実 bundle による3ノード設定生成・validate、�
 無効化した。現行2 Connect の登録・実認証・vault 参照が正常で、29 CR Ready と
 47 Application Synced / Healthy を確認した。旧 vault 本体と元項目は操作せず、
 利用者が削除する。Mackerel 等の provider API key の失効は行わない。
+
+旧 vault は利用者が削除済み。削除後、両新 Connect から全29参照を読み直し、
+Secret の canonical item path・item version と79個の値の一致を確認した。
+Connect API / sync に直近のエラーログはなく、全29 CR Ready、全47 Application
+Synced / Healthy、全稼働 Pod Ready を確認。Sophie の認証付き API 応答と、
+Mackerel のアプリ2ホスト・ノード3ホストの新着メトリクスも確認した。
+この確認のための Operator・workload 再起動や設定変更は行っていない。
