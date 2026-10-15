@@ -147,8 +147,12 @@ container-agent のホストは再登録され、両アプリと3ノードの新
 
 ## Mackerel Operator 正式版
 
-upstream PR #379 が採用され、正式 chart / image 0.5.0 へ切り替える。
+upstream PR #379 が採用され、正式 chart / image 0.5.0 へ切り替えた。
 `secretWatch.disabled: true` が watch 無効化フラグと Secret RBAC 除外を提供するため、
 独自イメージと起動フラグの追加パッチを外す。公式イメージは digest で固定する。
 既存6監視の名前制約・status/finalizer 用 Role と Namespace の境界は維持する。
 前節の fork 運用は切り替え前の履歴として残す。
+
+確認: Argo 同期 Succeeded、正式イメージの Ready・新リーダー取得、Secret watch disabled
+を確認。6件すべてが実際の監視と一致して Noop 再調整となり、CR UID・監視ID・Ready
+を維持した。Mackerel API 上の6監視と RBAC 114ケースも確認した。
