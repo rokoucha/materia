@@ -16,3 +16,29 @@ patches:
       - op: add
         path: /metadata/namespace
         value: mackerel-operator
+  - target:
+      kind: ClusterRole
+      name: mackerel-operator-manager
+    patch: |-
+      - op: replace
+        path: /rules
+        value:
+          - apiGroups: [mackerel.starry.blue]
+            resources: [externalmonitors]
+            verbs: [get, list, watch]
+          - apiGroups: [""]
+            resources: [secrets]
+            verbs: [list, watch]
+  - target:
+      kind: Role
+      name: mackerel-operator-leader-election
+    patch: |-
+      - op: replace
+        path: /rules
+        value:
+          - apiGroups: [coordination.k8s.io]
+            resources: [leases]
+            verbs: [get, list, watch, create, update, patch, delete]
+          - apiGroups: [""]
+            resources: [events]
+            verbs: [create, patch]
