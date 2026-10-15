@@ -295,6 +295,182 @@ rules:
   - update
   - patch
   - delete
+- apiGroups:
+  - coordination.k8s.io
+  resourceNames:
+  - elastic-operator-leader
+  resources:
+  - leases
+  verbs:
+  - get
+  - watch
+- apiGroups:
+  - ''
+  resources:
+  - endpoints
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  - events
+  - persistentvolumeclaims
+  - secrets
+  - services
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - events.k8s.io
+  resources:
+  - events
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - statefulsets
+  - daemonsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - policy
+  resources:
+  - poddisruptionbudgets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - elasticsearch.k8s.elastic.co
+  resources:
+  - elasticsearches
+  - elasticsearches/status
+  - elasticsearches/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - autoscaling.k8s.elastic.co
+  resources:
+  - elasticsearchautoscalers
+  - elasticsearchautoscalers/status
+  - elasticsearchautoscalers/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - kibana.k8s.elastic.co
+  resources:
+  - kibanas
+  - kibanas/status
+  - kibanas/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apm.k8s.elastic.co
+  resources:
+  - apmservers
+  - apmservers/status
+  - apmservers/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - enterprisesearch.k8s.elastic.co
+  resources:
+  - enterprisesearches
+  - enterprisesearches/status
+  - enterprisesearches/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - beat.k8s.elastic.co
+  resources:
+  - beats
+  - beats/status
+  - beats/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - agent.k8s.elastic.co
+  resources:
+  - agents
+  - agents/status
+  - agents/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - maps.k8s.elastic.co
+  resources:
+  - elasticmapsservers
+  - elasticmapsservers/status
+  - elasticmapsservers/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - stackconfigpolicy.k8s.elastic.co
+  resources:
+  - stackconfigpolicies
+  - stackconfigpolicies/status
+  - stackconfigpolicies/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - logstash.k8s.elastic.co
+  resources:
+  - logstashes
+  - logstashes/status
+  - logstashes/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - autoops.k8s.elastic.co
+  resources:
+  - autoopsagentpolicies
+  - autoopsagentpolicies/status
+  - autoopsagentpolicies/finalizers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - packageregistry.k8s.elastic.co
+  resources:
+  - packageregistries
+  - packageregistries/status
+  - packageregistries/finalizers
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
