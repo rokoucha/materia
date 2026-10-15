@@ -9,6 +9,10 @@ helmCharts:
     repo: https://ot-container-kit.github.io/helm-charts
     includeCRDs: true
     valuesInline:
+      redisOperator:
+        watchNamespace: mastodon
+      rbac:
+        scope: namespace
       podSecurityContext:
         runAsNonRoot: true
         runAsUser: 65532

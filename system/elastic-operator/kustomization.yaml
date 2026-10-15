@@ -9,6 +9,8 @@ helmCharts:
     repo: https://helm.elastic.co
     includeCRDs: true
     valuesInline:
+      managedNamespaces:
+        - mastodon
       podSecurityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -17,3 +19,13 @@ resources:
   - ./resources/network-policy.yaml
   - ./resources/namespace.yaml
   - ./resources/scoped-rbac.yaml
+
+patches:
+  - target:
+      group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: elastic-operator
+    patch: |-
+      - op: replace
+        path: /rules
+        value: [{"apiGroups": [""], "resources": ["namespaces"], "verbs": ["get", "list", "watch"]}, {"apiGroups": ["storage.k8s.io"], "resources": ["storageclasses"], "verbs": ["get", "list", "watch"]}, {"apiGroups": ["admissionregistration.k8s.io"], "resources": ["validatingwebhookconfigurations"], "verbs": ["get", "list", "watch", "create", "update", "patch", "delete"]}, {"apiGroups": [""], "resources": ["nodes"], "verbs": ["get", "list", "watch"]}]
