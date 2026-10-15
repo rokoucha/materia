@@ -18,12 +18,23 @@ Appellatur omnes res quae in res corporeas componi possunt
 
 ## 事前準備
 
-`./bootstrap` に次を用意する
+`materia-system` vault から基盤 Connect の資格情報を取得する。既存ファイルも再取得する。
+JSON は事前に base64 化せず、そのまま保存する。
 
-- 1password-credentials.json
-- 1password.env
+```sh
+umask 077
+op read 'op://materia-system/onepassword-system-credentials/1password-credentials.json' > bootstrap/1password-credentials.json
+{ printf 'token='; op read 'op://materia-system/onepassword-system-token/token'; } > bootstrap/1password.env
+chmod 600 bootstrap/1password-credentials.json bootstrap/1password.env
+```
+
+基盤 Operator が同じ vault からアプリ Connect の資格情報を同期する。
+旧 `materia` vault や旧 Connect の資格情報は使わない。
 
 ## ホスト構築
+
+Talos の既存 secrets bundle は `materia-system` vault の `talos-machine-secrets` に保存する。
+`talos-genconfig.sh` はこの項目を読み、秘密情報を Git に保存せず設定を生成する。
 
 
 ```sh

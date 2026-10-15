@@ -3,7 +3,7 @@
 `materia-system` and `materia-applications` are separate vaults with separate
 Connect servers and read-only API tokens. The system stack runs in `1password`;
 the application stack runs in `1password-applications`. Each Connect server and
-token is granted only its own vault. The old `materia` vault is retained for rollback.
+token is granted only its own vault. Runtime and recovery use only these two vaults.
 
 The application Operator watches only the nine application namespaces. It cannot
 read system Secrets or either Connect control namespace. The system Operator
@@ -35,11 +35,14 @@ still match. No credential values belong in Git.
 
 For recovery, restore Connect credentials/token from `materia-system` through an
 administrator before starting the stacks: each stack cannot bootstrap its own API
-from an unavailable Connect. Keep the generated credentials in 1Password. To revert
-a vault switch, restore the old watch/RBAC and reference permissions before reverting
-CR paths; use the old Connect credentials retained in `materia`. Do not rotate or
-revoke the old Mackerel key until its remaining consumers outside this cluster
-have been checked.
+from an unavailable Connect. Keep both stacks' credentials in `materia-system`;
+recovery does not require the old vault. Talos generation reads the existing bundle
+from `materia-system/talos-machine-secrets`; never generate replacement cluster secrets
+when rebuilding an existing cluster. Legacy items without live consumers are retained
+in their corresponding new vault, without adding Operator references.
+The obsolete Connect server and old vault are not used by either stack. Deleting
+the old vault is separate from revoking provider credentials such as the previous
+Mackerel key, whose consumers outside this cluster still need checking.
 
 Run `python3 tests/operator-namespace-permissions.py` and
 `python3 tests/onepassword-reference-policy.py` with cluster access. The latter uses

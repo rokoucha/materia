@@ -114,7 +114,8 @@ Mackerel の ExternalMonitor 参照はクラスタ全体に残る。更新先は
 ## 1Password vault 分離
 
 `materia-system` と `materia-applications` を新規作成し、各 vault 専用の Connect と
-read-only token を発行する。既存 `materia` はリネームせず切り戻し用に保持する。
+read-only token を発行した。既存 `materia` はリネームせず保持して移行し、
+下記の残項目移行で稼働・設定生成・復旧の依存を解消する。
 アプリ側 Operator は基盤 namespace と両 Connect の control namespace を watch しない。
 基盤側 Operator が両 Connect の bootstrap Secret を同期する。
 参照・Secret 書き込みの Admission と各 realm の RBAC も対応させる。
@@ -156,3 +157,27 @@ upstream PR #379 が採用され、正式 chart / image 0.5.0 へ切り替えた
 確認: Argo 同期 Succeeded、正式イメージの Ready・新リーダー取得、Secret watch disabled
 を確認。6件すべてが実際の監視と一致して Noop 再調整となり、CR UID・監視ID・Ready
 を維持した。Mackerel API 上の6監視と RBAC 114ケースも確認した。
+
+## 旧 materia vault 依存の解消
+
+残っていた7項目を内容・Document/添付の一致を確認して複製した。
+
+| 保存先 | 項目 |
+| --- | --- |
+| materia-system | talos-machine-secrets、oauth2-proxy-htpasswd、oauth2-proxy-secrets、argocd-redis-password |
+| materia-applications | vaxila-apikey、nebraska-secrets、sophie-secret |
+
+未使用の可能性がある項目も保管し、Operator の同期対象は増やさない。旧共有
+Mackerel key は新キーとは別に `materia-system/mackerel-apikey-legacy` に保持する。
+失効はクラスタ外の利用先を確認した後に行う。旧 Connect の旧 vault アクセス許可は解除した。
+旧 bootstrap 資格情報2項目は現行の新規資格情報4項目で置き換え済みで、復旧にも不要。
+
+Talos スクリプトの既定参照と初期構築用 bootstrap を新 vault / 新 Secret 名へ更新した。
+bootstrap は両 Connect を構築し、新基盤側資格情報2つを seed して、基盤 Operator が
+アプリ側資格情報を同期する。旧 vault を前提とする復旧手順は廃止する。
+
+確認: ダミー bundle の生成・障害時保護テスト、新 bootstrap のダミー資格情報による
+render、新 vault の実 bundle による3ノード設定生成・validate、生成資格情報を使う
+実 Talos API の読み取り認証に成功。ノードへの設定適用は行わず、生成した秘密情報は削除した。
+参照確認は稼働中の定義と各リポジトリの現行 main を対象とし、過去コミット・古い作業
+ブランチの履歴は書き換えない。旧 vault 本体と元項目は削除しない。

@@ -10,7 +10,7 @@ readonly OP_BIN="${OP_BIN:-op}"
 readonly TOPF_BIN="${TOPF_BIN:-topf}"
 readonly TALOSCTL_BIN="${TALOSCTL_BIN:-talosctl}"
 readonly YQ_BIN="${YQ_BIN:-yq}"
-readonly OP_FILE_REFERENCE="${OP_FILE_REFERENCE:-op://materia/talos-machine-secrets/talsecret.yaml?attr=content}"
+readonly OP_FILE_REFERENCE="${OP_FILE_REFERENCE:-op://materia-system/talos-machine-secrets/talsecret.yaml?attr=content}"
 readonly TALOSCONFIG_NODE_DOMAIN="${TALOSCONFIG_NODE_DOMAIN:-dns.ggrel.net}"
 
 for cmd in "${OP_BIN}" "${TOPF_BIN}" "${TALOSCTL_BIN}" "${YQ_BIN}"; do

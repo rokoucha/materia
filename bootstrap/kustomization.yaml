@@ -4,20 +4,18 @@ kind: Kustomization
 resources:
   - ../system/cilium
   - ../system/1password-connect
+  - ../system/1password-applications
   - ../system/argocd
 
 generatorOptions:
   disableNameSuffixHash: true
 
 secretGenerator:
-  # https://github.com/1Password/connect-helm-charts/blob/e2f33a6a429526add47fdc43c54cd6540134c4fe/charts/connect/values.yaml#L76
-  # cat 1password-credentials.json | base64 | tr -d '\n' > bootstrap/1password-credentials.json
-  - name: op-credentials
+  - name: op-credentials-system
     files:
       - ./1password-credentials.json
     namespace: 1password
-  # https://github.com/1Password/connect-helm-charts/blob/e2f33a6a429526add47fdc43c54cd6540134c4fe/charts/connect/values.yaml#L326
-  - name: onepassword-token
+  - name: onepassword-token-system
     envs:
       - ./1password.env
     namespace: 1password

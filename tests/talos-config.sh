@@ -16,6 +16,7 @@ cat >"${OP_BIN}" <<'MOCK'
 #!/usr/bin/env bash
 set -euo pipefail
 [[ "$1" == read ]]
+[[ "$2" == "op://materia-system/talos-machine-secrets/talsecret.yaml?attr=content" ]]
 cat "${TEST_WORK_DIR}/secrets.yaml"
 MOCK
 chmod +x "${OP_BIN}"
