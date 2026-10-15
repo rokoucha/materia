@@ -21,8 +21,6 @@ rules:
   resourceNames:
   - op-credentials-system
   - onepassword-token-system
-  - op-credentials
-  - onepassword-token
   verbs:
   - update
   - patch
@@ -52,8 +50,6 @@ rules:
   resourceNames:
   - op-credentials-system
   - onepassword-token-system
-  - op-credentials
-  - onepassword-token
   verbs:
   - update
   - patch
