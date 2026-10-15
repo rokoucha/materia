@@ -11,3 +11,32 @@ resources:
   - ./resources/onepassword-item-references.yaml
   - ./resources/onepassword-no-deployment-references.yaml
   - ./resources/onepassword-secret-references.yaml
+
+patches:
+  - target:
+      kind: ClusterRole
+      name: onepassword-connect-operator
+    patch: |-
+      - op: replace
+        path: /rules
+        value:
+          - apiGroups: [""]
+            resources: [namespaces]
+            resourceNames: ["1password", "argocd", "authentik", "cert-manager", "cloudflare-ddns", "cosense-cli-mcp", "docker-registry-secrets", "external-dns", "grafana", "mackerel-operator", "mahiron", "mastodon", "miniflux", "mirakurun", "monitoring", "otel-external", "sophie", "switchbot-meter-exporter", "synology-csi", "tailscale"]
+            verbs: [get]
+  - target:
+      kind: Deployment
+      name: onepassword-connect-operator
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: onepassword-connect-operator
+      spec:
+        template:
+          spec:
+            containers:
+              - name: onepassword-connect
+                env:
+                  - name: WATCH_NAMESPACE
+                    value: 1password,argocd,authentik,cert-manager,cloudflare-ddns,cosense-cli-mcp,docker-registry-secrets,external-dns,grafana,mackerel-operator,mahiron,mastodon,miniflux,mirakurun,monitoring,otel-external,sophie,switchbot-meter-exporter,synology-csi,tailscale
