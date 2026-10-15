@@ -2,6 +2,7 @@ apiVersion: onepassword.com/v1
 kind: OnePasswordItem
 
 metadata:
+  namespace: mackerel-operator
   name: mackerel-apikey
 
 spec:
