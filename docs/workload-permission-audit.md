@@ -153,3 +153,8 @@ Target Allocator / Collector の収集権限は維持し、namespace 横断の�
 2026-10-15: 1Password Operator を20 namespace に限定し、Secret 書き込み対象と
 Deployment 再起動先を名前で制限。不要な Pod・Service・PVC・StatefulSet 等の操作権限を
 除去。共通 Connect/vault の分離は別途。詳細は `operator-namespace-permissions.md`。
+
+2026-10-15: Mackerel Operator の CR 更新を4 namespace の既存6名に限定し、Secret
+get と不要な ConfigMap 管理を除去。注入 Policy・agent 権限は維持。全 Secret の
+list/watch は現行版の制約で残り、本文取得も可能。完全分離には本体対応が必要。
+詳細は `operator-namespace-permissions.md`。

@@ -1,6 +1,7 @@
 # Operator の namespace 権限
 
 2026-10-15: ECK 3.5.0 / Redis Operator 0.27.0 / CNPG 1.30.1 / OTel Operator 0.161.0 / Prometheus Operator 0.94.1 / 1Password Operator 1.12.0 は watch と RBAC の双方を限定した。
+Mackerel Operator 0.4.1 は更新先を限定したが、クラスタ全体の read/watch は残る。
 
 | Operator | 管理対象 | namespace 内の権限 | 残すクラスタ権限 |
 | --- | --- | --- | --- |
@@ -10,6 +11,7 @@
 | OTel | monitoring / otel-external | 2 namespace の Collector・関連リソース管理、自身のリーダー選出、default の API server EndpointSlice 読み取り | Namespace 読み取り・/version、メトリクス認証用 TokenReview / SubjectAccessReview |
 | Prometheus | prometheus | workload と Secret・ConfigMap・StatefulSet 管理、kube-system の kubelet Service/Endpoints 管理 | 全 namespace の監視定義参照・status 更新・Events、Node / Namespace 読み取り・StorageClass 取得 |
 | 1Password | 承認済み28参照の20 namespace | Secret 同期・OnePasswordItem 更新と28 Deployment の再起動。Secret 更新・削除は名前限定 | 対象20 Namespace の get のみ |
+| Mackerel | argocd / authentik / mastodon / nginx の6 ExternalMonitor | 既存6名の CR patch・finalizer/status 更新、自身の Lease/Events | 全 ExternalMonitor の get/list/watch と全 Secret の list/watch |
 
 ECK の標準 createClusterScopedResources=false は webhook / StorageClass 検証を
 無効にするため使わない。managedNamespaces は mastodon に固定し、ClusterRole の
@@ -79,9 +81,24 @@ Connect 管理は引き続き Helm、AUTO_RESTART と600秒の poll は維持。
 共通 Connect token / vault と、対象 namespace 内の Secret 読み取り権限は残る。
 Connect 資格情報のアプリ・基盤間分離は未実施。
 
-## 他の Operator の残作業
+## 残る境界
 
-- Mackerel: namespace 横断の監視・注入で使用する Secret の集合を先に固定する。
-  Pod 注入と manager の API 権限は別に制約する。
+Mackerel Operator 0.4.1 は namespace を限定する起動オプションがない。Secret の
+metadata watch を外せないため、その list/watch はクラスタ全体に残す。実装が metadata
+のみをキャッシュしていても、RBAC は Secret 本文の LIST/WATCH 取得を許可する。
+Secret get を除去しただけでは資格情報の読み取り境界にならない。完全な分離には
+Operator 本体の cache namespace / Secret watch 制限対応が必要。
 
-これらは今回の変更対象外。全 Operator の権限分離が完了したことを意味しない。
+現在の6 ExternalMonitor に Secret-backed header はない。今後追加する場合は
+その namespace の特定 Secret 名への get を追加し、外部送信先と参照を確認する。
+API key は env の secretKeyRef で受け取り、Operator 自身の Secret get は不要。
+新しい監視を追加するときは scoped-rbac.yaml の更新対象名も更新する。
+
+サイドカー注入は MutatingAdmissionPolicy が行い、Operator の Pod 更新権限を使わない。
+注入 Policy・agent 用 nodes/pods, nodes/stats, nodes/spec の get と明示 token 投影を維持。
+Mahiron / Mirakurun の注入を server dry-run で確認し、全102 RBAC ケース通過、
+新 Operator のリーダー取得と6件すべての再調整を確認した。監視IDは維持した。
+ConfigMap のリーダー選出権限は除去し、namespace Role 配備後に cluster Role を縮小する。
+
+1Password の共通 Connect/vault 資格情報分離も未実施。全 Operator の権限分離が
+完了したことを意味しない。
