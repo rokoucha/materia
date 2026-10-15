@@ -24,7 +24,7 @@ stringData:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: repo-materia-arcanum
+  name: repo-1978987
   labels:
     argocd.argoproj.io/secret-type: repository
 type: Opaque
