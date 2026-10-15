@@ -52,3 +52,15 @@ patches:
         name: mackerel-operator-manager
         annotations:
           argocd.argoproj.io/sync-wave: "1"
+  - target:
+      kind: Deployment
+      name: mackerel-operator
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --disable-secret-watch
+
+images:
+  - name: ghcr.io/slashnephy/mackerel-operator
+    newName: ghcr.io/rokoucha/mackerel-operator
+    digest: sha256:38882298ce39788e7cf58330aa43ee9e2ae1cee65f235b9ec355c8c6dca49621
