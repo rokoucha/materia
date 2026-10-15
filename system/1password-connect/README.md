@@ -40,8 +40,9 @@ recovery does not require the old vault. Talos generation reads the existing bun
 from `materia-system/talos-machine-secrets`; never generate replacement cluster secrets
 when rebuilding an existing cluster. Legacy items without live consumers are retained
 in their corresponding new vault, without adding Operator references.
-The obsolete Connect server and old vault are not used by either stack. Deleting
-the old vault is separate from revoking provider credentials such as the previous
+The obsolete Connect server has been deleted; its credentials and all tokens are
+invalid. The old vault and its items are left for manual deletion. Deleting the
+old vault is separate from revoking provider credentials such as the previous
 Mackerel key, whose consumers outside this cluster still need checking.
 
 Run `python3 tests/operator-namespace-permissions.py` and

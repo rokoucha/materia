@@ -181,3 +181,8 @@ render、新 vault の実 bundle による3ノード設定生成・validate、�
 実 Talos API の読み取り認証に成功。ノードへの設定適用は行わず、生成した秘密情報は削除した。
 参照確認は稼働中の定義と各リポジトリの現行 main を対象とし、過去コミット・古い作業
 ブランチの履歴は書き換えない。旧 vault 本体と元項目は削除しない。
+
+旧 Connect `materia` の登録を削除し、付属の資格情報ファイルと旧 Kubernetes token を
+無効化した。現行2 Connect の登録・実認証・vault 参照が正常で、29 CR Ready と
+47 Application Synced / Healthy を確認した。旧 vault 本体と元項目は操作せず、
+利用者が削除する。Mackerel 等の provider API key の失効は行わない。
