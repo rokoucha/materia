@@ -27,3 +27,4 @@ patches:
         path: /spec/syncPolicy/syncOptions
         value:
           - ServerSideApply=true
+          - RespectIgnoreDifferences=true
