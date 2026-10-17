@@ -594,6 +594,7 @@ rules:
   - secrets
   resourceNames:
   - sophie-secrets
+  - mackerel-apikey
   verbs:
   - update
   - patch
@@ -622,6 +623,7 @@ rules:
   - onepassworditems/finalizers
   resourceNames:
   - sophie-secrets
+  - mackerel-apikey
   verbs:
   - update
   - patch
