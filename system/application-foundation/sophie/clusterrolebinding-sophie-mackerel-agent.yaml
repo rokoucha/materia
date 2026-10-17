@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sophie-mackerel-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: mackerel-operator-agent
+subjects:
+  - kind: ServiceAccount
+    name: sophie-ocr
+    namespace: sophie
+  - kind: ServiceAccount
+    name: sophie-monitoring
+    namespace: sophie
