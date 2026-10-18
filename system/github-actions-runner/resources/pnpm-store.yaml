@@ -10,4 +10,4 @@ spec:
   resources:
     requests:
       storage: 20Gi
-  storageClassName: beryllium-iscsi
+  storageClassName: beryllium-nfs
