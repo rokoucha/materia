@@ -434,7 +434,6 @@ rules:
   - secrets
   resourceNames:
   - mackerel-apikey
-  - mirakurun-config
   verbs:
   - update
   - patch
@@ -463,7 +462,6 @@ rules:
   - onepassworditems/finalizers
   resourceNames:
   - mackerel-apikey
-  - mirakurun-config
   verbs:
   - update
   - patch
