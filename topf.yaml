@@ -1,5 +1,5 @@
 clusterName: materia-cluster
-talosVersion: v1.14.3
+talosVersion: v1.14.4
 kubernetesVersion: v1.37.1
 clusterEndpoint: https://materia-cluster.ggrel.net:6443
 platform: metal
