@@ -27,9 +27,11 @@ spec:
   project: applications
   source:
     path: applications/mirakurun
-    repoURL: https://github.com/rokoucha/materia.git
+    repoURL: https://github.com/rokoucha/materia-arcanum.git
     targetRevision: HEAD
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - RespectIgnoreDifferences=true
