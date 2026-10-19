@@ -11,6 +11,18 @@ spec:
     namespace: mastodon
     server: https://kubernetes.default.svc
   ignoreDifferences:
+    - group: ""
+      kind: ConfigMap
+      name: proxy-trust
+      jsonPointers: [/data/TRUSTED_PROXY_IP]
+    - group: apps
+      kind: Deployment
+      name: mastodon-web
+      jsonPointers: [/spec/template/metadata/annotations/pd.materia.rokoucha.com~1proxy-trust]
+    - group: apps
+      kind: Deployment
+      name: mastodon-streaming
+      jsonPointers: [/spec/template/metadata/annotations/pd.materia.rokoucha.com~1proxy-trust]
     - jsonPointers:
         - /metadata/annotations/cnpg.io~1nodeSerial
         - /metadata/annotations/cnpg.io~1operatorVersion
@@ -33,3 +45,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - RespectIgnoreDifferences=true

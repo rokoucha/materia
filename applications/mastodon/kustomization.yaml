@@ -24,6 +24,7 @@ resources:
   - ./resources/elasticsearch-persistent-volume-claim.yaml
   - ./resources/persistent-volume-claim.yaml
   - ./resources/postgresql.yaml
+  - ./resources/proxy-trust.yaml
   - ./resources/redis.yaml
   - ./resources/service-streaming.yaml
   - ./resources/service-web.yaml

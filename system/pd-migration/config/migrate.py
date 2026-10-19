@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Advance one PDB-respecting eviction per reconciliation; all state is in the API."""
 import ipaddress
+import hashlib
 import json
 import os
 import socket
@@ -81,6 +82,43 @@ def verify_egress(cidr):
         raise ValueError("IPv6 egress is still masqueraded: " + trace["ip"])
 
 
+def sync_proxy_trust(api, cidr):
+    networks = {str(cidr)}
+    for pool in api.request("/apis/cilium.io/v2alpha1/ciliumpodippools")["items"]:
+        if pool["metadata"].get("labels", {}).get(PREFIX + "managed") != "true":
+            continue
+        for value in pool["spec"].get("ipv6", {}).get("cidrs", []):
+            network = ipaddress.ip_network(value)
+            if network.version != 6 or network.prefixlen != 108 or not network.is_global:
+                raise ValueError("invalid managed proxy network: " + value)
+            networks.add(str(network))
+    trusted = ",".join(["fd00::/108", "::ffff:10.244.0.0/112", "10.244.0.0/16"] + sorted(networks))
+    path = "/api/v1/namespaces/mastodon/configmaps/proxy-trust"
+    if api.request(path).get("data", {}).get("TRUSTED_PROXY_IP") != trusted:
+        api.request(path, {"data": {"TRUSTED_PROXY_IP": trusted}}, "PATCH")
+    digest = hashlib.sha256(trusted.encode()).hexdigest()
+    annotation = PREFIX + "proxy-trust"
+    # Roll one deployment at a time; never select a new pool until both have
+    # loaded the new and retained generations. The annotation survives restarts.
+    for name in ("mastodon-web", "mastodon-streaming"):
+        path = "/apis/apps/v1/namespaces/mastodon/deployments/" + name
+        deployment = api.request(path)
+        template = deployment["spec"]["template"]
+        env = template["spec"]["containers"][0].get("env", [])
+        if not any(e.get("name") == "TRUSTED_PROXY_IP" and e.get("valueFrom", {}).get("configMapKeyRef") ==
+                   {"name": "proxy-trust", "key": "TRUSTED_PROXY_IP"} for e in env):
+            raise ValueError("Mastodon dynamic proxy trust is not configured: " + name)
+        if template["metadata"].get("annotations", {}).get(annotation) != digest:
+            api.request(path, {"spec": {"template": {"metadata": {"annotations": {annotation: digest}}}}}, "PATCH")
+            return False
+        replicas = deployment["spec"].get("replicas", 1)
+        status = deployment.get("status", {})
+        if (status.get("observedGeneration", 0) < deployment["metadata"]["generation"]
+                or any(status.get(k, 0) != replicas for k in ("replicas", "updatedReplicas", "availableReplicas"))):
+            return False
+    return True
+
+
 def write_status(api, status):
     data = dict.fromkeys(("pendingOwner", "pendingKind", "pendingOwnerName", "previousUIDs", "pendingUID", "pendingNamespace", "pendingName", "blocked", "evicted", "egressVerified"))
     data.update(status)
@@ -111,6 +149,12 @@ def reconcile(api, approved=()):
         raise ValueError("Cilium agents are not ready")
     if any(p["metadata"].get("annotations", {}).get(PREFIX + "multi-pool") != "true" for p in agents):
         raise ValueError("Cilium agents have not rolled into verified multi-pool configuration")
+    if not sync_proxy_trust(api, cidr):
+        # Do not erase a pending eviction when trust refresh interrupts migration.
+        api.request("/api/v1/namespaces/kube-system/configmaps/pd-migration-status",
+                    {"data": {"phase": "proxy-trust", "egressVerified": None,
+                              "blocked": "waiting for Mastodon proxy trust rollout"}}, "PATCH")
+        return
     namespaces = {n["metadata"]["name"]: n for n in api.request("/api/v1/namespaces")["items"]}
     all_pods = api.request("/api/v1/pods")["items"]
     pods = [p for p in all_pods if active(p)]
