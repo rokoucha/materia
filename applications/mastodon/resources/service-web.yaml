@@ -2,15 +2,14 @@ apiVersion: v1
 kind: Service
 
 metadata:
-  name: mastodon-web
+  name: mastodon-web-ipv6
 
 spec:
   selector:
     app: web
   type: ClusterIP
   ipFamilies:
-    - IPv4
-  # Keep proxy source IPs within TRUSTED_PROXY_IP across PD changes.
+    - IPv6
   ipFamilyPolicy: SingleStack
   ports:
     - name: http
