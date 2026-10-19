@@ -32,8 +32,21 @@ class API:
             headers["Content-Type"] = "application/merge-patch+json" if method == "PATCH" else "application/json"
         req = urllib.request.Request(self.server + path, headers=headers,
                                      data=None if body is None else json.dumps(body).encode(), method=method)
-        with urllib.request.urlopen(req, context=self.context, timeout=30) as response:
-            return json.load(response)
+        for attempt in range(4):
+            try:
+                with urllib.request.urlopen(req, context=self.context, timeout=30) as response:
+                    return json.load(response)
+            except urllib.error.HTTPError as error:
+                # Only retry reads: an eviction's 429 is a PDB decision.
+                if req.get_method() != "GET" or error.code != 429 or attempt == 3:
+                    raise
+                retry_after = error.headers.get("Retry-After", "")
+                delay = int(retry_after) if retry_after.isdigit() else 2 ** attempt
+                if delay > 5:
+                    raise  # Leave long waits to the next scheduled Job.
+                error.close()
+                print(f"GET {path}: HTTP 429; retrying in {delay}s", flush=True)
+                time.sleep(delay)
 
 
 def ready(pod):

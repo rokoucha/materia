@@ -137,6 +137,32 @@ class MigrationTests(unittest.TestCase):
     def test_ipv4_does_not_count_as_migrated(self):
         self.assertFalse(m.in_pool(pod(ip="10.244.0.3"), CIDR))
 
+    def test_api_throttled_read_retries_with_server_delay(self):
+        error = m.urllib.error.HTTPError("https://192.0.2.1", 429, "busy", {"Retry-After": "3"}, None)
+        with tempfile.TemporaryDirectory() as root:
+            (Path(root) / "token").write_text("token")
+            with patch.object(m, "ROOT", root), patch.dict(os.environ, {"API_SERVER": "https://192.0.2.1:6443"}), patch.object(m.ssl, "create_default_context"), patch.object(m.urllib.request, "urlopen", side_effect=[error, nullcontext(io.StringIO('{"items": []}'))]) as request, patch.object(m.time, "sleep") as sleep:
+                self.assertEqual(m.API().request("/apis/cilium.io/v2/ciliumnodes"), {"items": []})
+            self.assertEqual(request.call_count, 2)
+            sleep.assert_called_once_with(3)
+
+    def test_api_retries_are_bounded_and_do_not_retry_mutations(self):
+        cases = [(429, {}, None, 4, [1, 2, 4]),
+                 (429, {"Retry-After": "10"}, None, 1, []),
+                 (403, {}, None, 1, []),
+                 (429, {}, "POST", 1, []),
+                 (429, {}, "PATCH", 1, [])]
+        with tempfile.TemporaryDirectory() as root:
+            (Path(root) / "token").write_text("token")
+            for code, headers, method, attempts, delays in cases:
+                with self.subTest(code=code, headers=headers, method=method):
+                    error = m.urllib.error.HTTPError("https://192.0.2.1", code, "rejected", headers, None)
+                    with patch.object(m, "ROOT", root), patch.dict(os.environ, {"API_SERVER": "https://192.0.2.1:6443"}), patch.object(m.ssl, "create_default_context"), patch.object(m.urllib.request, "urlopen", side_effect=error) as request, patch.object(m.time, "sleep") as sleep:
+                        with self.assertRaises(m.urllib.error.HTTPError):
+                            m.API().request("/resource", {} if method else None, method)
+                    self.assertEqual(request.call_count, attempts)
+                    self.assertEqual([c.args[0] for c in sleep.call_args_list], delays)
+
     def test_stateful_and_jobs_require_permission(self):
         namespaces = {"app": {}}
         for kind in ("StatefulSet", "Job"):

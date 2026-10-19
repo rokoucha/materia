@@ -24,6 +24,8 @@ routerは起動時、DHCP経路イベント、15秒周期で照合する。境�
 
 クラスタのCronJobはNamespaceのIPv4/IPv6プール指定を切り替え、Eviction APIで1 Podずつ処理する。PDBの429はそのまま失敗・再試行し、強制削除に切り替えない。唯一不健全なのが既知の旧IPv6を持つ未移行Pod自身なら、既存の終了猶予とPDBの範囲で先に置き換える。Eviction前にUID、管理コントローラ、既存UID一覧をConfigMapへ保存する。途中停止後は同じUIDのEvictionを再試行し、置き換えPodがReadyになるまで次を処理しない。Podやテンプレートのプール上書きは、Namespaceによる切り替えを妨げるため事前に除去する。
 
+APIのGETが429を返した場合は最大3回再試行する。`Retry-After`の秒数を優先し、未指定なら1・2・4秒待つ。5秒を超える待機や再試行後の失敗は次の定期Jobへ委ねる。変更リクエストはこの再試行の対象外。
+
 プール切り替え前に、管理対象の新旧Pod IPv6範囲をMastodonの`proxy-trust` ConfigMapへ同期する。Web・Streamingは`TRUSTED_PROXY_IP`を起動時に読むため、設定のSHA-256をPodテンプレートへ付けて1 Deploymentずつ更新し、全レプリカの反映を待つ。更新中は`phase=proxy-trust`としてプール切り替え・Evictionを保留し、既存のEviction待ち状態は保持する。旧プール回収後は信頼範囲も縮小する。権限はMastodon内の当該ConfigMapと2 Deploymentのget/patchに限定し、Argoは動的な設定値とハッシュのみ保持する。接続元の制限は引き続きNetworkPolicyでIngress Podに限定する。
 
 IngressからMastodonのWeb・StreamingへはIPv6 SingleStackの`mastodon-web-ipv6`・`mastodon-streaming-ipv6` Serviceを使う。IPv4をprimaryに持つ旧Serviceはprimaryの変更ができないため別名へ切り替える。外部IngressのIPv4/IPv6公開は維持する。
