@@ -98,6 +98,27 @@ class MigrationTests(unittest.TestCase):
         m.reconcile(api)
         self.assertFalse(api.evictions())
 
+    def test_only_the_unhealthy_old_incumbent_can_be_replaced(self):
+        healthy = pod()
+        healthy["metadata"]["uid"] = "healthy"
+        unhealthy = pod(ready=False)
+        api = API([healthy, unhealthy])
+        m.reconcile(api)
+        self.assertEqual(api.evictions()[0][1]["deleteOptions"]["preconditions"]["uid"], "uid-1")
+        self.assertNotIn("gracePeriodSeconds", api.evictions()[0][1]["deleteOptions"])
+
+    def test_two_unhealthy_pods_do_not_start_another_disruption(self):
+        api = API([pod(ready=False), pod(ready=False)])
+        m.reconcile(api)
+        self.assertFalse(api.evictions())
+
+    def test_pending_pod_without_ipv6_is_not_evicted_as_old(self):
+        p = pod(ip="10.244.0.3", ready=False)
+        p["status"]["phase"] = "Pending"
+        api = API([p])
+        m.reconcile(api)
+        self.assertFalse(api.evictions())
+
     def test_overrides_block_before_any_mutation(self):
         p = pod()
         p["metadata"]["annotations"] = {m.V6: "obsolete"}
