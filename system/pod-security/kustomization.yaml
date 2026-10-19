@@ -3,3 +3,5 @@ kind: Kustomization
 
 resources:
   - ./namespaces.yaml
+  - ./privileged-boundaries.yaml
+  - ./privileged-namespaces.yaml

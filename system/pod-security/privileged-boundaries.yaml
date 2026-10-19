@@ -1,0 +1,402 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: privileged-namespace-boundaries
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [pods, pods/ephemeralcontainers]
+  variables:
+    - name: profiles
+      expression: >-
+        {
+          "apcupsd/default": {
+            "unconfined": dyn(false),
+            "network": dyn(false),
+            "pid": dyn(false),
+            "ipc": dyn(false),
+            "containers": dyn({
+              "apcupsd": {
+                "unconfined": dyn(false),
+                "privileged": dyn(true),
+                "capabilities": dyn([]),
+                "mounts": dyn({})
+              }
+            }),
+            "paths": dyn([])
+          },
+          "cloudflare-ddns/default": {
+            "unconfined": dyn(false),
+            "network": dyn(true),
+            "pid": dyn(false),
+            "ipc": dyn(false),
+            "containers": dyn({}),
+            "paths": dyn([])
+          },
+          "kube-system/default": {
+            "unconfined": dyn(false),
+            "network": dyn(true),
+            "pid": dyn(false),
+            "ipc": dyn(false),
+            "containers": dyn({
+              "amd-gpu-device-plugin": {
+                "unconfined": dyn(false),
+                "privileged": dyn(true),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/var/lib/kubelet/device-plugins": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/sys": {"readOnly": dyn(true), "propagation": dyn("None")}
+                })
+              },
+              "intel-gpu-device-plugin": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/dev/dri": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/sys/class/drm": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/var/lib/kubelet/device-plugins": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/var/run/cdi": {"readOnly": dyn(false), "propagation": dyn("None")}
+                })
+              },
+              "kube-apiserver": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn(["NET_BIND_SERVICE"]),
+                "mounts": dyn({
+                  "/system/secrets/kubernetes/kube-apiserver": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/system/config/kubernetes/kube-apiserver": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/var/log/audit/kube": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/etc/ssl/certs": {"readOnly": dyn(true), "propagation": dyn("None")}
+                })
+              },
+              "kube-controller-manager": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/system/secrets/kubernetes/kube-controller-manager": {"readOnly": dyn(true), "propagation": dyn("None")}
+                })
+              },
+              "kube-scheduler": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/system/secrets/kubernetes/kube-scheduler": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/system/config/kubernetes/kube-scheduler": {"readOnly": dyn(true), "propagation": dyn("None")}
+                })
+              }
+            }),
+            "paths": dyn(["/dev/dri", "/etc/ssl/certs", "/sys", "/sys/class/drm", "/system/config/kubernetes/kube-apiserver", "/system/config/kubernetes/kube-scheduler", "/system/secrets/kubernetes/kube-apiserver", "/system/secrets/kubernetes/kube-controller-manager", "/system/secrets/kubernetes/kube-scheduler", "/var/lib/kubelet/device-plugins", "/var/log/audit/kube", "/var/run/cdi"])
+          },
+          "kube-system/cilium": {
+            "unconfined": dyn(true),
+            "network": dyn(true),
+            "pid": dyn(false),
+            "ipc": dyn(false),
+            "containers": dyn({
+              "cilium-agent": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn(["CHOWN", "KILL", "NET_ADMIN", "NET_RAW", "IPC_LOCK", "SYS_ADMIN", "SYS_RESOURCE", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]),
+                "mounts": dyn({
+                  "/var/run/cilium/envoy/sockets": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/proc/sys/net": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/proc/sys/kernel": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/sys/fs/bpf": {"readOnly": dyn(false), "propagation": dyn("HostToContainer")},
+                  "/sys/fs/cgroup": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/var/run/cilium": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/var/run/netns": {"readOnly": dyn(false), "propagation": dyn("HostToContainer")},
+                  "/etc/cni/net.d": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/lib/modules": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/run/xtables.lock": {"readOnly": dyn(false), "propagation": dyn("None")}
+                })
+              },
+              "config": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn(["NET_ADMIN"]),
+                "mounts": dyn({})
+              },
+              "apply-sysctl-overwrites": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn(["SYS_ADMIN", "SYS_CHROOT", "SYS_PTRACE"]),
+                "mounts": dyn({
+                  "/proc": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/opt/cni/bin": {"readOnly": dyn(false), "propagation": dyn("None")}
+                })
+              },
+              "mount-bpf-fs": {
+                "unconfined": dyn(false),
+                "privileged": dyn(true),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/sys/fs/bpf": {"readOnly": dyn(false), "propagation": dyn("Bidirectional")}
+                })
+              },
+              "clean-cilium-state": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn(["NET_ADMIN", "SYS_ADMIN", "SYS_RESOURCE"]),
+                "mounts": dyn({
+                  "/sys/fs/bpf": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/sys/fs/cgroup": {"readOnly": dyn(false), "propagation": dyn("HostToContainer")},
+                  "/var/run/cilium": {"readOnly": dyn(false), "propagation": dyn("None")}
+                })
+              },
+              "install-cni-binaries": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/opt/cni/bin": {"readOnly": dyn(false), "propagation": dyn("None")}
+                })
+              }
+            }),
+            "paths": dyn(["/etc/cni/net.d", "/lib/modules", "/opt/cni/bin", "/proc", "/proc/sys/kernel", "/proc/sys/net", "/run/xtables.lock", "/sys/fs/bpf", "/sys/fs/cgroup", "/var/run/cilium", "/var/run/cilium/envoy/sockets", "/var/run/netns"])
+          },
+          "kube-system/cilium-envoy": {
+            "unconfined": dyn(false),
+            "network": dyn(true),
+            "pid": dyn(false),
+            "ipc": dyn(false),
+            "containers": dyn({
+              "cilium-envoy": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn(["NET_ADMIN", "SYS_ADMIN"]),
+                "mounts": dyn({
+                  "/var/run/cilium/envoy/sockets": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/var/run/cilium/envoy/artifacts": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/sys/fs/bpf": {"readOnly": dyn(false), "propagation": dyn("HostToContainer")}
+                })
+              }
+            }),
+            "paths": dyn(["/sys/fs/bpf", "/var/run/cilium/envoy/artifacts", "/var/run/cilium/envoy/sockets"])
+          },
+          "kube-system/cilium-operator": {
+            "unconfined": dyn(false),
+            "network": dyn(true),
+            "pid": dyn(false),
+            "ipc": dyn(false),
+            "containers": dyn({}),
+            "paths": dyn([])
+          },
+          "kube-system/coredns": {
+            "unconfined": dyn(false),
+            "network": dyn(false),
+            "pid": dyn(false),
+            "ipc": dyn(false),
+            "containers": dyn({
+              "coredns": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn(["NET_BIND_SERVICE"]),
+                "mounts": dyn({})
+              }
+            }),
+            "paths": dyn([])
+          },
+          "monitoring/drm-exporter": {
+            "unconfined": dyn(false),
+            "network": dyn(false),
+            "pid": dyn(false),
+            "ipc": dyn(false),
+            "containers": dyn({
+              "drm-exporter": {
+                "unconfined": dyn(false),
+                "privileged": dyn(true),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/dev/dri": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/sys": {"readOnly": dyn(true), "propagation": dyn("None")}
+                })
+              }
+            }),
+            "paths": dyn(["/dev/dri", "/sys"])
+          },
+          "monitoring/mackerel-agent-sa": {
+            "unconfined": dyn(false),
+            "network": dyn(true),
+            "pid": dyn(true),
+            "ipc": dyn(true),
+            "containers": dyn({
+              "mackerel-agent": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/dev/disk": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/sys": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/var/lib/mackerel-agent": {"readOnly": dyn(false), "propagation": dyn("None")}
+                })
+              }
+            }),
+            "paths": dyn(["/", "/dev/disk", "/sys", "/var/lib/mackerel-agent"])
+          },
+          "monitoring/node-exporter": {
+            "unconfined": dyn(false),
+            "network": dyn(true),
+            "pid": dyn(true),
+            "ipc": dyn(false),
+            "containers": dyn({
+              "node-exporter": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/proc": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/sys": {"readOnly": dyn(true), "propagation": dyn("HostToContainer")},
+                  "/": {"readOnly": dyn(true), "propagation": dyn("HostToContainer")}
+                })
+              }
+            }),
+            "paths": dyn(["/", "/proc", "/sys"])
+          },
+          "monitoring/otelcol-agent-sa": {
+            "unconfined": dyn(false),
+            "network": dyn(false),
+            "pid": dyn(false),
+            "ipc": dyn(false),
+            "containers": dyn({
+              "otc-container": {
+                "unconfined": dyn(false),
+                "privileged": dyn(false),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/var/log/pods": {"readOnly": dyn(true), "propagation": dyn("None")}
+                })
+              }
+            }),
+            "paths": dyn(["/", "/var/log/pods"])
+          },
+          "synology-csi/csi-controller-sa": {
+            "unconfined": dyn(false),
+            "network": dyn(true),
+            "pid": dyn(false),
+            "ipc": dyn(false),
+            "containers": dyn({
+              "csi-provisioner": {
+                "unconfined": dyn(false),
+                "privileged": dyn(true),
+                "capabilities": dyn(["SYS_ADMIN"]),
+                "mounts": dyn({})
+              },
+              "csi-attacher": {
+                "unconfined": dyn(false),
+                "privileged": dyn(true),
+                "capabilities": dyn(["SYS_ADMIN"]),
+                "mounts": dyn({})
+              },
+              "csi-resizer": {
+                "unconfined": dyn(false),
+                "privileged": dyn(true),
+                "capabilities": dyn(["SYS_ADMIN"]),
+                "mounts": dyn({})
+              },
+              "csi-plugin": {
+                "unconfined": dyn(false),
+                "privileged": dyn(true),
+                "capabilities": dyn(["SYS_ADMIN"]),
+                "mounts": dyn({})
+              }
+            }),
+            "paths": dyn([])
+          },
+          "synology-csi/csi-node-sa": {
+            "unconfined": dyn(false),
+            "network": dyn(true),
+            "pid": dyn(true),
+            "ipc": dyn(false),
+            "containers": dyn({
+              "csi-driver-registrar": {
+                "unconfined": dyn(false),
+                "privileged": dyn(true),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/var/lib/kubelet/plugins/csi.san.synology.com/": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/var/lib/kubelet/plugins_registry": {"readOnly": dyn(false), "propagation": dyn("None")}
+                })
+              },
+              "csi-plugin": {
+                "unconfined": dyn(false),
+                "privileged": dyn(true),
+                "capabilities": dyn([]),
+                "mounts": dyn({
+                  "/var/lib/kubelet": {"readOnly": dyn(false), "propagation": dyn("Bidirectional")},
+                  "/var/lib/kubelet/plugins/csi.san.synology.com/": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/": {"readOnly": dyn(false), "propagation": dyn("None")},
+                  "/dev": {"readOnly": dyn(false), "propagation": dyn("None")}
+                })
+              }
+            }),
+            "paths": dyn(["/", "/dev", "/var/lib/kubelet", "/var/lib/kubelet/plugins/csi.san.synology.com/", "/var/lib/kubelet/plugins_registry"])
+          }
+        }
+    - name: key
+      expression: object.metadata.namespace + '/' + object.spec.?serviceAccountName.orValue('default')
+    - name: profile
+      expression: >-
+        variables.key in variables.profiles ? variables.profiles[variables.key] :
+        {'unconfined': dyn(false), 'network': dyn(false), 'pid': dyn(false), 'ipc': dyn(false), 'paths': dyn([]), 'containers': dyn({})}
+    - name: containers
+      expression: object.spec.containers + object.spec.?initContainers.orValue([]) + object.spec.?ephemeralContainers.orValue([])
+  validations:
+    - expression: >-
+        (!object.spec.?hostNetwork.orValue(false) || variables.profile.network) &&
+        (!object.spec.?hostPID.orValue(false) || variables.profile.pid) &&
+        (!object.spec.?hostIPC.orValue(false) || variables.profile.ipc)
+      message: Host namespaces are limited to reviewed namespace/ServiceAccount profiles
+    - expression: >-
+        object.spec.?volumes.orValue([]).all(v, !has(v.hostPath) || v.hostPath.path in variables.profile.paths)
+      message: hostPath must exactly match a reviewed path for this ServiceAccount
+    - expression: >-
+        variables.containers.all(c,
+          !c.?securityContext.privileged.orValue(false) ||
+          (c.name in variables.profile.containers && variables.profile.containers[c.name].privileged))
+      message: Privileged mode is limited to reviewed containers
+    - expression: >-
+        variables.containers.all(c, c.?securityContext.capabilities.add.orValue([]).all(cap,
+          cap == 'NET_BIND_SERVICE' ||
+          (c.name in variables.profile.containers && cap in variables.profile.containers[c.name].capabilities)))
+      message: Added capabilities must match the reviewed container profile
+    - expression: >-
+        variables.containers.all(c, c.?volumeMounts.orValue([]).all(m,
+          object.spec.?volumes.orValue([]).filter(v, v.name == m.name && has(v.hostPath)).all(v,
+            c.name in variables.profile.containers &&
+            v.hostPath.path in variables.profile.containers[c.name].mounts &&
+            (!variables.profile.containers[c.name].mounts[v.hostPath.path].readOnly || m.?readOnly.orValue(false)) &&
+            m.?mountPropagation.orValue('None') == variables.profile.containers[c.name].mounts[v.hostPath.path].propagation)))
+      message: Host mounts must match the container's reviewed path, read-only flag and propagation
+    - expression: >-
+        variables.containers.all(c,
+          c.?securityContext.procMount.orValue('Default') == 'Default' &&
+          !c.?securityContext.windowsOptions.hostProcess.orValue(false) &&
+          (c.?securityContext.seccompProfile.type.orValue('RuntimeDefault') != 'Unconfined' ||
+           (c.name in variables.profile.containers && variables.profile.containers[c.name].unconfined))) &&
+        !object.spec.?securityContext.windowsOptions.hostProcess.orValue(false) &&
+        (object.spec.?securityContext.seccompProfile.type.orValue('RuntimeDefault') != 'Unconfined' || variables.profile.unconfined) &&
+        size(object.spec.?securityContext.sysctls.orValue([])) == 0
+      message: Unmasked proc, HostProcess, custom sysctls and unreviewed unconfined seccomp are not approved
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: privileged-namespace-boundaries
+spec:
+  policyName: privileged-namespace-boundaries
+  validationActions: [Deny]
+  matchResources:
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: In
+          values: [apcupsd, cloudflare-ddns, monitoring, synology-csi, kube-system]

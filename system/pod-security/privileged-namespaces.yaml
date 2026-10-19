@@ -1,0 +1,25 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: privileged-namespace-allowlist
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [namespaces]
+  validations:
+    - expression: >-
+        object.metadata.?labels['pod-security.kubernetes.io/enforce'].orValue('') != 'privileged' ||
+        object.metadata.name in ['apcupsd', 'cloudflare-ddns', 'monitoring', 'synology-csi', 'kube-system']
+      message: Privileged Pod Security is limited to namespaces covered by privileged-namespace-boundaries
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: privileged-namespace-allowlist
+spec:
+  policyName: privileged-namespace-allowlist
+  validationActions: [Deny]
