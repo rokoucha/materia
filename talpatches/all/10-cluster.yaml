@@ -32,6 +32,5 @@ workloadIsolation: false
 apiVersion: v1alpha1
 kind: VolumeConfig
 name: EPHEMERAL
-# Preserve the legacy EPHEMERAL mount flags during the generator migration.
 mount:
-  secure: false
+  secure: true
