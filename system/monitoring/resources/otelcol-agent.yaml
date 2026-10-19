@@ -9,6 +9,23 @@ spec:
     enabled: false
   config:
     receivers:
+      filelog/audit:
+        include:
+          - /hostfs/var/log/audit/kube/*.log
+        start_at: beginning
+        include_file_path: true
+        retry_on_failure:
+          enabled: true
+        resource:
+          service.name: kubernetes-audit
+          k8s.node.name: ${env:K8S_NODE_NAME}
+        operators:
+          - type: json_parser
+            parse_to: body
+            timestamp:
+              parse_from: body.stageTimestamp
+              layout_type: gotime
+              layout: "2006-01-02T15:04:05.999999999Z07:00"
       filelog:
         include:
           - /var/log/pods/*/*/*.log
@@ -176,6 +193,7 @@ spec:
         logs:
           receivers:
             - filelog
+            - filelog/audit
           processors:
             - k8sattributes
             - resourcedetection

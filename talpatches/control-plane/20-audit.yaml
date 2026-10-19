@@ -1,0 +1,23 @@
+apiVersion: v1alpha1
+kind: KubeAPIServerConfig
+extraArgs:
+  audit-log-path: /var/log/audit/kube/audit.log
+  audit-log-maxage: "7"
+  audit-log-maxbackup: "3"
+  audit-log-maxsize: "100"
+---
+apiVersion: v1alpha1
+kind: KubeAuditPolicyConfig
+configuration:
+  apiVersion: audit.k8s.io/v1
+  kind: Policy
+  omitStages:
+    - RequestReceived
+  rules:
+    - level: None
+      nonResourceURLs:
+        - /healthz*
+        - /livez*
+        - /readyz*
+    # Request and response bodies can contain credentials, even outside Secrets.
+    - level: Metadata

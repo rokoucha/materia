@@ -30,6 +30,8 @@ for node in hydrogen lithium phosphorus; do
   "${YQ_BIN}" -e 'select(.kind == "KubeNetworkConfig") | .nodeCIDRMaskSizeIPv6 == 120 and .podSubnets[1] == "fd00::/108"' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.kind == "KubeNodeConfig") | (.taints | length) == 0' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.kind == "KubeProxyConfig") | .enabled == false' "${config}" >/dev/null
+  "${YQ_BIN}" -e 'select(.kind == "KubeAPIServerConfig") | .extraArgs."audit-log-path" == "/var/log/audit/kube/audit.log" and .extraArgs."audit-log-maxbackup" == "3"' "${config}" >/dev/null
+  "${YQ_BIN}" -e 'select(.kind == "KubeAuditPolicyConfig") | (.configuration.omitStages | length) == 1 and .configuration.omitStages[0] == "RequestReceived" and .configuration.rules[-1].level == "Metadata" and (.configuration.rules | all_c(.level == "None" or .level == "Metadata"))' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.kind == "VLANConfig" and .vlanID == 30) | (.addresses | length) == 1 and (.addresses[0].address | test("^172\\.16\\.3\\."))' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.version == "v1alpha1") | .machine.kernel.modules[0].name == "btrfs" and (.machine.systemDiskEncryption.state.keys[0] | has("tpm"))' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.kind == "KubeEtcdEncryptionConfig") | (.config.resources[0].providers[0].secretbox.keys[0].name == "key2") and (.config.resources[0].providers[1] | has("identity"))' "${config}" >/dev/null
