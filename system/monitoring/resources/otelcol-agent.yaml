@@ -205,8 +205,10 @@ spec:
   volumeMounts:
     - name: hostfs
       mountPath: /hostfs
+      readOnly: true
     - name: varlogpods
       mountPath: /var/log/pods
+      readOnly: true
   volumes:
     - name: hostfs
       hostPath:
