@@ -1,5 +1,5 @@
 # Apply after every CiliumNode has migrated; retain IPv6 NAT until GUA rollout.
-egressMasqueradeInterfaces: "enp+,ethSel0.30"
+egressMasqueradeInterfaces: "enp+ ethSel0.30"
 enableIPv6Masquerade: true
 ipam:
   mode: multi-pool

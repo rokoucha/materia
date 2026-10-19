@@ -28,7 +28,7 @@ ipam:
         ipv6:
           cidrs: [fd00::/108]
           maskSize: 120
-egressMasqueradeInterfaces: "enp+,ethSel0.30"
+egressMasqueradeInterfaces: "enp+ ethSel0.30"
 enableIPv6Masquerade: false
 podAnnotations:
   pd.materia.rokoucha.com/multi-pool: "true"
