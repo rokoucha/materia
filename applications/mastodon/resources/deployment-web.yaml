@@ -8,6 +8,10 @@ metadata:
 
 spec:
   replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: web
@@ -47,6 +51,11 @@ spec:
             limits:
               memory: 1536Mi
           env:
+            - name: TRUSTED_PROXY_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: proxy-trust
+                  key: TRUSTED_PROXY_IP
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:

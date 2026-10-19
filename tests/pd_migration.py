@@ -1,5 +1,7 @@
 import importlib.util
 import ipaddress
+import hashlib
+import copy
 import io
 import os
 from pathlib import Path
@@ -26,11 +28,27 @@ class API:
         self.pods, self.writes = pods, []
         self.status = {}
         self.job_finished = False
+        self.pool_cidrs = [str(CIDR)]
+        self.trusted = "fd00::/108,::ffff:10.244.0.0/112,10.244.0.0/16," + str(CIDR)
+        self.deployments = {
+            name: {"metadata": {"generation": 2}, "spec": {"replicas": 1, "template": {
+                "metadata": {"annotations": {m.PREFIX + "proxy-trust": hashlib.sha256(self.trusted.encode()).hexdigest()}},
+                "spec": {"containers": [{"env": [{"name": "TRUSTED_PROXY_IP", "valueFrom": {
+                    "configMapKeyRef": {"name": "proxy-trust", "key": "TRUSTED_PROXY_IP"}}}]}]}}},
+                "status": {"observedGeneration": 2, "replicas": 1, "updatedReplicas": 1, "availableReplicas": 1}}
+            for name in ("mastodon-web", "mastodon-streaming")}
 
     def request(self, path, body=None, method=None):
         if method:
             self.writes.append((path, body, method))
             return {}
+        if path.endswith("/configmaps/proxy-trust"):
+            return {"data": {"TRUSTED_PROXY_IP": self.trusted}}
+        if "/deployments/" in path:
+            return copy.deepcopy(self.deployments[path.rsplit("/", 1)[1]])
+        if path.endswith("/ciliumpodippools"):
+            return {"items": [{"metadata": {"labels": {m.PREFIX + "managed": "true"}},
+                               "spec": {"ipv6": {"cidrs": self.pool_cidrs}}}]}
         if path.endswith("/pd-desired"):
             return {"data": {"pool": "pd-test", "podCIDR": str(CIDR)}}
         if path.endswith("/pd-migration-status"):
@@ -56,6 +74,54 @@ class API:
 
 
 class MigrationTests(unittest.TestCase):
+    def test_trust_includes_new_and_retained_generations_before_pool_selection(self):
+        api = API([pod()])
+        api.pool_cidrs += ["240b:10:3f6d:1503:1000::/108"]
+        api.status = {"pendingOwner": "owner-1", "pendingUID": "uid-1"}
+        m.reconcile(api)
+        self.assertIn("240b:10:3f6d:1503:1000::/108", api.writes[0][1]["data"]["TRUSTED_PROXY_IP"])
+        self.assertTrue(api.writes[1][0].endswith("/deployments/mastodon-web"))
+        self.assertFalse(api.evictions())
+        self.assertFalse(any(w[0] == "/api/v1/namespaces/app" for w in api.writes))
+        self.assertNotIn("pendingOwner", api.writes[-1][1]["data"])
+
+    def test_proxy_rollout_resumes_one_deployment_at_a_time(self):
+        api = API([])
+        api.deployments["mastodon-web"]["status"]["observedGeneration"] = 1
+        self.assertFalse(m.sync_proxy_trust(api, CIDR))
+        self.assertFalse(api.writes)
+        api.deployments["mastodon-web"]["status"]["observedGeneration"] = 2
+        api.deployments["mastodon-streaming"]["spec"]["template"]["metadata"]["annotations"] = {}
+        self.assertFalse(m.sync_proxy_trust(api, CIDR))
+        self.assertTrue(api.writes[-1][0].endswith("/deployments/mastodon-streaming"))
+
+    def test_old_proxy_replicas_must_finish_before_pool_selection(self):
+        api = API([pod()])
+        api.deployments["mastodon-web"]["status"]["replicas"] = 2
+        m.reconcile(api)
+        self.assertFalse(api.evictions())
+        self.assertEqual(api.writes[-1][1]["data"]["phase"], "proxy-trust")
+
+    def test_retired_generation_is_removed_from_trust(self):
+        api = API([])
+        api.trusted += ",240b:10:3f6d:1503:1000::/108"
+        self.assertTrue(m.sync_proxy_trust(api, CIDR))
+        self.assertNotIn("1503", api.writes[0][1]["data"]["TRUSTED_PROXY_IP"])
+
+    def test_invalid_pool_cannot_widen_proxy_trust(self):
+        api = API([])
+        api.pool_cidrs = ["::/0"]
+        with self.assertRaises(ValueError):
+            m.sync_proxy_trust(api, CIDR)
+        self.assertFalse(api.writes)
+
+    def test_missing_dynamic_env_stops_migration(self):
+        api = API([pod()])
+        api.deployments["mastodon-web"]["spec"]["template"]["spec"]["containers"][0]["env"] = []
+        with self.assertRaises(ValueError):
+            m.reconcile(api)
+        self.assertFalse(api.evictions())
+
     def test_projected_token_rotation_is_used_on_the_next_request(self):
         with tempfile.TemporaryDirectory() as root:
             token = Path(root) / "token"
