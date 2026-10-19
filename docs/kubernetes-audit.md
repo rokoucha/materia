@@ -9,6 +9,7 @@ gateway経由でLokiへ全件送信する。Mackerelへは既存設定どおり1
 監査ディレクトリは0700、ファイルは0600で所有者が65534のため、CollectorもUID/GID 65534で実行する。
 親の`/var/log/audit`はroot専用のため、`kube`ディレクトリを直接マウントする。
 Admission policyもこのパスをCollectorの読み取り専用マウントとして許可する。
+Talosのkubeletからはホスト側の監査パスをstatできないため、hostPathの`type`は指定しない。
 変更前の`kube-apiserver*.log`は収集対象に含めない。
 ノード側は1ファイル100 MiB、バックアップ3個、最大7日でローテーションし、Lokiは既存の7日保持を使う。
 
@@ -28,6 +29,8 @@ Collectorに読み取り位置の永続化機能が含まれていないため�
    ```
 
    新規構築時は`scripts/talos-genconfig.sh`が同じパッチを取り込む。
+   旧形式のmachine configが残るノードでは、`cluster.apiServer.extraArgs`と
+   `cluster.apiServer.auditPolicy`へ同じ値をパッチする。
 3. `kubectl get namespace default`などを実行し、Grafana Exploreで次を検索する。
 
 ```logql
