@@ -272,11 +272,12 @@ spec:
                 "capabilities": dyn([]),
                 "mounts": dyn({
                   "/": {"readOnly": dyn(true), "propagation": dyn("None")},
-                  "/var/log/pods": {"readOnly": dyn(true), "propagation": dyn("None")}
+                  "/var/log/pods": {"readOnly": dyn(true), "propagation": dyn("None")},
+                  "/var/log/audit/kube": {"readOnly": dyn(true), "propagation": dyn("None")}
                 })
               }
             }),
-            "paths": dyn(["/", "/var/log/pods"])
+            "paths": dyn(["/", "/var/log/pods", "/var/log/audit/kube"])
           },
           "synology-csi/csi-controller-sa": {
             "unconfined": dyn(false),

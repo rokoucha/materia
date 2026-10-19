@@ -11,7 +11,7 @@ spec:
     receivers:
       filelog/audit:
         include:
-          - /hostfs/var/log/audit/kube/audit*.log
+          - /var/log/audit/kube/audit*.log
         start_at: beginning
         include_file_path: true
         retry_on_failure:
@@ -232,6 +232,9 @@ spec:
     - name: varlogpods
       mountPath: /var/log/pods
       readOnly: true
+    - name: varlogaudit
+      mountPath: /var/log/audit/kube
+      readOnly: true
   volumes:
     - name: hostfs
       hostPath:
@@ -239,3 +242,7 @@ spec:
     - name: varlogpods
       hostPath:
         path: /var/log/pods
+    - name: varlogaudit
+      hostPath:
+        path: /var/log/audit/kube
+        type: Directory
