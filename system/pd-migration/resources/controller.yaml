@@ -102,6 +102,8 @@ spec:
               env:
                 - name: ALLOW_INITIAL_STATEFUL
                   value: "false"
+                - name: RECONCILE_LOOPS
+                  value: "1"
               resources:
                 requests:
                   cpu: 10m
