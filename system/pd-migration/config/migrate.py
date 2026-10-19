@@ -83,7 +83,7 @@ def verify_egress(cidr):
 
 
 def write_status(api, status):
-    data = dict.fromkeys(("pendingOwner", "previousUIDs", "pendingUID", "pendingNamespace", "pendingName", "blocked", "evicted", "egressVerified"))
+    data = dict.fromkeys(("pendingOwner", "pendingKind", "pendingOwnerName", "previousUIDs", "pendingUID", "pendingNamespace", "pendingName", "blocked", "evicted", "egressVerified"))
     data.update(status)
     api.request("/api/v1/namespaces/kube-system/configmaps/pd-migration-status", {"data": data}, "PATCH")
 
@@ -137,11 +137,13 @@ def reconcile(api, approved=()):
         before = set(json.loads(previous["previousUIDs"]))
         replacement = [p for p in pods if p["metadata"]["uid"] not in before
                        and any(o.get("uid") == previous["pendingOwner"] for o in p["metadata"].get("ownerReferences", []))]
-        finished = any(p.get("status", {}).get("phase") in ("Succeeded", "Failed")
-                       and any(o.get("kind") == "Job" and o.get("uid") == previous["pendingOwner"]
-                               for o in p["metadata"].get("ownerReferences", [])) for p in all_pods)
+        finished = False
+        if previous.get("pendingKind") == "Job":
+            job = api.request("/apis/batch/v1/namespaces/" + previous["pendingNamespace"] + "/jobs/" + previous["pendingOwnerName"])
+            finished = any(c["type"] in ("Complete", "Failed") and c["status"] == "True"
+                           for c in job.get("status", {}).get("conditions", []))
         if not finished and not any(ready(p) for p in replacement):
-            status.update({k: previous[k] for k in ("pendingOwner", "previousUIDs", "pendingUID", "pendingNamespace", "pendingName")})
+            status.update({k: previous[k] for k in ("pendingOwner", "pendingKind", "pendingOwnerName", "previousUIDs", "pendingUID", "pendingNamespace", "pendingName") if k in previous})
             status["blocked"] = "waiting for evicted workload replacement"
             write_status(api, status)
             if original and not original["metadata"].get("deletionTimestamp"):
@@ -159,7 +161,8 @@ def reconcile(api, approved=()):
             candidate = next((p for p in old if recreate_allowed(p, namespaces, initial, approved)), None)
             if candidate:
                 meta = candidate["metadata"]
-                status["pendingOwner"] = next(o["uid"] for o in meta["ownerReferences"] if o.get("controller"))
+                owner = next(o for o in meta["ownerReferences"] if o.get("controller"))
+                status.update(pendingOwner=owner["uid"], pendingKind=owner["kind"], pendingOwnerName=owner["name"])
                 status["previousUIDs"] = json.dumps([p["metadata"]["uid"] for p in pods])
                 status.update(pendingUID=meta["uid"], pendingNamespace=meta["namespace"], pendingName=meta["name"])
                 # Persist the wait before eviction so a process restart cannot

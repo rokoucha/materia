@@ -12,7 +12,7 @@ CIDR = ipaddress.ip_network("240b:10:3f6d:1403:1000::/108")
 
 def pod(kind="ReplicaSet", ip="fd00::42", ready=True):
     return {"metadata": {"name": "app", "namespace": "app", "uid": "uid-1",
-                         "ownerReferences": [{"kind": kind, "controller": True, "uid": "owner-1"}] if kind else []},
+                         "ownerReferences": [{"kind": kind, "name": "controller", "controller": True, "uid": "owner-1"}] if kind else []},
             "spec": {}, "status": {"phase": "Running", "podIPs": [{"ip": ip}],
                                    "conditions": [{"type": "Ready", "status": "True" if ready else "False"}]}}
 
@@ -21,6 +21,7 @@ class API:
     def __init__(self, pods):
         self.pods, self.writes = pods, []
         self.status = {}
+        self.job_finished = False
 
     def request(self, path, body=None, method=None):
         if method:
@@ -30,6 +31,8 @@ class API:
             return {"data": {"pool": "pd-test", "podCIDR": str(CIDR)}}
         if path.endswith("/pd-migration-status"):
             return {"data": self.status}
+        if "/jobs/" in path:
+            return {"status": {"conditions": [{"type": "Complete", "status": "True"}] if self.job_finished else []}}
         if "ciliumpodippools/" in path:
             return {"spec": {"ipv6": {"cidrs": [str(CIDR)], "maskSize": 120}}}
         if path.endswith("/ciliumnodes"):
@@ -128,6 +131,46 @@ class MigrationTests(unittest.TestCase):
             m.reconcile(api)
         self.assertEqual(api.writes[-1][1]["data"]["pendingUID"], "uid-1")
         self.assertFalse(any(w[2] == "DELETE" for w in api.writes))
+
+    def test_another_pd_change_during_replacement_can_renumber_again(self):
+        api = API([pod()])
+        m.reconcile(api)
+        api.status = api.writes[-1][1]["data"]
+        replacement = pod(ip="240b:10:1234:5603:1000::42")
+        replacement["metadata"]["uid"] = "replacement-uid"
+        api.pods = [replacement]
+        api.writes = []
+        m.reconcile(api)
+        self.assertEqual(api.evictions()[0][1]["deleteOptions"]["preconditions"]["uid"], "replacement-uid")
+
+    def test_completed_job_does_not_wait_for_a_replacement_forever(self):
+        api = API([pod("Job")])
+        with patch.dict(m.os.environ, {"ALLOW_INITIAL_STATEFUL": "true"}):
+            m.reconcile(api)
+        api.status = api.writes[-1][1]["data"]
+        api.job_finished = True
+        finished = pod("Job")
+        finished["status"]["phase"] = "Succeeded"
+        current = pod(ip="240b:10:3f6d:1403:1000::42")
+        current["metadata"]["uid"] = "current-uid"
+        api.pods = [finished, current]
+        with patch.object(m, "verify_egress"):
+            result = m.reconcile(api)
+        self.assertEqual(result["phase"], "pods-ready")
+        self.assertFalse(api.writes[-1][1]["data"]["pendingOwner"])
+
+    def test_historical_failed_job_pod_does_not_end_replacement_wait(self):
+        api = API([pod("Job")])
+        with patch.dict(m.os.environ, {"ALLOW_INITIAL_STATEFUL": "true"}):
+            m.reconcile(api)
+        api.status = api.writes[-1][1]["data"]
+        historical = pod("Job")
+        historical["metadata"]["uid"] = "historical"
+        historical["status"]["phase"] = "Failed"
+        api.pods, api.writes = [historical], []
+        m.reconcile(api)
+        self.assertTrue(api.writes[-1][1]["data"]["pendingOwner"])
+        self.assertFalse(api.evictions())
 
 
 if __name__ == "__main__":
