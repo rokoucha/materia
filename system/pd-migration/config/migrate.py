@@ -23,11 +23,10 @@ class API:
         if ipaddress.ip_address(urllib.parse.urlparse(self.server).hostname).version != 4:
             raise ValueError("control API must use IPv4")
         self.context = ssl.create_default_context(cafile=ROOT + "/ca.crt")
-        with open(ROOT + "/token") as f:
-            self.token = f.read().strip()
 
     def request(self, path, body=None, method=None):
-        headers = {"Authorization": "Bearer " + self.token}
+        with open(ROOT + "/token") as f:
+            headers = {"Authorization": "Bearer " + f.read().strip()}
         if body is not None:
             headers["Content-Type"] = "application/merge-patch+json" if method == "PATCH" else "application/json"
         req = urllib.request.Request(self.server + path, headers=headers,

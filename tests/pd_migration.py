@@ -1,6 +1,10 @@
 import importlib.util
 import ipaddress
+import io
+import os
 from pathlib import Path
+from contextlib import nullcontext
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -52,6 +56,18 @@ class API:
 
 
 class MigrationTests(unittest.TestCase):
+    def test_projected_token_rotation_is_used_on_the_next_request(self):
+        with tempfile.TemporaryDirectory() as root:
+            token = Path(root) / "token"
+            token.write_text("old-token")
+            responses = [nullcontext(io.StringIO("{}")), nullcontext(io.StringIO("{}"))]
+            with patch.object(m, "ROOT", root), patch.dict(os.environ, {"API_SERVER": "https://192.0.2.1:6443"}), patch.object(m.ssl, "create_default_context"), patch.object(m.urllib.request, "urlopen", side_effect=responses) as request:
+                api = m.API()
+                api.request("/readyz")
+                token.write_text("new-token")
+                api.request("/readyz")
+            self.assertEqual([c.args[0].get_header("Authorization") for c in request.call_args_list], ["Bearer old-token", "Bearer new-token"])
+
     def test_ipv4_does_not_count_as_migrated(self):
         self.assertFalse(m.in_pool(pod(ip="10.244.0.3"), CIDR))
 
