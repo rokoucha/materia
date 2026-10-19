@@ -4,8 +4,10 @@ Talosの`KubeAuditPolicyConfig`でヘルスチェック以外のAPIアクセス�
 リクエスト・レスポンス本文は保存しない。`RequestReceived`は省略し、長時間接続の
 `ResponseStarted`と終了時の`ResponseComplete`、`Panic`を記録する。
 
-各ノードの`/var/log/audit/kube/*.log`を既存otelcol-agentの読み取り専用`/hostfs`から収集し、
+各ノードの`/var/log/audit/kube/audit*.log`を既存otelcol-agentの読み取り専用`/hostfs`から収集し、
 gateway経由でLokiへ全件送信する。Mackerelへは既存設定どおり10%を送信する。
+監査ディレクトリは0700、ファイルは0600で所有者が65534のため、CollectorもUID/GID 65534で実行する。
+変更前の`kube-apiserver*.log`は収集対象に含めない。
 ノード側は1ファイル100 MiB、バックアップ3個、最大7日でローテーションし、Lokiは既存の7日保持を使う。
 
 Collectorに読み取り位置の永続化機能が含まれていないため、再起動時は残存ファイルを先頭から読む。

@@ -11,7 +11,7 @@ spec:
     receivers:
       filelog/audit:
         include:
-          - /hostfs/var/log/audit/kube/*.log
+          - /hostfs/var/log/audit/kube/audit*.log
         start_at: beginning
         include_file_path: true
         retry_on_failure:
@@ -220,6 +220,11 @@ spec:
   mode: daemonset
   replicas: 1
   serviceAccount: otelcol-agent-sa
+  securityContext:
+    # Talos audit files and their directory are private to the API server UID.
+    runAsUser: 65534
+    runAsGroup: 65534
+    runAsNonRoot: true
   volumeMounts:
     - name: hostfs
       mountPath: /hostfs
