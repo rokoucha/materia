@@ -1,0 +1,116 @@
+[
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "apcupsd-exporter",
+    "namespace": "apcupsd"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "argocd-application-controller",
+    "namespace": "argocd"
+  },
+  {
+    "apiVersion": "postgresql.cnpg.io/v1",
+    "kind": "Cluster",
+    "name": "postgresql",
+    "namespace": "authentik"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "elastic-operator",
+    "namespace": "elastic-system"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "influxdb",
+    "namespace": "influxdb"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "loki",
+    "namespace": "loki"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "mahiron",
+    "namespace": "mahiron"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "elasticsearch-es-default",
+    "namespace": "mastodon"
+  },
+  {
+    "apiVersion": "postgresql.cnpg.io/v1",
+    "kind": "Cluster",
+    "name": "postgresql",
+    "namespace": "mastodon"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "redis",
+    "namespace": "mastodon"
+  },
+  {
+    "apiVersion": "postgresql.cnpg.io/v1",
+    "kind": "Cluster",
+    "name": "postgresql",
+    "namespace": "miniflux"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "mirakurun",
+    "namespace": "mirakurun"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "otelcol-gateway-collector",
+    "namespace": "monitoring"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "prometheus-prometheus",
+    "namespace": "prometheus"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "elasticsearch",
+    "namespace": "sophie"
+  },
+  {
+    "apiVersion": "postgresql.cnpg.io/v1",
+    "kind": "Cluster",
+    "name": "postgresql",
+    "namespace": "sophie"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "redis",
+    "namespace": "sophie"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "teamspeak",
+    "namespace": "teamspeak"
+  },
+  {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "name": "tempo",
+    "namespace": "tempo"
+  }
+]

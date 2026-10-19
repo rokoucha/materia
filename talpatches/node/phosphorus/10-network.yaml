@@ -29,4 +29,3 @@ vlanID: 30
 parent: ethSel0
 addresses:
   - address: 172.16.3.23/24
-  - address: 240b:10:3f6d:1403::23/64
