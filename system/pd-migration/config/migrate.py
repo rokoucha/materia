@@ -23,11 +23,10 @@ class API:
         if ipaddress.ip_address(urllib.parse.urlparse(self.server).hostname).version != 4:
             raise ValueError("control API must use IPv4")
         self.context = ssl.create_default_context(cafile=ROOT + "/ca.crt")
-        with open(ROOT + "/token") as f:
-            self.token = f.read().strip()
 
     def request(self, path, body=None, method=None):
-        headers = {"Authorization": "Bearer " + self.token}
+        with open(ROOT + "/token") as f:
+            headers = {"Authorization": "Bearer " + f.read().strip()}
         if body is not None:
             headers["Content-Type"] = "application/merge-patch+json" if method == "PATCH" else "application/json"
         req = urllib.request.Request(self.server + path, headers=headers,
@@ -83,7 +82,7 @@ def verify_egress(cidr):
 
 
 def write_status(api, status):
-    data = dict.fromkeys(("pendingOwner", "previousUIDs", "pendingUID", "pendingNamespace", "pendingName", "blocked", "evicted", "egressVerified"))
+    data = dict.fromkeys(("pendingOwner", "pendingKind", "pendingOwnerName", "previousUIDs", "pendingUID", "pendingNamespace", "pendingName", "blocked", "evicted", "egressVerified"))
     data.update(status)
     api.request("/api/v1/namespaces/kube-system/configmaps/pd-migration-status", {"data": data}, "PATCH")
 
@@ -137,38 +136,51 @@ def reconcile(api, approved=()):
         before = set(json.loads(previous["previousUIDs"]))
         replacement = [p for p in pods if p["metadata"]["uid"] not in before
                        and any(o.get("uid") == previous["pendingOwner"] for o in p["metadata"].get("ownerReferences", []))]
-        finished = any(p.get("status", {}).get("phase") in ("Succeeded", "Failed")
-                       and any(o.get("kind") == "Job" and o.get("uid") == previous["pendingOwner"]
-                               for o in p["metadata"].get("ownerReferences", [])) for p in all_pods)
+        finished = False
+        if previous.get("pendingKind") == "Job":
+            job = api.request("/apis/batch/v1/namespaces/" + previous["pendingNamespace"] + "/jobs/" + previous["pendingOwnerName"])
+            finished = any(c["type"] in ("Complete", "Failed") and c["status"] == "True"
+                           for c in job.get("status", {}).get("conditions", []))
         if not finished and not any(ready(p) for p in replacement):
-            status.update({k: previous[k] for k in ("pendingOwner", "previousUIDs", "pendingUID", "pendingNamespace", "pendingName")})
+            status.update({k: previous[k] for k in ("pendingOwner", "pendingKind", "pendingOwnerName", "previousUIDs", "pendingUID", "pendingNamespace", "pendingName") if k in previous})
             status["blocked"] = "waiting for evicted workload replacement"
             write_status(api, status)
             if original and not original["metadata"].get("deletionTimestamp"):
                 evict(api, original["metadata"])
-            print(json.dumps(status), flush=True)
+            print(json.dumps({k: v for k, v in status.items() if k != "previousUIDs"}), flush=True)
             return
     if old:
         # A replacement must become Ready before the next eviction. Re-evaluate
         # from live objects after every restart; an interrupted eviction is safe.
         unavailable = [p for p in pods if p["metadata"].get("deletionTimestamp") or not ready(p)]
+        initial = os.environ.get("ALLOW_INITIAL_STATEFUL", "false") == "true"
+        candidate = next((p for p in old if recreate_allowed(p, namespaces, initial, approved)), None)
         if unavailable:
-            status["blocked"] = ",".join(p["metadata"]["namespace"] + "/" + p["metadata"]["name"] for p in unavailable)
-        else:
-            initial = os.environ.get("ALLOW_INITIAL_STATEFUL", "false") == "true"
-            candidate = next((p for p in old if recreate_allowed(p, namespaces, initial, approved)), None)
-            if candidate:
-                meta = candidate["metadata"]
-                status["pendingOwner"] = next(o["uid"] for o in meta["ownerReferences"] if o.get("controller"))
-                status["previousUIDs"] = json.dumps([p["metadata"]["uid"] for p in pods])
-                status.update(pendingUID=meta["uid"], pendingNamespace=meta["namespace"], pendingName=meta["name"])
-                # Persist the wait before eviction so a process restart cannot
-                # cause a second disruption while no replacement exists yet.
-                write_status(api, status)
-                evict(api, meta)
-                status["evicted"] = meta["namespace"] + "/" + meta["name"]
-            else:
-                status["blocked"] = "recreate approval or independent-pod replacement required"
+            candidate = None
+            if len(unavailable) == 1:
+                unhealthy = unavailable[0]
+                # Replacing the sole unhealthy incumbent adds no disruption.
+                # A pending Pod without an IPv6 assignment may already be new.
+                if (unhealthy in old and not unhealthy["metadata"].get("deletionTimestamp")
+                        and unhealthy.get("status", {}).get("phase") == "Running"
+                        and any(ipaddress.ip_address(a["ip"]).version == 6 for a in unhealthy["status"].get("podIPs", []))
+                        and recreate_allowed(unhealthy, namespaces, initial, approved)):
+                    candidate = unhealthy
+            if candidate is None:
+                status["blocked"] = ",".join(p["metadata"]["namespace"] + "/" + p["metadata"]["name"] for p in unavailable)
+        if candidate:
+            meta = candidate["metadata"]
+            owner = next(o for o in meta["ownerReferences"] if o.get("controller"))
+            status.update(pendingOwner=owner["uid"], pendingKind=owner["kind"], pendingOwnerName=owner["name"])
+            status["previousUIDs"] = json.dumps([p["metadata"]["uid"] for p in pods])
+            status.update(pendingUID=meta["uid"], pendingNamespace=meta["namespace"], pendingName=meta["name"])
+            # Persist the wait before eviction so a process restart cannot
+            # cause a second disruption while no replacement exists yet.
+            write_status(api, status)
+            evict(api, meta)
+            status["evicted"] = meta["namespace"] + "/" + meta["name"]
+        elif "blocked" not in status:
+            status["blocked"] = "recreate approval or independent-pod replacement required"
     else:
         if not all(ready(p) for p in pods):
             status["blocked"] = "waiting for pod readiness"
@@ -180,13 +192,16 @@ def reconcile(api, approved=()):
             except (OSError, ValueError) as error:
                 status["blocked"] = str(error)
     write_status(api, status)
-    print(json.dumps(status), flush=True)
+    print(json.dumps({k: v for k, v in status.items() if k != "previousUIDs"}), flush=True)
+    return status
 
 
 if __name__ == "__main__":
     api = API()
     with open("/app/recreate.json") as f:
         approved = json.load(f)
-    for _ in range(4):
-        reconcile(api, approved)
+    for _ in range(int(os.environ.get("RECONCILE_LOOPS", "8"))):
+        status = reconcile(api, approved)
+        if status and status.get("egressVerified"):
+            break
         time.sleep(5)

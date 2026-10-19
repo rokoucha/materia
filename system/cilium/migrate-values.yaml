@@ -1,5 +1,6 @@
 # Apply over values.yaml: operator first, agents remain on their existing config.
-egressMasqueradeInterfaces: enp+
+egressMasqueradeInterfaces: "enp+ ethSel0.30"
+enableIPv6Masquerade: true
 ipam:
   mode: multi-pool
   operator:
