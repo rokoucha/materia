@@ -18,13 +18,23 @@ hubble:
       hosts:
         - hubble.materia.ggrel.net
 ipam:
+  mode: multi-pool
   operator:
-    clusterPoolIPv4MaskSize: 24
-    clusterPoolIPv4PodCIDRList:
-      - 10.244.0.0/16
-    clusterPoolIPv6MaskSize: 120
-    clusterPoolIPv6PodCIDRList:
-      - fd00::/108
+    autoCreateCiliumPodIPPools:
+      default:
+        ipv4:
+          cidrs: [10.244.0.0/16]
+          maskSize: 24
+        ipv6:
+          cidrs: [fd00::/108]
+          maskSize: 120
+egressMasqueradeInterfaces: enp+
+podAnnotations:
+  pd.materia.rokoucha.com/multi-pool: "true"
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
 ipv4:
   enabled: true
 ipv6:
