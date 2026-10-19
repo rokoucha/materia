@@ -72,7 +72,7 @@ metadata:
 spec:
   schedule: "* * * * *"
   concurrencyPolicy: Forbid
-  suspend: true
+  suspend: false
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 2
   jobTemplate:

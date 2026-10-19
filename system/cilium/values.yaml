@@ -29,6 +29,7 @@ ipam:
           cidrs: [fd00::/108]
           maskSize: 120
 egressMasqueradeInterfaces: enp+
+enableIPv6Masquerade: false
 podAnnotations:
   pd.materia.rokoucha.com/multi-pool: "true"
 updateStrategy:

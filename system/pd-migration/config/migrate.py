@@ -146,7 +146,7 @@ def reconcile(api, approved=()):
             write_status(api, status)
             if original and not original["metadata"].get("deletionTimestamp"):
                 evict(api, original["metadata"])
-            print(json.dumps(status), flush=True)
+            print(json.dumps({k: v for k, v in status.items() if k != "previousUIDs"}), flush=True)
             return
     if old:
         # A replacement must become Ready before the next eviction. Re-evaluate
@@ -180,13 +180,16 @@ def reconcile(api, approved=()):
             except (OSError, ValueError) as error:
                 status["blocked"] = str(error)
     write_status(api, status)
-    print(json.dumps(status), flush=True)
+    print(json.dumps({k: v for k, v in status.items() if k != "previousUIDs"}), flush=True)
+    return status
 
 
 if __name__ == "__main__":
     api = API()
     with open("/app/recreate.json") as f:
         approved = json.load(f)
-    for _ in range(4):
-        reconcile(api, approved)
+    for _ in range(int(os.environ.get("RECONCILE_LOOPS", "4"))):
+        status = reconcile(api, approved)
+        if status and status.get("egressVerified"):
+            break
         time.sleep(5)

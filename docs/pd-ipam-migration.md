@@ -1,6 +1,6 @@
 # DHCP-PDとPod/LBのIPv6
 
-chlorinateの`materia-pd`が、networkdの現行DHCPリースのpreferred lifetimeからGUA `/56`を選び、カーネル上のDHCP経路との一致を確認してSubnet ID 3を予約する。deprecatedになった旧PDが残っても新世代を選択できる。VLAN 30ではIPv4とIPv6リンクローカルのみ使用し、予約 `/64`自体は割り当てない。
+chlorinateの`materia-pd`が、networkdの現行DHCPリースのpreferred lifetimeからGUA `/56`を選び、Subnet ID 3を予約する。deprecatedになった旧PDが残っても新世代を選択できる。networkdの再設定では有効なリースを保持したまま集約経路が消えるため、集約経路の存在には依存しない。VLAN 30ではIPv4とIPv6リンクローカルのみ使用し、予約 `/64`自体は割り当てない。
 
 - Pod: `…:3:1000::/108`、ノード単位 `/120`。IPv4は`default`プールの`10.244.0.0/16`を維持。
 - LB: `…:3:ffff::/112`をVLAN 30へオンリンクルーティングし、CiliumがNDP応答。
