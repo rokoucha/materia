@@ -191,7 +191,7 @@ if __name__ == "__main__":
     api = API()
     with open("/app/recreate.json") as f:
         approved = json.load(f)
-    for _ in range(int(os.environ.get("RECONCILE_LOOPS", "4"))):
+    for _ in range(int(os.environ.get("RECONCILE_LOOPS", "8"))):
         status = reconcile(api, approved)
         if status and status.get("egressVerified"):
             break

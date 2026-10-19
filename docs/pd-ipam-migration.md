@@ -15,7 +15,7 @@ chlorinateの`materia-pd`が、networkdの現行DHCPリースのpreferred lifeti
 4. router用RBACと、停止状態の`system/pd-migration`を適用する。routerの既存kubeconfigの接続先を`https://172.16.2.20:6443`に変更する。TLS検証は維持する。
 5. chlorinateの設定を適用し、`pd-desired`とnftables set、LBオンリンク経路を確認する。ノードのVLAN 30の固定GUAを順次除去し、LB疎通を確認する。
 6. 初回は`ALLOW_INITIAL_STATEFUL=true`を指定した移行Jobで、StatefulSet/実行中Jobを含めて順次移行する。今回の事前確認では独立Podは存在しなかった。独立Podがある場合は永続的な再作成元を用意してから移行し、Evictionだけは行わない。
-7. `pd-migration-status`が対象世代で`pods-ready`になった後にCiliumの`enableIPv6Masquerade=false`を適用する。GUA再採番が完了する前にULAのNATを無効化しない。
+7. `pd-migration-status`が対象世代で`pods-ready`になった後に初回Jobを終了し、Ciliumの`enableIPv6Masquerade=false`を適用する。GUA再採番が完了する前にULAのNATを無効化しない。通常CronJobは初回Jobと同時に実行しない。
 8. NATなしの外部疎通、VLAN 30のNDP、LBのHTTPS/公開DNSを確認する。最終設定をGitへ反映して自動同期を戻す。初回用のStateful/Job許可は解除する。
 
 ## 定期処理と再開
