@@ -18,13 +18,13 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: mastodon-streaming
+                name: mastodon-streaming-ipv6
                 port:
                   number: 4000
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: mastodon-web
+                name: mastodon-web-ipv6
                 port:
                   number: 3000
