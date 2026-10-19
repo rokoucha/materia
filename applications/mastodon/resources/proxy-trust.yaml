@@ -4,30 +4,3 @@ metadata:
   name: proxy-trust
 data:
   TRUSTED_PROXY_IP: fd00::/108,::ffff:10.244.0.0/112,10.244.0.0/16
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: pd-proxy-trust
-rules:
-  - apiGroups: [""]
-    resources: [configmaps]
-    resourceNames: [proxy-trust]
-    verbs: [get, patch]
-  - apiGroups: [apps]
-    resources: [deployments]
-    resourceNames: [mastodon-web, mastodon-streaming]
-    verbs: [get, patch]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: pd-proxy-trust
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: pd-proxy-trust
-subjects:
-  - kind: ServiceAccount
-    name: pd-migration
-    namespace: kube-system
