@@ -10,7 +10,7 @@ chlorinateの`materia-pd`が、networkdの現行DHCPリースのpreferred lifeti
 ## 初回移行
 
 1. [Cilium 1.20の正式な移行手順](https://docs.cilium.io/en/stable/network/concepts/ipam/cluster-pool-to-multi-pool/)に従う。移行は一方向であり、cluster-poolへの復帰は行わない。
-2. CiliumのGitOps自動同期を一時停止する。`values.yaml`に`migrate-values.yaml`を重ねたConfigMapとOperatorのみ適用する。既存DaemonSetには触れない。Operatorを再起動し、全CiliumNodeの旧`podCIDRs`と同じCIDRが`pools.allocated`へ移ったことをポーリングして確認する。OperatorのReadyだけでは変換完了を意味しない。Multi-Poolのiptables masqueradeでは対象IFの明示が必要なため、全ノードの物理NICに一致する`egressMasqueradeInterfaces: enp+`を設定する。
+2. CiliumのGitOps自動同期を一時停止する。`values.yaml`に`migrate-values.yaml`を重ねたConfigMapとOperatorのみ適用する。既存DaemonSetには触れない。Operatorを再起動し、全CiliumNodeの旧`podCIDRs`と同じCIDRが`pools.allocated`へ移ったことをポーリングして確認する。OperatorのReadyだけでは変換完了を意味しない。Multi-Poolのiptables masqueradeでは対象IFの明示が必要なため、物理NICと公開VLANを対象に`egressMasqueradeInterfaces: "enp+,ethSel0.30"`を設定する。
 3. `multi-pool-values.yaml`を重ねたDaemonSetを適用し、全Agentの再起動とReadyを確認する。テンプレートの`pd.materia.rokoucha.com/multi-pool=true`はこの段階にのみ付ける。
 4. router用RBACと、停止状態の`system/pd-migration`を適用する。routerの既存kubeconfigの接続先を`https://172.16.2.20:6443`に変更する。TLS検証は維持する。
 5. chlorinateの設定を適用し、`pd-desired`とnftables set、LBオンリンク経路を確認する。ノードのVLAN 30の固定GUAを順次除去し、LB疎通を確認する。
