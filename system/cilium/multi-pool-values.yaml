@@ -1,0 +1,16 @@
+# Apply after every CiliumNode has migrated; retain IPv6 NAT until GUA rollout.
+egressMasqueradeInterfaces: enp+
+ipam:
+  mode: multi-pool
+  operator:
+    autoCreateCiliumPodIPPools:
+      default:
+        ipv4:
+          cidrs: [10.244.0.0/16]
+          maskSize: 24
+        ipv6:
+          cidrs: [fd00::/108]
+          maskSize: 120
+podAnnotations:
+  pd.materia.rokoucha.com/multi-pool: "true"
+rollOutCiliumPods: true

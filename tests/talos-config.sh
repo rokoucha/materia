@@ -30,6 +30,7 @@ for node in hydrogen lithium phosphorus; do
   "${YQ_BIN}" -e 'select(.kind == "KubeNetworkConfig") | .nodeCIDRMaskSizeIPv6 == 120 and .podSubnets[1] == "fd00::/108"' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.kind == "KubeNodeConfig") | (.taints | length) == 0' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.kind == "KubeProxyConfig") | .enabled == false' "${config}" >/dev/null
+  "${YQ_BIN}" -e 'select(.kind == "VLANConfig" and .vlanID == 30) | (.addresses | length) == 1 and (.addresses[0].address | test("^172\\.16\\.3\\."))' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.version == "v1alpha1") | .machine.kernel.modules[0].name == "btrfs" and (.machine.systemDiskEncryption.state.keys[0] | has("tpm"))' "${config}" >/dev/null
   "${YQ_BIN}" -e 'select(.kind == "KubeEtcdEncryptionConfig") | (.config.resources[0].providers[0].secretbox.keys[0].name == "key2") and (.config.resources[0].providers[1] | has("identity"))' "${config}" >/dev/null
   actual_key="$("${YQ_BIN}" -r 'select(.kind == "KubeEtcdEncryptionConfig") | .config.resources[0].providers[0].secretbox.keys[0].secret' "${config}")"

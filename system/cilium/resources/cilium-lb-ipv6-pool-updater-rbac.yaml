@@ -24,8 +24,18 @@ rules:
       - ciliumloadbalancerippools
     verbs:
       - get
+      - list
       - create
       - patch
+  - apiGroups: [cilium.io]
+    resources: [ciliumpodippools]
+    verbs: [get, list, create, patch, delete]
+  - apiGroups: [cilium.io]
+    resources: [ciliumnodes, ciliumendpoints]
+    verbs: [get, list]
+  - apiGroups: [""]
+    resources: [services]
+    verbs: [get, list]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -35,6 +45,34 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: cilium-lb-ipv6-pool-updater
+subjects:
+  - kind: ServiceAccount
+    name: cilium-lb-ipv6-pool-updater
+    namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pd-router
+  namespace: kube-system
+rules:
+  - apiGroups: [""]
+    resources: [configmaps]
+    resourceNames: [pd-desired, pd-migration-status]
+    verbs: [get, patch]
+  - apiGroups: [""]
+    resources: [configmaps]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pd-router
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pd-router
 subjects:
   - kind: ServiceAccount
     name: cilium-lb-ipv6-pool-updater

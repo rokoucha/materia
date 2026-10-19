@@ -27,6 +27,7 @@ resources:
   - ./monitoring.yaml
   - ./network-policy.yaml
   - ./pod-security.yaml
+  - ./pd-migration.yaml
   - ./opentelemetry-operator.yaml
   - ./prometheus-operator.yaml
   - ./redis-operator.yaml

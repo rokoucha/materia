@@ -26,6 +26,8 @@ jobs:
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
       - name: Test validator
         run: python3 -m unittest discover -s tests -p 'network_policy_*.py'
+      - name: Test PD migration and restart handling
+        run: python3 -m unittest discover -s tests -p pd_migration.py
       - name: Render manifests
         run: python3 scripts/render-network-policy.py "$RUNNER_TEMP/network-policy"
       - name: Check policy and exceptions

@@ -1,0 +1,152 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pd-migration
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pd-migration-status
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pd-migration
+rules:
+  - apiGroups: [""]
+    resources: [namespaces]
+    verbs: [get, list, patch]
+  - apiGroups: [""]
+    resources: [pods]
+    verbs: [get, list]
+  - apiGroups: [""]
+    resources: [pods/eviction]
+    verbs: [create]
+  - apiGroups: [cilium.io]
+    resources: [ciliumnodes, ciliumpodippools]
+    verbs: [get, list]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pd-migration
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pd-migration
+subjects:
+  - kind: ServiceAccount
+    name: pd-migration
+    namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pd-migration
+rules:
+  - apiGroups: [""]
+    resources: [configmaps]
+    resourceNames: [pd-desired, pd-migration-status]
+    verbs: [get]
+  - apiGroups: [""]
+    resources: [configmaps]
+    resourceNames: [pd-migration-status]
+    verbs: [patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pd-migration
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pd-migration
+subjects:
+  - kind: ServiceAccount
+    name: pd-migration
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pd-migration
+spec:
+  schedule: "* * * * *"
+  concurrencyPolicy: Forbid
+  suspend: true
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 55
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: pd-migration
+        spec:
+          serviceAccountName: pd-migration
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: migrate
+              image: python:3.14-alpine
+              command: [python3, /app/migrate.py]
+              env:
+                - name: ALLOW_INITIAL_STATEFUL
+                  value: "false"
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 96Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: [ALL]
+              volumeMounts:
+                - name: script
+                  mountPath: /app
+                  readOnly: true
+          volumes:
+            - name: script
+              configMap:
+                name: pd-migration-script
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: pd-migration
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: pd-migration
+  egress:
+    - toEntities: [kube-apiserver]
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+    - toFQDNs:
+        - matchName: www.cloudflare.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
