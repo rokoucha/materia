@@ -10,8 +10,8 @@ spec:
   type: ClusterIP
   ipFamilies:
     - IPv4
-    - IPv6
-  ipFamilyPolicy: RequireDualStack
+  # Keep proxy source IPs within TRUSTED_PROXY_IP across PD changes.
+  ipFamilyPolicy: SingleStack
   ports:
     - name: http
       port: 3000
