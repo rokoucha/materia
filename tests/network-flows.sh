@@ -4,6 +4,10 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 name="network-flows-test-$$"
 config="$(mktemp -d)"
 cleanup() {
+  if [[ "$?" != 0 ]]; then
+    docker logs "$name-collector" 2>&1 | tail -40 || true
+    docker exec "$name-db" psql -U flows -d flows -c 'SELECT direction,remote_as,sum(bytes) FROM traffic GROUP BY 1,2' || true
+  fi
   docker rm -f "$name-collector" "$name-db" >/dev/null 2>&1 || true
   docker network rm "$name" >/dev/null 2>&1 || true
   rm -rf "$config"
@@ -69,8 +73,16 @@ if docker exec -e PGPASSWORD=disposable-reader "$name-db" \
   exit 1
 fi
 printf '64512,1.1.1.0/24\n64512,2606:4700::/32\n' > "$config/maps/networks.lst"
+loaded="$(docker logs "$name-collector" 2>&1 | grep -Fc '[/maps/networks.lst] map successfully')"
 docker kill --signal USR2 "$name-collector" >/dev/null
-sleep 1
+docker run --rm --network "$name" -v "$root/tests/network_flows_packets.py:/packets.py:ro" \
+  python:3.14.0-slim-bookworm python /packets.py collector --empty
+for _ in {1..30}; do
+  reloaded="$(docker logs "$name-collector" 2>&1 | grep -Fc '[/maps/networks.lst] map successfully')"
+  if (( reloaded >= loaded + 3 )); then break; fi
+  sleep 1
+done
+(( reloaded >= loaded + 3 ))
 docker run --rm --network "$name" -v "$root/tests/network_flows_packets.py:/packets.py:ro" \
   python:3.14.0-slim-bookworm python /packets.py collector
 for _ in {1..30}; do
