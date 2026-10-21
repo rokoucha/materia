@@ -9,6 +9,7 @@ cleanup() {
     docker exec "$name-db" psql -U flows -d flows -c 'SELECT direction,remote_as,sum(bytes) FROM traffic GROUP BY 1,2' || true
   fi
   docker rm -f "$name-collector" "$name-db" >/dev/null 2>&1 || true
+  docker image rm "$name-enrichment" >/dev/null 2>&1 || true
   docker network rm "$name" >/dev/null 2>&1 || true
   rm -rf "$config"
 }
@@ -72,6 +73,10 @@ if docker exec -e PGPASSWORD=disposable-reader "$name-db" \
   echo 'Reader unexpectedly has write access' >&2
   exit 1
 fi
+docker build -q -t "$name-enrichment" "$root/applications/network-flows/enrichment" >/dev/null
+docker run --rm --network "$name" -e PGHOST=postgresql-rw -e PGDATABASE=flows -e PGUSER=flows -e PGPASSWORD=disposable-test \
+  -v "$root/applications/network-flows/config:/queries:ro" \
+  -v "$root/tests/network_flows_enrichment.py:/app/test_enrich.py:ro" "$name-enrichment" python -m unittest test_enrich
 printf '64512,1.1.1.0/24\n64512,2606:4700::/32\n' > "$config/maps/networks.lst"
 loaded="$(docker logs "$name-collector" 2>&1 | grep -Fc '[/maps/networks.lst] map successfully')"
 docker kill --signal USR2 "$name-collector" >/dev/null

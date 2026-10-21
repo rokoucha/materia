@@ -32,15 +32,30 @@ $$;
 CREATE OR REPLACE VIEW traffic AS
 SELECT stamp_inserted AT TIME ZONE 'UTC' AS time,
        'upload'::text AS direction, mac_src AS device_mac, ip_src AS device_ip,
-       as_dst AS remote_as, port_dst AS service_port, ip_proto, packets, bytes
+       as_dst AS remote_as, port_dst AS service_port, ip_proto, packets, bytes, ip_dst AS remote_ip
 FROM upload WHERE is_external(ip_dst, ip_src)
 UNION ALL
 SELECT stamp_inserted AT TIME ZONE 'UTC', 'download', mac_dst, ip_dst,
-       as_src, port_src, ip_proto, packets, bytes
+       as_src, port_src, ip_proto, packets, bytes, ip_src
 FROM download WHERE is_external(ip_src, ip_dst);
+
+CREATE TABLE IF NOT EXISTS as_names (
+  asn bigint PRIMARY KEY, name text NOT NULL, updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS device_names (
+  mac macaddr PRIMARY KEY, name text, updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS address_names (
+  ip inet PRIMARY KEY, name text, expires_at timestamptz NOT NULL
+);
+CREATE OR REPLACE VIEW device_labels AS
+SELECT mac, CASE WHEN name IS NULL OR updated_at < now() - interval '1 day' THEN mac::text
+                WHEN count(*) OVER (PARTITION BY name) > 1 THEN name || ' (' || mac::text || ')'
+                ELSE name END AS label
+FROM device_names;
 
 GRANT CONNECT ON DATABASE flows TO flow_reader;
 GRANT USAGE ON SCHEMA public TO flow_reader;
-GRANT SELECT ON traffic TO flow_reader;
+GRANT SELECT ON traffic, as_names, device_labels, address_names TO flow_reader;
 
 SELECT pg_advisory_unlock(6343);

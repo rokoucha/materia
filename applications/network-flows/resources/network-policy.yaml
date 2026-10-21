@@ -12,6 +12,9 @@ spec:
               app: collector
         - podSelector:
             matchLabels:
+              app: enrichment
+        - podSelector:
+            matchLabels:
               app: retention
         - podSelector:
             matchLabels:
@@ -121,4 +124,31 @@ spec:
       toPorts:
         - ports:
             - port: "443"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: enrichment
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: enrichment
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toFQDNs:
+        - matchName: iptoasn.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+    - toCIDR:
+        - 172.16.2.1/32
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
               protocol: TCP

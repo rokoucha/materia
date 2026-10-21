@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enrichment
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: enrichment
+  template:
+    metadata:
+      labels:
+        app: enrichment
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: enrichment
+          image: ghcr.io/rokoucha/materia/network-flow-enrichment:20261021.1
+          env:
+            - name: PGHOST
+              value: postgresql-rw
+            - name: PGDATABASE
+              value: flows
+            - name: PGUSER
+              value: flows
+            - name: PGSSLMODE
+              value: require
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-app
+                  key: password
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 192Mi
