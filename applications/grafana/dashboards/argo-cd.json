@@ -593,7 +593,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "ops",
           "color": {
             "mode": "palette-classic"
           },
@@ -723,7 +723,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "reqps",
           "color": {
             "mode": "palette-classic"
           },
@@ -1009,7 +1009,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "reqps",
           "color": {
             "mode": "palette-classic"
           },
@@ -1139,7 +1139,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "reqps",
           "color": {
             "mode": "palette-classic"
           },
