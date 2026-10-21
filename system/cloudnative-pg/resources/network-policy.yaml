@@ -82,6 +82,7 @@ spec:
                 - authentik
                 - mastodon
                 - miniflux
+                - network-flows
                 - sophie
       toPorts:
         - ports:
