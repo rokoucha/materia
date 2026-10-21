@@ -45,6 +45,8 @@ def main():
         ("172.16.1.100", "1.1.1.1", True, False),
         ("240b:10:abcd:1201::100", "2606:4700:4700::1111", True, True),
     ]
+    if "--wake" in sys.argv:
+        cases = [("172.16.1.200", "8.8.8.8", True, True), ("8.8.8.8", "172.16.1.200", False, True)]
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         for sequence, case in enumerate(cases, 1):
             sock.sendto(sample(sequence, *case), (target, 6343))
