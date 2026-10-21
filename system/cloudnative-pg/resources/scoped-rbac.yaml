@@ -266,6 +266,20 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: cnpg-manager
+  namespace: network-flows
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cnpg-manager-namespaced
+subjects:
+- kind: ServiceAccount
+  name: cnpg-manager
+  namespace: cnpg-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cnpg-manager
   namespace: sophie
 roleRef:
   apiGroup: rbac.authorization.k8s.io

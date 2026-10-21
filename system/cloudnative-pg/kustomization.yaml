@@ -71,4 +71,4 @@ patches:
           - name: manager
             env:
             - name: WATCH_NAMESPACE
-              value: authentik,mastodon,miniflux,sophie
+              value: authentik,mastodon,miniflux,network-flows,sophie
