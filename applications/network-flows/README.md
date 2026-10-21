@@ -4,7 +4,11 @@ chlorine samples VLAN 10 in both directions at 1:100 with Host sFlow. Only the
 LAN interface is sampled; MAP-E, WARP and WAN encapsulation are not counted again.
 UDP/6343 goes to the internal-only IPv4 LB `172.16.3.12`; NodePorts are disabled
 and the Service source range allows only chlorine (`172.16.3.1`). L2 announcements
-use `externalTrafficPolicy: Cluster`, so the Pod policy also permits node forwarding.
+use `externalTrafficPolicy: Cluster`. Across VXLAN, forwarded traffic has the
+node's `CiliumInternalIP` as its source and world identity. The Pod policy permits
+only the three current node /32s on UDP/6343; update them if rebuilding a node
+reallocates its CiliumInternalIP. The LB source range still checks chlorine before
+SNAT. No broad Pod CIDR or world ingress is allowed.
 
 `sfacctd` identifies upload/download using chlorine's LAN MAC
 `00:e0:b4:6c:80:87`. Replace the direction map if the router NIC changes. It stores
