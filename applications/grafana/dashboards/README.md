@@ -104,3 +104,12 @@ per-target ICMP charts and separate router CPU/memory/conntrack history plots.
 Health cards include those histories. RX/TX interface and error charts retain
 separate series in combined panels; the overview covers VLAN 10 and diagnostics
 cover the other networks. Logs and hardware/session checks have separate rows.
+
+## 表示障害の修正（2026-10-21、反映待ち）
+
+- Redis 2画面: Grafana→Redisの6379/TCPが送受信ポリシーで未許可。Grafana Podから対象Redis Podだけを許可する。
+- cert-manager: 別環境の`k8s.*`データソースフィルターを除去し、Namespace/Certificateを証明書パネルへ適用。ACMEは現行の`*_count_total`と`action`ラベルへ更新し、廃止されたpath別パネルを統合。
+- CoreDNS: ServiceMonitorとCollector→CoreDNSの9153/TCP許可を追加。upstreamは現行の`coredns_proxy_*`を利用し、接続キャッシュ比率はhit+missを分母にする。公開されない専用DNSSEC指標は説明へ置換。
+- Mahiron: コンテナCPUの単位をpercent、メモリをbytesへ訂正。
+
+全15画面をレンダリング要求し、13画面のPNGを取得。Redis 2画面は接続タイムアウトを伴いレンダリングも失敗。収集・ポリシー変更後のCoreDNS系列とRedis疎通、および修正画面の再描画は本番反映後に確認する。

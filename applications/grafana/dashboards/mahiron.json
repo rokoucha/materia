@@ -1279,7 +1279,7 @@
         {
           "refId": "A",
           "expr": "sum(container_cpu_usage{job=\"mahiron/mahiron\"}) * 100",
-          "legendFormat": "__auto",
+          "legendFormat": "CPU %",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -1287,7 +1287,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
+          "unit": "percent",
           "color": {
             "mode": "palette-classic"
           },
@@ -1344,7 +1344,7 @@
         {
           "refId": "A",
           "expr": "sum(container_memory_working_set_bytes{job=\"mahiron/mahiron\"})",
-          "legendFormat": "__auto",
+          "legendFormat": "working set",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -1352,7 +1352,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
+          "unit": "bytes",
           "color": {
             "mode": "palette-classic"
           },
