@@ -1,6 +1,6 @@
 # Grafana dashboards
 
-Mackerelから移植した11ダッシュボードと、既存Grafanaダッシュボード11個の定義。移植分はサービス別フォルダー、`existing/`は既存のUID・保存先・設定を保持する。
+Mackerelから移植した11ダッシュボードと、既存Grafanaダッシュボード11個の定義。移植分はサービス別フォルダー、`existing/`は既存のUID・設定を保持し、サービスに対応するフォルダーに配置する。
 
 `applications/grafana`のArgo CD Application（automated sync / prune / selfHeal）がConfigMapとGrafana Deploymentを反映する。Helm chartの`dashboardProviders`と`dashboardsConfigMaps`を使い、Grafana標準のファイルprovisioningで読み込む。
 
@@ -8,9 +8,9 @@ Mackerelから移植した11ダッシュボードと、既存Grafanaダッシュ
 kustomize build --enable-helm applications/grafana > /tmp/grafana.yaml
 ```
 
-JSONはGrafanaネイティブ形式。既存UID・フォルダーを維持し、Gitを正としてUI編集を無効にする。ConfigMapのハッシュが変わるとDeploymentが再作成される。稼働中は30秒間隔でもファイルを確認する。`disableDeletion: true`により、ファイルを外しても保存済みダッシュボードは削除しない。
+JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正としてUI編集を無効にする。ConfigMapのハッシュが変わるとDeploymentが再作成される。稼働中は30秒間隔でもファイルを確認する。`disableDeletion: true`により、ファイルを外しても保存済みダッシュボードは削除しない。
 
-新しいダッシュボードを追加する場合は、`kustomization.yaml`のConfigMapファイル一覧と、必要に応じて`values.yaml`のprovider・mountも更新する。取り込み済み既存分はConfigMapの1 MiB上限を避けて`existing`と`existing-node`に分割。大きいConfigMapのapply annotation上限を避けるため、生成ConfigMapにはServerSideApplyを指定する。
+新しいダッシュボードを追加する場合は、`kustomization.yaml`のConfigMapファイル一覧と、必要に応じて`values.yaml`のprovider・mountも更新する。ConfigMapはサービス単位にまとめ、1 MiB上限を超えないようにする。大きいConfigMapのapply annotation上限を避けるため、生成ConfigMapにはServerSideApplyを指定する。
 
 移植分のPrometheus UID: `bdy6m43uy9ybkd`、Loki UID: `loki`。1分更新・初期表示6時間。別環境へ移す場合はUIDを変更する。
 
@@ -32,17 +32,17 @@ JSONはGrafanaネイティブ形式。既存UID・フォルダーを維持し、
 
 `existing/`は既存のデータソース・クエリ・変数・パネル・UIDを保持する。UI編集は無効化し、APIのresource envelopeを外してGrafanaネイティブ形式で保存する。
 
-- [OpenTelemetry Collector](https://monitor.ggrel.net/d/BKf2sowmj)
-- [Redis Mastodon](https://monitor.ggrel.net/d/RpSjVqWMz)
-- [Redis Argo CD](https://monitor.ggrel.net/d/RpSjVqWMz2)
-- [Environment](https://monitor.ggrel.net/d/fdyds678jw45ca)
-- [Home network flows](https://monitor.ggrel.net/d/home-network-flows)
-- [ArgoCD](https://monitor.ggrel.net/d/qPkgGHg7k)
-- [Node Exporter Full](https://monitor.ggrel.net/d/rYdddlPWk)
-- [K8S Dashboard](https://monitor.ggrel.net/d/sxhrdsz)
-- [cert-manager](https://monitor.ggrel.net/d/u6M5igpWk)
-- [CoreDNS](https://monitor.ggrel.net/d/wY4blRMGz)
-- [APC RS 550VA](https://monitor.ggrel.net/d/zlnq0Cynk)
+| フォルダー | 既存ダッシュボード |
+| --- | --- |
+| APC RS 550VA | [APC RS 550VA (Detailed)](https://monitor.ggrel.net/d/zlnq0Cynk) |
+| Argo CD | [ArgoCD](https://monitor.ggrel.net/d/qPkgGHg7k)、[Redis Argo CD](https://monitor.ggrel.net/d/RpSjVqWMz2) |
+| Environment | [Environment (Detailed)](https://monitor.ggrel.net/d/fdyds678jw45ca) |
+| OpenTelemetry Collector | [OpenTelemetry Collector (Detailed)](https://monitor.ggrel.net/d/BKf2sowmj) |
+| Materia Cluster | [Node Exporter Full](https://monitor.ggrel.net/d/rYdddlPWk)、[K8S Dashboard](https://monitor.ggrel.net/d/sxhrdsz)、[cert-manager](https://monitor.ggrel.net/d/u6M5igpWk)、[CoreDNS](https://monitor.ggrel.net/d/wY4blRMGz) |
+| Mastodon | [Redis Mastodon](https://monitor.ggrel.net/d/RpSjVqWMz) |
+| Traffic | [Home network flows](https://monitor.ggrel.net/d/home-network-flows) |
+
+同名の移植版と同じフォルダーに置く既存版は、タイトルに`(Detailed)`を付けて区別する。UID・リンク・クエリは変更しない。
 
 `Home network flows`は既存の`network-flows.json`を単一のソースとし、`network-flows` providerと`Traffic`フォルダーのUIDを維持する。重複するAPIエクスポートは置かない。
 

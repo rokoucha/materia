@@ -27,9 +27,12 @@ configMapGenerator:
   - name: dashboards-apc-rs-550va
     files:
       - dashboards/apc-rs-550va.json
+      - detailed.json=dashboards/existing/apc-rs-550va.json
   - name: dashboards-argo-cd
     files:
       - dashboards/argo-cd.json
+      - dashboards/existing/argocd.json
+      - dashboards/existing/redis-argo-cd.json
   - name: dashboards-authentik
     files:
       - dashboards/authentik.json
@@ -42,35 +45,30 @@ configMapGenerator:
   - name: dashboards-environment
     files:
       - dashboards/environment.json
+      - detailed.json=dashboards/existing/environment.json
   - name: dashboards-mahiron
     files:
       - dashboards/mahiron.json
   - name: dashboards-materia-cluster
     files:
       - dashboards/materia-cluster.json
+      - dashboards/existing/node-exporter-full.json
+      - dashboards/existing/k8s-dashboard.json
+      - dashboards/existing/cert-manager.json
+      - dashboards/existing/coredns.json
   - name: dashboards-opentelemetry-collector
     files:
       - dashboards/opentelemetry-collector.json
+      - detailed.json=dashboards/existing/opentelemetry-collector.json
   - name: dashboards-ping-pong
     files:
       - dashboards/ping-pong.json
   - name: dashboards-sophie
     files:
       - dashboards/sophie.json
-  - name: dashboards-existing
+  - name: dashboards-mastodon
     files:
-      - dashboards/existing/apc-rs-550va.json
-      - dashboards/existing/argocd.json
-      - dashboards/existing/cert-manager.json
-      - dashboards/existing/coredns.json
-      - dashboards/existing/environment.json
-      - dashboards/existing/k8s-dashboard.json
-      - dashboards/existing/opentelemetry-collector.json
-      - dashboards/existing/redis-argo-cd.json
       - dashboards/existing/redis-mastodon.json
-  - name: dashboards-existing-node
-    files:
-      - dashboards/existing/node-exporter-full.json
   - name: network-flows-dashboard
     files:
       - dashboards/network-flows.json
