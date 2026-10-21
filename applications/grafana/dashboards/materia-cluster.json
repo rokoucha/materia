@@ -321,7 +321,7 @@
         {
           "refId": "A",
           "expr": "sum(kube_pod_status_phase{phase=~\"Pending|Failed|Unknown\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}) by (exported_namespace, phase)",
-          "legendFormat": "{{namespace}} / {{phase}}",
+          "legendFormat": "{{exported_namespace}} / {{phase}}",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -386,7 +386,7 @@
         {
           "refId": "A",
           "expr": "sum(kube_pod_container_status_waiting_reason{reason!=\"ContainerCreating\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}) by (exported_namespace, reason)",
-          "legendFormat": "{{namespace}} / {{reason}}",
+          "legendFormat": "{{exported_namespace}} / {{reason}}",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -516,7 +516,7 @@
         {
           "refId": "A",
           "expr": "sum(kube_deployment_status_replicas_unavailable{exported_namespace=~\"${namespace:regex}\"}) by (exported_namespace, deployment)",
-          "legendFormat": "{{namespace}} / {{deployment}}",
+          "legendFormat": "{{exported_namespace}} / {{deployment}}",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -581,7 +581,7 @@
         {
           "refId": "A",
           "expr": "sum(increase(kube_pod_container_status_restarts_total{exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}[1h])) by (exported_namespace)",
-          "legendFormat": "{{namespace}}",
+          "legendFormat": "{{exported_namespace}}",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -651,7 +651,7 @@
             {
               "refId": "A",
               "expr": "sum(kube_pod_container_status_waiting_reason{reason=\"CrashLoopBackOff\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}) by (exported_namespace, exported_pod, container, reason)",
-              "legendFormat": "{{namespace}} / {{pod}} / {{container}}",
+              "legendFormat": "{{exported_namespace}} / {{exported_pod}} / {{container}}",
               "range": true,
               "instant": false,
               "interval": "1m"
@@ -716,7 +716,7 @@
             {
               "refId": "A",
               "expr": "sum(kube_pod_container_status_waiting_reason{reason=~\"ErrImagePull|ImagePullBackOff\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}) by (exported_namespace, exported_pod, container, reason)",
-              "legendFormat": "{{namespace}} / {{pod}} / {{container}} / {{reason}}",
+              "legendFormat": "{{exported_namespace}} / {{exported_pod}} / {{container}} / {{reason}}",
               "range": true,
               "instant": false,
               "interval": "1m"
@@ -724,7 +724,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "s",
+              "unit": "short",
               "color": {
                 "mode": "palette-classic"
               },
@@ -781,7 +781,7 @@
             {
               "refId": "A",
               "expr": "sum(kube_daemonset_status_number_unavailable{exported_namespace=~\"${namespace:regex}\"}) by (exported_namespace, daemonset)",
-              "legendFormat": "{{namespace}} / {{daemonset}}",
+              "legendFormat": "{{exported_namespace}} / {{daemonset}}",
               "range": true,
               "instant": false,
               "interval": "1m"
@@ -846,7 +846,7 @@
             {
               "refId": "A",
               "expr": "sum(kube_statefulset_replicas{exported_namespace=~\"${namespace:regex}\"} - kube_statefulset_status_replicas_ready{exported_namespace=~\"${namespace:regex}\"}) by (exported_namespace, statefulset)",
-              "legendFormat": "{{namespace}} / {{statefulset}}",
+              "legendFormat": "{{exported_namespace}} / {{statefulset}}",
               "range": true,
               "instant": false,
               "interval": "1m"
@@ -911,7 +911,7 @@
             {
               "refId": "A",
               "expr": "sum(kube_job_status_failed{exported_namespace=~\"${namespace:regex}\"}) by (exported_namespace, job_name)",
-              "legendFormat": "{{namespace}} / {{job_name}}",
+              "legendFormat": "{{exported_namespace}} / {{job_name}}",
               "range": true,
               "instant": false,
               "interval": "1m"
@@ -1417,7 +1417,7 @@
         {
           "refId": "A",
           "expr": "sum(kube_persistentvolumeclaim_status_phase{exported_namespace=~\"${namespace:regex}\"}) by (exported_namespace, phase)",
-          "legendFormat": "{{namespace}} / {{phase}}",
+          "legendFormat": "{{exported_namespace}} / {{phase}}",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -1714,7 +1714,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
+          "unit": "short",
           "color": {
             "mode": "palette-classic"
           },

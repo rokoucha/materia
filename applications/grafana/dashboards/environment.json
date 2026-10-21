@@ -346,7 +346,7 @@
             "lastNotNull",
             "max"
           ],
-          "width": 240
+          "width": 320
         }
       },
       "gridPos": {
@@ -412,7 +412,7 @@
             "lastNotNull",
             "max"
           ],
-          "width": 240
+          "width": 320
         }
       },
       "gridPos": {

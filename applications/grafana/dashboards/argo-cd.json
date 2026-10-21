@@ -545,12 +545,10 @@
           "sort": "desc"
         },
         "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
+          "displayMode": "list",
+          "placement": "right",
+          "calcs": [],
+          "width": 250
         }
       },
       "gridPos": {
