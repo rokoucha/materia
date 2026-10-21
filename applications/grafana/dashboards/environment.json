@@ -911,7 +911,9 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "min": 0,
+              "max": 100
             },
             "overrides": []
           },
@@ -927,7 +929,7 @@
                 "lastNotNull",
                 "max"
               ],
-              "width": 240
+              "width": 320
             }
           },
           "gridPos": {
