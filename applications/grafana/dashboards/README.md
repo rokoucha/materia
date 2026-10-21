@@ -70,3 +70,16 @@ JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正として
 Node Exporter Fullはノードの詳細診断として独立させ、Materia Clusterからリンクする。KubernetesのPod選択はkube-state-metricsへ適用する。OTelのworkload集計はNamespace選択のみ、ノード・GPUはクラスタ全体を表示する。Argo CDのProject／Application選択はアプリケーション状態を対象とし、コントローラーの診断は全体を表示する。
 
 統合版の検証（2026-10-21）: PromQL 129件を実行し構文・実行エラーなし、123件に現在の系列を確認。EnvcolのFluxもライブデータを確認。本番で統合版5つのパネル・クエリ・変数を再取得して照合済み。画像確認は画像レンダラー未導入（HTTP 500）で未完了。
+
+## 画像レンダリング
+
+Grafana chartのリモートimageRenderer（`v5.12.7`）を利用する。共有トークンは1Passwordの`grafana-image-renderer-token`から同期し、Grafanaの`GF_RENDERING_RENDERER_TOKEN`とレンダラーの`AUTH_TOKEN`へ同じSecretキーを渡す。レンダラーへのIngressはGrafanaのみ、EgressはDNSとGrafanaへのコールバックのみ許可する。
+
+レンダラーは同時1要求、CPU上限2コア・メモリ上限3 GiB、Goのメモリ目標384 MiB。軽い逐次実行向けの設定なので、複数同時レンダリングは行わない。負荷が増えた場合は実測に応じてリソースを調整する。
+
+```sh
+gcx dashboards snapshot materia-apc-rs-550va materia-argo-cd materia-environment materia-opentelemetry-collector materia-materia-cluster \
+  --since 6h --width 1920 --concurrency 1 --timeout 90s --output-dir /tmp/grafana-snapshots
+```
+
+[公式セットアップ](https://grafana.com/docs/grafana/latest/setup-grafana/image-rendering/) / [レンダラーの設定](https://grafana.com/docs/grafana/latest/setup-grafana/image-rendering/flags/)

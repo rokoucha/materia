@@ -21,6 +21,17 @@ spec:
       ports:
         - port: 3000
           protocol: TCP
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: grafana
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: grafana
+              app.kubernetes.io/name: grafana-image-renderer
+      ports:
+        - port: 3000
+          protocol: TCP
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -102,10 +113,56 @@ spec:
         - ports:
             - port: "5432"
               protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: grafana
+            k8s:app.kubernetes.io/instance: grafana
+            k8s:app.kubernetes.io/name: grafana-image-renderer
+      toPorts:
+        - ports:
+            - port: "8081"
+              protocol: TCP
     - toFQDNs:
         - matchName: grafana.com
         - matchName: storage.googleapis.com
       toPorts:
         - ports:
             - port: "443"
+              protocol: TCP
+
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: grafana-image-renderer-egress
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/instance: grafana
+      k8s:app.kubernetes.io/name: grafana-image-renderer
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+          rules:
+            dns:
+              - matchPattern: '*'
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: grafana
+            k8s:app.kubernetes.io/instance: grafana
+            k8s:app.kubernetes.io/name: grafana
+      toPorts:
+        - ports:
+            - port: "3000"
               protocol: TCP

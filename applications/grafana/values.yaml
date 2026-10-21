@@ -85,6 +85,12 @@ datasources:
             spanStartTimeShift: -15m
             spanEndTimeShift: 15m
 
+envValueFrom:
+  GF_RENDERING_RENDERER_TOKEN:
+    secretKeyRef:
+      name: grafana-image-renderer-token
+      key: token
+
 envFromSecrets:
   - name: flow-reader
   - name: grafana-secrets
@@ -248,3 +254,30 @@ dashboardsConfigMaps:
   ping-pong: dashboards-ping-pong
   sophie: dashboards-sophie
   mastodon: dashboards-mastodon
+
+imageRenderer:
+  enabled: true
+  image:
+    tag: v5.12.7
+    pullPolicy: IfNotPresent
+  env:
+    GOMEMLIMIT: 384MiB
+    RATE_LIMIT_MAX_LIMIT: "1"
+    RATE_LIMIT_MIN_LIMIT: "1"
+  envValueFrom:
+    AUTH_TOKEN:
+      secretKeyRef:
+        name: grafana-image-renderer-token
+        key: token
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    fsGroup: 65532
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 3Gi
