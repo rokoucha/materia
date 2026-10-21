@@ -149,16 +149,6 @@ dashboardProviders:
         updateIntervalSeconds: 30
         options:
           path: /var/lib/grafana/dashboards/authentik
-      - name: chlorine-router
-        orgId: 1
-        folder: Chlorine Router
-        folderUid: svc-chlorine-router
-        type: file
-        disableDeletion: false
-        allowUiUpdates: false
-        updateIntervalSeconds: 30
-        options:
-          path: /var/lib/grafana/dashboards/chlorine-router
       - name: cilium
         orgId: 1
         folder: Cilium
@@ -209,16 +199,6 @@ dashboardProviders:
         updateIntervalSeconds: 30
         options:
           path: /var/lib/grafana/dashboards/opentelemetry-collector
-      - name: ping-pong
-        orgId: 1
-        folder: Ping Pong
-        folderUid: svc-ping-pong
-        type: file
-        disableDeletion: false
-        allowUiUpdates: false
-        updateIntervalSeconds: 30
-        options:
-          path: /var/lib/grafana/dashboards/ping-pong
       - name: sophie
         orgId: 1
         folder: Sophie
@@ -245,13 +225,11 @@ dashboardsConfigMaps:
   apc-rs-550va: dashboards-apc-rs-550va
   argo-cd: dashboards-argo-cd
   authentik: dashboards-authentik
-  chlorine-router: dashboards-chlorine-router
   cilium: dashboards-cilium
   environment: dashboards-environment
   mahiron: dashboards-mahiron
   materia-cluster: dashboards-materia-cluster
   opentelemetry-collector: dashboards-opentelemetry-collector
-  ping-pong: dashboards-ping-pong
   sophie: dashboards-sophie
   mastodon: dashboards-mastodon
 
