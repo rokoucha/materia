@@ -75,6 +75,7 @@ if docker exec -e PGPASSWORD=disposable-reader "$name-db" \
 fi
 docker build -q -t "$name-enrichment" "$root/applications/network-flows/enrichment" >/dev/null
 docker run --rm --network "$name" -e PGHOST=postgresql-rw -e PGDATABASE=flows -e PGUSER=flows -e PGPASSWORD=disposable-test \
+  -v "$root/applications/grafana/dashboards:/dashboard:ro" \
   -v "$root/applications/network-flows/config:/queries:ro" \
   -v "$root/tests/network_flows_enrichment.py:/app/test_enrich.py:ro" "$name-enrichment" python -m unittest test_enrich
 printf '64512,1.1.1.0/24\n64512,2606:4700::/32\n' > "$config/maps/networks.lst"

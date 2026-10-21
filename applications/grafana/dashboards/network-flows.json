@@ -16,18 +16,70 @@
   ],
   "panels": [
     {
-      "id": 1,
-      "title": "Selected traffic (estimated)",
-      "type": "stat",
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "network-flows"
-      },
+      "id": 10,
+      "title": "",
+      "type": "text",
       "gridPos": {
         "x": 0,
         "y": 0,
-        "w": 8,
-        "h": 5
+        "w": 24,
+        "h": 3
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "noValue": "—"
+        },
+        "overrides": []
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "## Home network · Traffic explorer\n端末・通信先ごとの通信量と変化を確認できます。数値はサンプリングによる推定値です。"
+      },
+      "transparent": true
+    },
+    {
+      "id": 1,
+      "title": "TRANSFER",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 3,
+        "w": 4,
+        "h": 4
+      },
+      "description": "選択した期間・方向・端末の集計です。",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "noValue": "—",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56D4C6"
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "left",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true,
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
       },
       "targets": [
         {
@@ -36,33 +88,54 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT sum(bytes)::double precision AS \"Bytes\" FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring}",
-          "format": "table",
+          "rawSql": "SELECT $__timeGroupAlias(time,'5m',0), sum(bytes)::double precision AS value FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY 1 ORDER BY 1",
+          "format": "time_series",
           "editorMode": "code",
           "rawQuery": true
         }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "options": {}
+      ]
     },
     {
       "id": 2,
-      "title": "Average over latest 5 minutes (estimated)",
+      "title": "↓ DOWNLOAD · 5 min",
       "type": "stat",
+      "gridPos": {
+        "x": 4,
+        "y": 3,
+        "w": 4,
+        "h": 4
+      },
+      "description": "選択端末の直近5分の推定速度。期間・方向フィルターに関係なく、各方向の現在値を表示します。",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps",
+          "noValue": "—",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#5794F2"
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "left",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
       "datasource": {
         "type": "grafana-postgresql-datasource",
         "uid": "network-flows"
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 0,
-        "w": 8,
-        "h": 5
       },
       "targets": [
         {
@@ -71,68 +144,238 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT sum(bytes)::double precision * 8 / 300 AS \"Bit/s\" FROM traffic WHERE time >= now() - interval '5 minutes' AND direction = ${direction:sqlstring}",
+          "rawSql": "SELECT sum(bytes)::double precision * 8 / 300 AS value FROM traffic WHERE time >= now() - interval '5 minutes' AND time < now() AND direction='download' AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
         }
-      ],
+      ]
+    },
+    {
+      "id": 11,
+      "title": "↑ UPLOAD · 5 min",
+      "type": "stat",
+      "gridPos": {
+        "x": 8,
+        "y": 3,
+        "w": 4,
+        "h": 4
+      },
+      "description": "選択端末の直近5分の推定速度。期間・方向フィルターに関係なく、各方向の現在値を表示します。",
       "fieldConfig": {
         "defaults": {
-          "unit": "bps"
+          "unit": "bps",
+          "noValue": "—",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#B877D9"
+          },
+          "decimals": 1
         },
         "overrides": []
       },
-      "options": {}
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "left",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT sum(bytes)::double precision * 8 / 300 AS value FROM traffic WHERE time >= now() - interval '5 minutes' AND time < now() AND direction='upload' AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "DEVICES",
+      "type": "stat",
+      "gridPos": {
+        "x": 12,
+        "y": 3,
+        "w": 4,
+        "h": 4
+      },
+      "description": "選択した期間・方向・端末の集計です。",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "noValue": "—",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#FFB357"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "left",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT count(DISTINCT device_mac)::double precision AS value FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "IPv6 SHARE",
+      "type": "stat",
+      "gridPos": {
+        "x": 16,
+        "y": 3,
+        "w": 4,
+        "h": 4
+      },
+      "description": "選択した期間・方向・端末の集計です。",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "noValue": "—",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56D4C6"
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "left",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT 100.0 * sum(bytes) FILTER (WHERE family(device_ip)=6) / NULLIF(sum(bytes),0) AS value FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ]
     },
     {
       "id": 6,
-      "title": "Latest sample age",
+      "title": "DATA AGE",
       "type": "stat",
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "network-flows"
-      },
       "gridPos": {
-        "x": 16,
-        "y": 0,
-        "w": 8,
-        "h": 5
+        "x": 20,
+        "y": 3,
+        "w": 4,
+        "h": 4
       },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "network-flows"
-          },
-          "rawSql": "SELECT extract(epoch FROM now()-max(time))::double precision AS \"Age\" FROM traffic",
-          "format": "table",
-          "editorMode": "code",
-          "rawQuery": true
-        }
-      ],
+      "description": "全端末の最新サンプルからの経過時間。低トラフィック時にも長くなるため、収集障害の断定には使いません。",
       "fieldConfig": {
         "defaults": {
-          "unit": "s"
+          "unit": "s",
+          "noValue": "—",
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 180
+              },
+              {
+                "color": "red",
+                "value": 600
+              }
+            ]
+          }
         },
         "overrides": []
       },
-      "options": {}
-    },
-    {
-      "id": 3,
-      "title": "Device \u2192 external AS \u2192 service (estimated traffic)",
-      "type": "netsage-sankey-panel",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "left",
+        "textMode": "value",
+        "orientation": "auto",
+        "wideLayout": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
       "datasource": {
         "type": "grafana-postgresql-datasource",
         "uid": "network-flows"
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 5,
-        "w": 24,
-        "h": 15
       },
       "targets": [
         {
@@ -141,42 +384,256 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "WITH selected AS (\n  SELECT device_mac AS device, remote_as,\n         CASE WHEN ip_proto IN (6,17) THEN\n           CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n         ELSE 'IP/' || ip_proto::text END AS service, bytes\n  FROM traffic\n  WHERE $__timeFilter(time) AND direction = ${direction:sqlstring}\n), devices AS (\n  SELECT device FROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY device ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), ases AS (\n  SELECT remote_as FROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY remote_as ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), services AS (\n  SELECT service FROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY service ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n)\nSELECT CASE WHEN device IN (SELECT device FROM devices) THEN COALESCE(d.label, device::text) ELSE 'Other devices' END AS \"Device\",\n       CASE WHEN remote_as IN (SELECT remote_as FROM ases) THEN COALESCE(a.name, 'AS' || remote_as::text) ELSE 'Other ASes' END AS \"AS\",\n       CASE WHEN service IN (SELECT service FROM services) THEN service ELSE 'Other services' END AS \"Service\",\n       sum(bytes)::double precision AS \"Bytes\"\nFROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY 1,2,3 ORDER BY 4 DESC",
+          "rawSql": "SELECT extract(epoch FROM now()-max(time))::double precision AS value FROM traffic",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
         }
-      ],
+      ]
+    },
+    {
+      "id": 4,
+      "title": "BANDWIDTH · Download ↓ / Upload ↑",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 7,
+        "w": 16,
+        "h": 9
+      },
+      "description": "選択端末の双方向通信。uploadは下側へ反転表示し、値・凡例は正の通信速度です。方向フィルターに関係なく両方向を表示します。",
       "fieldConfig": {
         "defaults": {
-          "unit": "bytes"
+          "unit": "bps",
+          "noValue": "—",
+          "decimals": 1,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 22,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "download"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#5794F2"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "upload"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#B877D9"
+                }
+              },
+              {
+                "id": "custom.transform",
+                "value": "negative-Y"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        }
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT $__timeGroupAlias(time,'5m',0), direction AS metric, sum(bytes)::double precision * 8 / 300 AS value FROM traffic WHERE $__timeFilter(time) AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY 1,2 ORDER BY 1",
+          "format": "time_series",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "IP FAMILY · Traffic mix",
+      "type": "piechart",
+      "gridPos": {
+        "x": 16,
+        "y": 7,
+        "w": 8,
+        "h": 9
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "noValue": "—",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 1
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPv6"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#56D4C6"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "IPv4"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#5794F2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "desc"
+        },
+        "reduceOptions": {
+          "values": true,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "sort": "desc"
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT CASE family(device_ip) WHEN 6 THEN 'IPv6' ELSE 'IPv4' END AS \"Family\", sum(bytes)::double precision AS \"Bytes\" FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY 1",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "TRAFFIC PATHS · Device → AS → service port",
+      "type": "netsage-sankey-panel",
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 24,
+        "h": 15
+      },
+      "description": "線の太さは選択期間の推定転送量。各列の上位N件以外はOtherに集約し総量を保ちます。HTTPS等は標準ポート名の補助表示で、アプリ識別ではありません。",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "noValue": "—"
         },
         "overrides": []
       },
       "options": {
         "monochrome": false,
-        "nodeWidth": 15,
-        "nodePadding": 10,
+        "nodeWidth": 12,
+        "nodePadding": 16,
         "iteration": 32,
         "valueField": "Bytes",
         "labelSize": 12,
-        "textColor": "#cccccc",
+        "textColor": "#D8D9DA",
         "nodeColor": "#5794F2"
-      }
-    },
-    {
-      "id": 4,
-      "title": "Traffic by direction (estimated)",
-      "type": "timeseries",
+      },
       "datasource": {
         "type": "grafana-postgresql-datasource",
         "uid": "network-flows"
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 20,
-        "w": 12,
-        "h": 8
       },
       "targets": [
         {
@@ -185,33 +642,305 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT $__timeGroupAlias(time,'5m'), direction AS metric, sum(bytes)::double precision * 8 / 300 AS value FROM traffic WHERE $__timeFilter(time) GROUP BY 1,2 ORDER BY 1",
+          "rawSql": "WITH selected AS (\n  SELECT device_mac AS device, remote_as,\n         CASE\n  WHEN ip_proto=6 AND service_port=443 THEN 'HTTPS · TCP/443'\n  WHEN ip_proto=17 AND service_port=443 THEN 'QUIC · UDP/443'\n  WHEN ip_proto IN (6,17) AND service_port=53 THEN CASE WHEN ip_proto=6 THEN 'DNS · TCP/53' ELSE 'DNS · UDP/53' END\n  WHEN ip_proto=6 AND service_port=853 THEN 'DoT · TCP/853'\n  WHEN ip_proto=17 AND service_port=853 THEN 'DoQ · UDP/853'\n  WHEN ip_proto=6 AND service_port=80 THEN 'HTTP · TCP/80'\n  WHEN ip_proto=6 AND service_port=22 THEN 'SSH · TCP/22'\n  WHEN ip_proto=1 THEN 'ICMP'\n  WHEN ip_proto=58 THEN 'ICMPv6'\n  WHEN ip_proto IN (6,17) THEN CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n  ELSE 'IP/' || ip_proto::text END AS service, bytes\n  FROM traffic\n  WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), devices AS (\n  SELECT device FROM selected GROUP BY device ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), ases AS (\n  SELECT remote_as FROM selected GROUP BY remote_as ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), services AS (\n  SELECT service FROM selected GROUP BY service ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n)\nSELECT CASE WHEN device IN (SELECT device FROM devices) THEN COALESCE(d.label, device::text) ELSE 'Other devices' END AS \"Device\",\n       CASE WHEN remote_as IN (SELECT remote_as FROM ases) THEN COALESCE(a.name, 'AS' || remote_as::text) ELSE 'Other ASes' END AS \"AS\",\n       CASE WHEN service IN (SELECT service FROM services) THEN service ELSE 'Other services' END AS \"Service\",\n       sum(bytes)::double precision AS \"Bytes\"\nFROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY 1,2,3 ORDER BY 4 DESC",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "title": "TOP DEVICES · Transfer volume",
+      "type": "bargauge",
+      "gridPos": {
+        "x": 0,
+        "y": 31,
+        "w": 12,
+        "h": 10
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "noValue": "—",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56D4C6"
+          },
+          "min": 0,
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "namePlacement": "left",
+        "valueMode": "color",
+        "showUnfilled": true,
+        "sizing": "auto",
+        "minVizHeight": 18,
+        "maxVizHeight": 30,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "legend": {
+          "showLegend": false
+        }
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT COALESCE(d.label,t.device_mac::text) AS \"Device\",sum(bytes)::double precision AS \"Bytes\" FROM traffic t LEFT JOIN device_labels d ON d.mac=t.device_mac WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY t.device_mac,d.label ORDER BY 2 DESC LIMIT 10",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ],
+      "transformations": [
+        {
+          "id": "rowsToFields",
+          "options": {
+            "mappings": [
+              {
+                "fieldName": "Device",
+                "handlerKey": "field.name"
+              },
+              {
+                "fieldName": "Bytes",
+                "handlerKey": "field.value"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "title": "TOP REMOTE AS · Transfer volume",
+      "type": "bargauge",
+      "gridPos": {
+        "x": 12,
+        "y": 31,
+        "w": 12,
+        "h": 10
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "noValue": "—",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#FFB357"
+          },
+          "min": 0,
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "namePlacement": "left",
+        "valueMode": "color",
+        "showUnfilled": true,
+        "sizing": "auto",
+        "minVizHeight": 18,
+        "maxVizHeight": 30,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "legend": {
+          "showLegend": false
+        }
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT COALESCE(a.name,'AS'||remote_as::text) AS \"AS\",sum(bytes)::double precision AS \"Bytes\" FROM traffic LEFT JOIN as_names a ON a.asn=remote_as WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY 1 ORDER BY 2 DESC LIMIT 10",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ],
+      "transformations": [
+        {
+          "id": "rowsToFields",
+          "options": {
+            "mappings": [
+              {
+                "fieldName": "AS",
+                "handlerKey": "field.name"
+              },
+              {
+                "fieldName": "Bytes",
+                "handlerKey": "field.value"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "title": "AS MIX · Traffic over time",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 41,
+        "w": 16,
+        "h": 10
+      },
+      "description": "選択期間で転送量の多い上位8組織とOtherを積み上げ表示します。",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps",
+          "noValue": "—",
+          "min": 0,
+          "decimals": 1,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 65,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "spanNulls": false,
+            "axisBorderShow": false,
+            "axisLabel": "",
+            "axisColorMode": "text",
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            }
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        }
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "WITH selected AS (\n SELECT time, COALESCE(a.name,'AS'||remote_as::text) AS name,bytes\n FROM traffic LEFT JOIN as_names a ON a.asn=remote_as WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), top_ases AS (\n SELECT name FROM selected GROUP BY name ORDER BY sum(bytes) DESC LIMIT 8\n)\nSELECT $__timeGroupAlias(time,'5m',0), CASE WHEN name IN (SELECT name FROM top_ases) THEN name ELSE 'Other ASes' END AS metric,\n       sum(bytes)::double precision * 8 / 300 AS value\nFROM selected GROUP BY 1,2 ORDER BY 1\n",
           "format": "time_series",
           "editorMode": "code",
           "rawQuery": true
         }
-      ],
+      ]
+    },
+    {
+      "id": 18,
+      "title": "SERVICE PORTS · Traffic mix",
+      "type": "piechart",
+      "gridPos": {
+        "x": 16,
+        "y": 41,
+        "w": 8,
+        "h": 10
+      },
+      "description": "転送量の多い上位6ポートとOther。名称はポート番号からの推定であり、通信内容の解析結果ではありません。",
       "fieldConfig": {
         "defaults": {
-          "unit": "bps"
+          "unit": "bytes",
+          "noValue": "—",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 1
         },
         "overrides": []
       },
-      "options": {}
-    },
-    {
-      "id": 5,
-      "title": "Device addresses",
-      "type": "table",
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "desc"
+        },
+        "reduceOptions": {
+          "values": true,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "sort": "desc"
+      },
       "datasource": {
         "type": "grafana-postgresql-datasource",
         "uid": "network-flows"
-      },
-      "gridPos": {
-        "x": 12,
-        "y": 20,
-        "w": 12,
-        "h": 8
       },
       "targets": [
         {
@@ -220,34 +949,205 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT COALESCE(d.label, t.device_mac::text) AS \"Device\", host(t.device_ip) AS \"Address\",\n       n.name AS \"Reverse DNS\", sum(t.bytes)::double precision AS \"Bytes\"\nFROM traffic t LEFT JOIN device_labels d ON d.mac=t.device_mac\nLEFT JOIN address_names n ON n.ip=t.device_ip AND n.expires_at > now()\nWHERE $__timeFilter(t.time) AND t.direction = ${direction:sqlstring}\nGROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 100",
+          "rawSql": "WITH selected AS (\n SELECT CASE\n  WHEN ip_proto=6 AND service_port=443 THEN 'HTTPS · TCP/443'\n  WHEN ip_proto=17 AND service_port=443 THEN 'QUIC · UDP/443'\n  WHEN ip_proto IN (6,17) AND service_port=53 THEN CASE WHEN ip_proto=6 THEN 'DNS · TCP/53' ELSE 'DNS · UDP/53' END\n  WHEN ip_proto=6 AND service_port=853 THEN 'DoT · TCP/853'\n  WHEN ip_proto=17 AND service_port=853 THEN 'DoQ · UDP/853'\n  WHEN ip_proto=6 AND service_port=80 THEN 'HTTP · TCP/80'\n  WHEN ip_proto=6 AND service_port=22 THEN 'SSH · TCP/22'\n  WHEN ip_proto=1 THEN 'ICMP'\n  WHEN ip_proto=58 THEN 'ICMPv6'\n  WHEN ip_proto IN (6,17) THEN CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n  ELSE 'IP/' || ip_proto::text END AS service, bytes FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), ranked AS (\n SELECT service,sum(bytes)::double precision AS bytes,row_number() OVER (ORDER BY sum(bytes) DESC) AS rank\n FROM selected GROUP BY service\n)\nSELECT CASE WHEN rank<=6 THEN service ELSE 'Other ports' END AS \"Port\", sum(bytes)::double precision AS \"Bytes\"\nFROM ranked GROUP BY 1 ORDER BY 2 DESC\n",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
         }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "options": {}
+      ]
     },
     {
-      "id": 7,
-      "title": "Remote addresses and reverse DNS",
+      "id": 19,
+      "title": "DEVICE ACTIVITY · Click a name to focus",
       "type": "table",
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "network-flows"
-      },
       "gridPos": {
         "x": 0,
-        "y": 28,
+        "y": 51,
         "w": 24,
         "h": 10
       },
+      "description": "端末名のリンクでダッシュボード全体を絞り込み。Download/Uploadは方向フィルターに関係なく両方向の期間合計です。",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "noValue": "—",
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true
+          },
+          "color": {
+            "mode": "continuous-BlYlRd"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "MAC"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom.viz",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Device"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Focus on this device",
+                    "url": "/d/home-network-flows?${__url_time_range}&var-direction=${direction:percentencode}&var-top=${top:percentencode}&var-device=${__data.fields.MAC}",
+                    "targetBlank": false
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 240
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Download"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#5794F2"
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Upload"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#B877D9"
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bytes"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#56D4C6"
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "gauge",
+                  "mode": "gradient"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Last seen"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeFromNow"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "enablePagination": true,
+        "sortBy": [
+          {
+            "displayName": "Bytes",
+            "desc": true
+          }
+        ]
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
       "targets": [
         {
           "refId": "A",
@@ -255,19 +1155,202 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT host(t.remote_ip) AS \"Address\", n.name AS \"Reverse DNS\",\n       COALESCE(a.name, 'AS' || t.remote_as::text) AS \"AS\", sum(t.bytes)::double precision AS \"Bytes\"\nFROM traffic t LEFT JOIN address_names n ON n.ip=t.remote_ip AND n.expires_at > now()\nLEFT JOIN as_names a ON a.asn=t.remote_as\nWHERE $__timeFilter(t.time) AND t.direction = ${direction:sqlstring}\nGROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 100",
+          "rawSql": "SELECT COALESCE(d.label,t.device_mac::text) AS \"Device\", t.device_mac::text AS \"MAC\",\n sum(bytes) FILTER (WHERE direction='download')::double precision AS \"Download\",\n sum(bytes) FILTER (WHERE direction='upload')::double precision AS \"Upload\",\n sum(bytes)::double precision AS \"Bytes\", count(DISTINCT remote_as)::int AS \"AS count\", max(time) AS \"Last seen\"\nFROM traffic t LEFT JOIN device_labels d ON d.mac=t.device_mac\nWHERE $__timeFilter(time) AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\nGROUP BY t.device_mac,d.label ORDER BY \"Bytes\" DESC LIMIT 100\n",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
         }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes"
-        },
-        "overrides": []
+      ]
+    },
+    {
+      "id": 20,
+      "title": "ADDRESS DETAILS · Device IPs, remote IPs & reverse DNS",
+      "type": "row",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 61,
+        "w": 24,
+        "h": 1
       },
-      "options": {}
+      "panels": [
+        {
+          "id": 5,
+          "title": "Device addresses · Names & reverse DNS",
+          "type": "table",
+          "gridPos": {
+            "x": 0,
+            "y": 62,
+            "w": 24,
+            "h": 10
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "noValue": "—",
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true
+              },
+              "color": {
+                "mode": "continuous-BlYlRd"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Bytes"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "bytes"
+                  },
+                  {
+                    "id": "min",
+                    "value": 0
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "#56D4C6"
+                    }
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "gauge",
+                      "mode": "gradient"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "showHeader": true,
+            "cellHeight": "sm",
+            "enablePagination": true,
+            "sortBy": [
+              {
+                "displayName": "Bytes",
+                "desc": true
+              }
+            ]
+          },
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": "network-flows"
+              },
+              "rawSql": "SELECT COALESCE(d.label, t.device_mac::text) AS \"Device\", host(t.device_ip) AS \"Address\",\n       n.name AS \"Reverse DNS\", sum(t.bytes)::double precision AS \"Bytes\"\nFROM traffic t LEFT JOIN device_labels d ON d.mac=t.device_mac\nLEFT JOIN address_names n ON n.ip=t.device_ip AND n.expires_at > now()\nWHERE $__timeFilter(t.time) AND t.direction = ${direction:sqlstring}\nAND (${device:sqlstring} = 'all' OR t.device_mac::text = ${device:sqlstring})\nGROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 100",
+              "format": "table",
+              "editorMode": "code",
+              "rawQuery": true
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "title": "Remote addresses · Names & reverse DNS",
+          "type": "table",
+          "gridPos": {
+            "x": 0,
+            "y": 72,
+            "w": 24,
+            "h": 12
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "noValue": "—",
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true
+              },
+              "color": {
+                "mode": "continuous-BlYlRd"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Bytes"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "bytes"
+                  },
+                  {
+                    "id": "min",
+                    "value": 0
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "#56D4C6"
+                    }
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "gauge",
+                      "mode": "gradient"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "showHeader": true,
+            "cellHeight": "sm",
+            "enablePagination": true,
+            "sortBy": [
+              {
+                "displayName": "Bytes",
+                "desc": true
+              }
+            ]
+          },
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "grafana-postgresql-datasource",
+                "uid": "network-flows"
+              },
+              "rawSql": "SELECT host(t.remote_ip) AS \"Address\", n.name AS \"Reverse DNS\",\n       COALESCE(a.name, 'AS' || t.remote_as::text) AS \"AS\", sum(t.bytes)::double precision AS \"Bytes\"\nFROM traffic t LEFT JOIN address_names n ON n.ip=t.remote_ip AND n.expires_at > now()\nLEFT JOIN as_names a ON a.asn=t.remote_as\nWHERE $__timeFilter(t.time) AND t.direction = ${direction:sqlstring}\nAND (${device:sqlstring} = 'all' OR t.device_mac::text = ${device:sqlstring})\nGROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 100",
+              "format": "table",
+              "editorMode": "code",
+              "rawQuery": true
+            }
+          ]
+        }
+      ]
     }
   ],
   "templating": {
@@ -295,24 +1378,43 @@
         ]
       },
       {
+        "name": "device",
+        "label": "Device",
+        "type": "query",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "network-flows"
+        },
+        "query": "SELECT 'All devices' AS __text,'all' AS __value UNION ALL SELECT COALESCE(d.label,t.device_mac::text) AS __text,t.device_mac::text AS __value FROM traffic t LEFT JOIN device_labels d ON d.mac=t.device_mac WHERE $__timeFilter(time) GROUP BY t.device_mac,d.label ORDER BY 1",
+        "refresh": 2,
+        "includeAll": false,
+        "multi": false,
+        "sort": 1,
+        "current": {
+          "text": "All devices",
+          "value": "all"
+        },
+        "options": []
+      },
+      {
         "name": "top",
         "label": "Top nodes per column",
         "type": "custom",
         "query": "10,20,30",
         "current": {
-          "text": "20",
-          "value": "20"
+          "text": "10",
+          "value": "10"
         },
         "options": [
           {
             "text": "10",
             "value": "10",
-            "selected": false
+            "selected": true
           },
           {
             "text": "20",
             "value": "20",
-            "selected": true
+            "selected": false
           },
           {
             "text": "30",
@@ -322,5 +1424,14 @@
         ]
       }
     ]
-  }
+  },
+  "description": "Home LAN flow explorer: bidirectional bandwidth, traffic paths, top devices/ASes, IP-family and service-port mix, with device drilldown. Counters are sampled estimates; port labels are hints, not DPI.",
+  "links": [
+    {
+      "title": "All devices",
+      "type": "link",
+      "url": "/d/home-network-flows?${__url_time_range}&var-direction=${direction:percentencode}&var-top=${top:percentencode}&var-device=all",
+      "targetBlank": false
+    }
+  ]
 }

@@ -65,3 +65,17 @@ test samples into the production collector.
 Run the disposable Docker integration test with `bash tests/network-flows.sh`.
 It sends synthetic sFlow packets and checks sampling normalization, direction,
 IPv6 PD changes, internal traffic exclusion and read-only access.
+
+## Dashboard layout
+
+The overview uses mirrored download/upload bandwidth, IPv4/IPv6 share, the
+Sankey, top device/AS bars and AS traffic stacked over time. Service-port names
+are conventional port hints, not application detection. Select a Device or click
+its name in Device activity to focus all traffic panels; All devices resets it.
+Bandwidth and Device activity deliberately show both directions. Address details
+are collapsed by default; all counters are sampling-based estimates.
+
+The layout takes inspiration from [Akvorado's flow distributions and stacked
+AS time series](https://github.com/akvorado/akvorado/blob/main/console/data/docs/52-console.md)
+and [ntopng's top talkers and host drilldown](https://www.ntop.org/guides/ntopng/user_interface/network_interface/dashboard/dashboard.html).
+It uses Grafana's built-in panels plus the existing NetSage Sankey plugin.

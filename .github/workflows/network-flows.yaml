@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - applications/network-flows/**
+      - applications/grafana/dashboards/network-flows.json
       - tests/network-flows.sh
       - tests/network_flows_packets.py
       - tests/network_flows_enrichment.py
@@ -11,6 +12,7 @@ on:
     branches: [main]
     paths:
       - applications/network-flows/**
+      - applications/grafana/dashboards/network-flows.json
       - tests/network-flows.sh
       - tests/network_flows_packets.py
       - tests/network_flows_enrichment.py
