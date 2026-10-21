@@ -105,7 +105,7 @@
         "w": 4,
         "h": 4
       },
-      "description": "",
+      "description": "選択端末の直近5分の推定速度。期間・方向フィルターに関係なく、各方向の現在値を表示します。",
       "fieldConfig": {
         "defaults": {
           "unit": "bps",
@@ -161,7 +161,7 @@
         "w": 4,
         "h": 4
       },
-      "description": "",
+      "description": "選択端末の直近5分の推定速度。期間・方向フィルターに関係なく、各方向の現在値を表示します。",
       "fieldConfig": {
         "defaults": {
           "unit": "bps",
@@ -731,7 +731,7 @@
     },
     {
       "id": 16,
-      "title": "TOP DESTINATION AS · Transfer volume",
+      "title": "TOP REMOTE AS · Transfer volume",
       "type": "bargauge",
       "gridPos": {
         "x": 12,
@@ -811,7 +811,7 @@
     },
     {
       "id": 17,
-      "title": "DESTINATION MIX · AS traffic over time",
+      "title": "AS MIX · Traffic over time",
       "type": "timeseries",
       "gridPos": {
         "x": 0,
