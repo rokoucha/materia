@@ -27,11 +27,9 @@ configMapGenerator:
   - name: dashboards-apc-rs-550va
     files:
       - dashboards/apc-rs-550va.json
-      - detailed.json=dashboards/existing/apc-rs-550va.json
   - name: dashboards-argo-cd
     files:
       - dashboards/argo-cd.json
-      - dashboards/existing/argocd.json
       - dashboards/existing/redis-argo-cd.json
   - name: dashboards-authentik
     files:
@@ -45,7 +43,6 @@ configMapGenerator:
   - name: dashboards-environment
     files:
       - dashboards/environment.json
-      - detailed.json=dashboards/existing/environment.json
   - name: dashboards-mahiron
     files:
       - dashboards/mahiron.json
@@ -53,13 +50,11 @@ configMapGenerator:
     files:
       - dashboards/materia-cluster.json
       - dashboards/existing/node-exporter-full.json
-      - dashboards/existing/k8s-dashboard.json
       - dashboards/existing/cert-manager.json
       - dashboards/existing/coredns.json
   - name: dashboards-opentelemetry-collector
     files:
       - dashboards/opentelemetry-collector.json
-      - detailed.json=dashboards/existing/opentelemetry-collector.json
   - name: dashboards-ping-pong
     files:
       - dashboards/ping-pong.json

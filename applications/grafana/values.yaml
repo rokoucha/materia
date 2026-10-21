@@ -118,7 +118,7 @@ dashboardProviders:
         folder: APC RS 550VA
         folderUid: svc-apc-rs-550va
         type: file
-        disableDeletion: true
+        disableDeletion: false
         allowUiUpdates: false
         updateIntervalSeconds: 30
         options:
@@ -128,7 +128,7 @@ dashboardProviders:
         folder: Argo CD
         folderUid: svc-argo-cd
         type: file
-        disableDeletion: true
+        disableDeletion: false
         allowUiUpdates: false
         updateIntervalSeconds: 30
         options:
@@ -168,7 +168,7 @@ dashboardProviders:
         folder: Environment
         folderUid: svc-environment
         type: file
-        disableDeletion: true
+        disableDeletion: false
         allowUiUpdates: false
         updateIntervalSeconds: 30
         options:
@@ -188,7 +188,7 @@ dashboardProviders:
         folder: Materia Cluster
         folderUid: svc-materia-cluster
         type: file
-        disableDeletion: true
+        disableDeletion: false
         allowUiUpdates: false
         updateIntervalSeconds: 30
         options:
@@ -198,7 +198,7 @@ dashboardProviders:
         folder: OpenTelemetry Collector
         folderUid: svc-opentelemetry-collector
         type: file
-        disableDeletion: true
+        disableDeletion: false
         allowUiUpdates: false
         updateIntervalSeconds: 30
         options:
