@@ -4575,18 +4575,6 @@
       "type": "link",
       "url": "/d/home-network-flows?${__url_time_range}&var-direction=${direction:percentencode}&var-top=${top:percentencode}&var-device=all",
       "targetBlank": false
-    },
-    {
-      "title": "Chlorine Router detail",
-      "type": "link",
-      "url": "/d/materia-chlorine-router?${__url_time_range}",
-      "targetBlank": false
-    },
-    {
-      "title": "Ping Pong detail",
-      "type": "link",
-      "url": "/d/materia-ping-pong?${__url_time_range}",
-      "targetBlank": false
     }
   ],
   "graphTooltip": 1

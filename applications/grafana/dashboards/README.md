@@ -1,6 +1,6 @@
 # Grafana dashboards
 
-サービス別に整理した17ダッシュボードの定義。Mackerel移植版と既存版の重複5組は統合し、専用の詳細診断画面は残す。`existing/`の独立した画面は既存UID・設定を保持する。
+サービス別に整理した15ダッシュボードの定義。Mackerel移植版と既存版の重複5組は統合し、専用の詳細診断画面は残す。`existing/`の独立した画面は既存UID・設定を保持する。
 
 `applications/grafana`のArgo CD Application（automated sync / prune / selfHeal）がConfigMapとGrafana Deploymentを反映する。Helm chartの`dashboardProviders`と`dashboardsConfigMaps`を使い、Grafana標準のファイルprovisioningで読み込む。
 
@@ -19,13 +19,11 @@ JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正として
 - [APC RS 550VA](https://monitor.ggrel.net/d/materia-apc-rs-550va)
 - [Argo CD](https://monitor.ggrel.net/d/materia-argo-cd)
 - [Authentik](https://monitor.ggrel.net/d/materia-authentik)
-- [Chlorine Router](https://monitor.ggrel.net/d/materia-chlorine-router)
 - [Cilium](https://monitor.ggrel.net/d/materia-cilium)
 - [Environment](https://monitor.ggrel.net/d/materia-environment)
 - [Mahiron](https://monitor.ggrel.net/d/materia-mahiron)
 - [Materia Cluster](https://monitor.ggrel.net/d/materia-materia-cluster)
 - [OpenTelemetry Collector](https://monitor.ggrel.net/d/materia-opentelemetry-collector)
-- [Ping Pong](https://monitor.ggrel.net/d/materia-ping-pong)
 - [Sophie](https://monitor.ggrel.net/d/materia-sophie)
 
 ## 既存Grafanaからの取り込み
@@ -95,5 +93,5 @@ throughout; Device/Direction filter only the flow panels. Interface counters are
 measured totals, while flow panels estimate external traffic from samples.
 
 Ping Pong target-by-target checks and router WAN/VLAN/NAT/hardware/log diagnostics
-are available in collapsed rows. The existing Chlorine Router and Ping Pong UIDs
-remain focused detail views, with time-preserving links in both directions.
+are available in collapsed rows. The standalone Chlorine Router and Ping Pong dashboards have been retired;
+use the unified Home network dashboard for both overview and diagnostics.

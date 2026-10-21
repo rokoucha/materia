@@ -154,7 +154,7 @@ dashboardProviders:
         folder: Chlorine Router
         folderUid: svc-chlorine-router
         type: file
-        disableDeletion: true
+        disableDeletion: false
         allowUiUpdates: false
         updateIntervalSeconds: 30
         options:
@@ -214,7 +214,7 @@ dashboardProviders:
         folder: Ping Pong
         folderUid: svc-ping-pong
         type: file
-        disableDeletion: true
+        disableDeletion: false
         allowUiUpdates: false
         updateIntervalSeconds: 30
         options:
