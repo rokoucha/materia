@@ -5,6 +5,7 @@ resources:
   - resources/postgresql.yaml
   - resources/reader-secret.yaml
   - resources/daemonset.yaml
+  - resources/enrichment.yaml
   - resources/service.yaml
   - resources/network-policy.yaml
   - resources/retention.yaml

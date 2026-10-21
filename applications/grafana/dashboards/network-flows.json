@@ -141,7 +141,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "WITH selected AS (\n  SELECT device_mac::text AS device, remote_as,\n         CASE WHEN ip_proto IN (6,17) THEN\n           CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n         ELSE 'IP/' || ip_proto::text END AS service, bytes\n  FROM traffic\n  WHERE $__timeFilter(time) AND direction = ${direction:sqlstring}\n), devices AS (\n  SELECT device FROM selected GROUP BY device ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), ases AS (\n  SELECT remote_as FROM selected GROUP BY remote_as ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), services AS (\n  SELECT service FROM selected GROUP BY service ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n)\nSELECT CASE WHEN device IN (SELECT device FROM devices) THEN device ELSE 'Other devices' END AS \"Device\",\n       CASE WHEN remote_as IN (SELECT remote_as FROM ases) THEN 'AS' || remote_as::text ELSE 'Other ASes' END AS \"AS\",\n       CASE WHEN service IN (SELECT service FROM services) THEN service ELSE 'Other services' END AS \"Service\",\n       sum(bytes)::double precision AS \"Bytes\"\nFROM selected GROUP BY 1,2,3 ORDER BY 4 DESC\n",
+          "rawSql": "WITH selected AS (\n  SELECT device_mac AS device, remote_as,\n         CASE WHEN ip_proto IN (6,17) THEN\n           CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n         ELSE 'IP/' || ip_proto::text END AS service, bytes\n  FROM traffic\n  WHERE $__timeFilter(time) AND direction = ${direction:sqlstring}\n), devices AS (\n  SELECT device FROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY device ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), ases AS (\n  SELECT remote_as FROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY remote_as ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), services AS (\n  SELECT service FROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY service ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n)\nSELECT CASE WHEN device IN (SELECT device FROM devices) THEN COALESCE(d.label, device::text) ELSE 'Other devices' END AS \"Device\",\n       CASE WHEN remote_as IN (SELECT remote_as FROM ases) THEN COALESCE(a.name, 'AS' || remote_as::text) ELSE 'Other ASes' END AS \"AS\",\n       CASE WHEN service IN (SELECT service FROM services) THEN service ELSE 'Other services' END AS \"Service\",\n       sum(bytes)::double precision AS \"Bytes\"\nFROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY 1,2,3 ORDER BY 4 DESC",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
@@ -220,7 +220,42 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT device_mac::text AS \"Device\", host(device_ip) AS \"Address\", sum(bytes)::double precision AS \"Bytes\" FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} GROUP BY 1,2 ORDER BY 3 DESC LIMIT 100",
+          "rawSql": "SELECT COALESCE(d.label, t.device_mac::text) AS \"Device\", host(t.device_ip) AS \"Address\",\n       n.name AS \"Reverse DNS\", sum(t.bytes)::double precision AS \"Bytes\"\nFROM traffic t LEFT JOIN device_labels d ON d.mac=t.device_mac\nLEFT JOIN address_names n ON n.ip=t.device_ip AND n.expires_at > now()\nWHERE $__timeFilter(t.time) AND t.direction = ${direction:sqlstring}\nGROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 100",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 7,
+      "title": "Remote addresses and reverse DNS",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 28,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT host(t.remote_ip) AS \"Address\", n.name AS \"Reverse DNS\",\n       COALESCE(a.name, 'AS' || t.remote_as::text) AS \"AS\", sum(t.bytes)::double precision AS \"Bytes\"\nFROM traffic t LEFT JOIN address_names n ON n.ip=t.remote_ip AND n.expires_at > now()\nLEFT JOIN as_names a ON a.asn=t.remote_as\nWHERE $__timeFilter(t.time) AND t.direction = ${direction:sqlstring}\nGROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 100",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true

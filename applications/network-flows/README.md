@@ -18,12 +18,27 @@ advisory lock to serialize receiver startup.
 `00:e0:b4:6c:80:87`. Replace the direction map if the router NIC changes. It stores
 one-minute aggregates in a dedicated CNPG database on iSCSI. IPtoASN's IPv4/IPv6
 maps are downloaded at startup and atomically refreshed daily (the previous map
-survives a failed refresh). ASN values are resolved at ingestion; labels initially
-show AS numbers. Restarting a Pod requires a successful initial ASN download.
+survives a failed refresh). ASN values are resolved at ingestion; a separate small enrichment worker refreshes
+IPtoASN organization names daily. Restarting a Pod requires a successful initial ASN download.
 
 Grafana's `Traffic / Home network flows` dashboard groups devices by MAC, so IPv6
 privacy addresses do not create separate device nodes. The address table retains
-IP detail. Service labels are protocol/port, not application identification.
+IP detail. Device labels use chlorine's active DHCP hostname via MAC-specific
+`home.arpa` DNS aliases, refreshed every minute. This also names IPv6 privacy
+addresses without joining historical IPv4 leases. Devices that omit their DHCP
+hostname fall back to their MAC; randomized MACs remain separate devices. Duplicate
+hostnames include the MAC to distinguish them. AS labels use organization names,
+falling back to AS numbers. Address tables show PTR names where available; public
+DNS cannot necessarily identify the application or website behind an address.
+
+The enrichment image is built by `Flow enrichment image` and published to GHCR;
+keep its version tag in the workflow and Deployment aligned when changing it.
+It uses eight DNS workers, two-second lookup deadlines and at most 500 uncached
+addresses per refresh, prioritizing recent traffic. PTR successes are cached for
+5 minutes to 24 hours, missing records for one hour. Local DHCP DNS uses only
+chlorine's existing DNS listener at `172.16.2.1`; public PTR uses cluster DNS.
+Cached addresses and inactive device metadata are pruned after seven days.
+Enrichment failure does not stop flow ingestion. Service labels are protocol/port, not application identification.
 Internal IPv4, non-global IPv6 and destinations in the device's delegated /56
 are excluded from the view. This relies on chlorine's /56 DHCP-PD allocation and
 continues across prefix changes without updating a fixed address list.
@@ -35,7 +50,7 @@ in-memory aggregation do not guarantee delivery during restarts or DB outages.
 The collector does not persist packet payloads. Aggregates (including remote IPs)
 are deleted hourly after seven days; PostgreSQL autovacuum reuses freed space.
 
-The `flow_reader` role can only SELECT the normalized view. Its credentials are
+The `flow_reader` role can only SELECT the normalized view and label metadata. Its credentials are
 stored in the `materia-applications/network-flows-reader` 1Password item; scoped
 Operator RBAC and admission reference maps explicitly permit the two Secret
 targets. Grafana requires login globally, including existing dashboards.
