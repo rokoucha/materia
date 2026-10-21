@@ -20,6 +20,12 @@
   },
   "links": [
     {
+      "title": "Home network overview",
+      "type": "link",
+      "url": "/d/home-network-flows?${__url_time_range}&var-device=all",
+      "targetBlank": false
+    },
+    {
       "type": "link",
       "title": "Mackerel original",
       "url": "https://mackerel.io/orgs/rokoucha/dashboards/5hgxd4umuw5",
@@ -49,7 +55,7 @@
         {
           "refId": "A",
           "expr": "probe_icmp_duration_seconds{job=\"chlorinate\",phase=\"rtt\",instance=\"1.1.1.1\"} * 1000",
-          "legendFormat": "{{network}}",
+          "legendFormat": "Cloudflare DNS · IPv4",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -114,7 +120,7 @@
         {
           "refId": "A",
           "expr": "probe_icmp_duration_seconds{job=\"chlorinate\",phase=\"rtt\",instance=\"8.8.8.8\"} * 1000",
-          "legendFormat": "{{network}}",
+          "legendFormat": "Google DNS · IPv4",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -179,7 +185,7 @@
         {
           "refId": "A",
           "expr": "probe_icmp_duration_seconds{job=\"chlorinate\",phase=\"rtt\",instance=\"2606:4700:4700::1111\"} * 1000",
-          "legendFormat": "Cloudflare DNS",
+          "legendFormat": "Cloudflare DNS · IPv6",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -244,7 +250,7 @@
         {
           "refId": "A",
           "expr": "probe_icmp_duration_seconds{job=\"chlorinate\",phase=\"rtt\",instance=\"2001:4860:4860::8888\"} * 1000",
-          "legendFormat": "Google DNS",
+          "legendFormat": "Google DNS · IPv6",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -517,8 +523,8 @@
           "refId": "A",
           "expr": "avg_over_time(probe_success{job=\"chlorinate\"}[$__range]) * 100",
           "legendFormat": "{{instance}}",
-          "range": true,
-          "instant": false,
+          "range": false,
+          "instant": true,
           "interval": "1m"
         }
       ],

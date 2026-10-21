@@ -69,6 +69,8 @@ class DatabaseTests(unittest.TestCase):
             for selected_device in ('all', '02:00:00:00:00:01', '02:00:00:00:00:ff'):
                 for panel in panels:
                     for target in panel.get('targets', []):
+                        if 'rawSql' not in target:
+                            continue
                         sql = target['rawSql']
                         sql = re.sub(r"\$__timeFilter\(([^)]+)\)", r"\1 > now() - interval '1 day'", sql)
                         sql = re.sub(r"\$__timeGroupAlias\(time,'5m',0\)", 'to_timestamp(floor(extract(epoch from time)/300)*300) AS "time"', sql)
