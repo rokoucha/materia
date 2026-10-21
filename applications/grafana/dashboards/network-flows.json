@@ -243,10 +243,10 @@
         "uid": "network-flows"
       },
       "gridPos": {
-        "x": 12,
+        "x": 0,
         "y": 28,
-        "w": 12,
-        "h": 8
+        "w": 24,
+        "h": 10
       },
       "targets": [
         {
