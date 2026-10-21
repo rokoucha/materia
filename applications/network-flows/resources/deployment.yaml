@@ -25,7 +25,7 @@ spec:
           type: RuntimeDefault
       initContainers:
         - name: asn
-          image: python:3.14.0-slim-bookworm
+          image: python:3.14.7-slim-bookworm
           command: [python, /etc/pmacct/update-asn.py, --once]
           securityContext:
             allowPrivilegeEscalation: false
@@ -113,7 +113,7 @@ spec:
             - name: maps
               mountPath: /maps
         - name: asn-refresh
-          image: python:3.14.0-slim-bookworm
+          image: python:3.14.7-slim-bookworm
           command: [python, /etc/pmacct/update-asn.py]
           securityContext:
             allowPrivilegeEscalation: false
