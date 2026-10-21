@@ -26,7 +26,7 @@ docker network create "$name" >/dev/null
 docker run -d --name "$name-db" --network "$name" --network-alias postgresql-rw \
   -e POSTGRES_PASSWORD=disposable-test -e POSTGRES_DB=flows -e POSTGRES_USER=flows postgres:18.1 >/dev/null
 for _ in {1..60}; do
-  if docker exec "$name-db" pg_isready -U flows -d flows >/dev/null 2>&1; then break; fi
+  if docker exec "$name-db" pg_isready -h 127.0.0.1 -U flows -d flows >/dev/null 2>&1; then break; fi
   sleep 1
 done
 docker exec "$name-db" psql -U flows -d flows -v ON_ERROR_STOP=1 \
