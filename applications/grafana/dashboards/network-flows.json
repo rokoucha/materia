@@ -1619,7 +1619,7 @@
       },
       "panels": [
         {
-          "title": "Probe Availability",
+          "title": "PROBE AVAILABILITY",
           "type": "state-timeline",
           "description": "Probe Availability。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -1696,7 +1696,7 @@
           "interval": "1m"
         },
         {
-          "title": "FLET'S IPv6 TCP Connect (ms)",
+          "title": "TCP CONNECT · FLET’S IPv6",
           "type": "timeseries",
           "description": "FLET'S IPv6 TCP Connect (ms)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -1974,7 +1974,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "pps",
               "color": {
                 "mode": "palette-classic"
               },
@@ -2033,7 +2033,7 @@
           "interval": "1m"
         },
         {
-          "title": "Link Carrier (1 = up)",
+          "title": "LINK STATE",
           "type": "state-timeline",
           "description": "Link Carrier (1 = up)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -2145,7 +2145,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "pps",
               "color": {
                 "mode": "palette-classic"
               },
@@ -2205,7 +2205,7 @@
       },
       "panels": [
         {
-          "title": "Firewall Drops (/s)",
+          "title": "FIREWALL DROPS",
           "type": "timeseries",
           "description": "Firewall Drops (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -2224,7 +2224,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "pps",
               "color": {
                 "mode": "palette-classic"
               },
@@ -2270,7 +2270,7 @@
           "interval": "1m"
         },
         {
-          "title": "Invalid Packets (/s)",
+          "title": "INVALID PACKETS",
           "type": "timeseries",
           "description": "Invalid Packets (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -2289,7 +2289,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "pps",
               "color": {
                 "mode": "palette-classic"
               },
@@ -2374,7 +2374,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "suffix:/s",
               "color": {
                 "mode": "palette-classic"
               },
@@ -2420,7 +2420,7 @@
           "interval": "1m"
         },
         {
-          "title": "TCP Established",
+          "title": "TCP CONNECTIONS",
           "type": "timeseries",
           "description": "TCP Established。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -2485,7 +2485,7 @@
           "interval": "1m"
         },
         {
-          "title": "TCP Retransmits (/s)",
+          "title": "TCP RETRANSMISSIONS",
           "type": "timeseries",
           "description": "TCP Retransmits (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -2504,7 +2504,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "suffix:/s",
               "color": {
                 "mode": "palette-classic"
               },
@@ -2629,7 +2629,7 @@
           "interval": "1m"
         },
         {
-          "title": "CPU Frequency (GHz)",
+          "title": "CPU FREQUENCY",
           "type": "timeseries",
           "description": "CPU Frequency (GHz)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -2694,7 +2694,7 @@
           "interval": "1m"
         },
         {
-          "title": "Context Switches (/s)",
+          "title": "CONTEXT SWITCHES",
           "type": "timeseries",
           "description": "Context Switches (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -2713,7 +2713,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "suffix:/s",
               "color": {
                 "mode": "palette-classic"
               },
@@ -2759,7 +2759,7 @@
           "interval": "1m"
         },
         {
-          "title": "Load Average",
+          "title": "LOAD AVERAGE · 5 min",
           "type": "timeseries",
           "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
           "datasource": {
@@ -2778,7 +2778,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "s",
+              "unit": "short",
               "color": {
                 "mode": "palette-classic"
               },
@@ -2824,7 +2824,7 @@
           "interval": "1m"
         },
         {
-          "title": "Filesystem",
+          "title": "FILESYSTEM USAGE",
           "type": "timeseries",
           "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
           "datasource": {
@@ -2889,7 +2889,7 @@
           "interval": "1m"
         },
         {
-          "title": "Disk Write (bytes/s)",
+          "title": "DISK WRITES",
           "type": "timeseries",
           "description": "Disk Write (bytes/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
