@@ -6,7 +6,7 @@
   "timezone": "browser",
   "refresh": "1m",
   "time": {
-    "from": "now-3h",
+    "from": "now-24h",
     "to": "now"
   },
   "tags": [

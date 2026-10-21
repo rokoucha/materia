@@ -19,3 +19,26 @@ spec:
               protocol: TCP
             - port: "53"
               protocol: UDP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: coredns-metrics
+  namespace: kube-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:k8s-app: kube-dns
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: monitoring
+            k8s:app.kubernetes.io/component: opentelemetry-collector
+            k8s:app.kubernetes.io/instance: monitoring.otelcol-gateway
+      toPorts:
+        - ports:
+            - port: "9153"
+              protocol: TCP

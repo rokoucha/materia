@@ -211,7 +211,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "coredns_build_info{instance=~\"$instance\"}",
+          "expr": "coredns_build_info{job=\"coredns\",instance=~\"$instance\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -279,7 +279,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_forward_healthcheck_broken_total{instance=~\"$instance\"}[5m]))",
+          "expr": "sum(rate(coredns_forward_healthcheck_broken_total{job=\"coredns\",instance=~\"$instance\"}[5m]))",
           "interval": "",
           "legendFormat": "{{instance}}",
           "refId": "A"
@@ -344,7 +344,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_forward_max_concurrent_rejects_total{instance=~\"$instance\"}[5m]))",
+          "expr": "sum(rate(coredns_forward_max_concurrent_rejects_total{job=\"coredns\",instance=~\"$instance\"}[5m]))",
           "interval": "",
           "legendFormat": "{{instance}}",
           "refId": "A"
@@ -409,7 +409,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_panics_total{instance=~\"$instance\"}[5m]))",
+          "expr": "sum(rate(coredns_panics_total{job=\"coredns\",instance=~\"$instance\"}[5m]))",
           "interval": "",
           "legendFormat": "{{instance}}",
           "refId": "A"
@@ -474,7 +474,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_reload_failed_total{instance=~\"$instance\"}[5m]))",
+          "expr": "sum(rate(coredns_reload_failed_total{job=\"coredns\",instance=~\"$instance\"}[5m]))",
           "interval": "",
           "legendFormat": "{{instance}}",
           "refId": "A"
@@ -543,7 +543,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(process_cpu_seconds_total{instance=~\"$instance\"}[5m]))",
+          "expr": "sum(rate(process_cpu_seconds_total{job=\"coredns\",instance=~\"$instance\"}[5m]))",
           "interval": "",
           "legendFormat": "{{instance}}",
           "refId": "A"
@@ -605,7 +605,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "go_memstats_alloc_bytes{instance=~\"$instance\"}",
+          "expr": "go_memstats_alloc_bytes{job=\"coredns\",instance=~\"$instance\"}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{instance}}",
@@ -718,7 +718,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_dns_requests_total{instance=~\"$instance\"}[5m])) by (server)",
+          "expr": "sum(rate(coredns_dns_requests_total{job=\"coredns\",instance=~\"$instance\"}[5m])) by (server)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -732,7 +732,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_cache_requests_total{instance=~\"$instance\"}[5m]))",
+          "expr": "sum(rate(coredns_cache_requests_total{job=\"coredns\",instance=~\"$instance\"}[5m]))",
           "hide": false,
           "interval": "",
           "legendFormat": "cache",
@@ -819,7 +819,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_dns_requests_total{instance=~\"$instance\"}[5m])) by (zone)",
+          "expr": "sum(rate(coredns_dns_requests_total{job=\"coredns\",instance=~\"$instance\"}[5m])) by (zone)",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{zone}}",
@@ -907,7 +907,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.99, sum(rate(coredns_dns_request_duration_seconds_bucket{instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(coredns_dns_request_duration_seconds_bucket{job=\"coredns\",instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -922,7 +922,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.90, sum(rate(coredns_dns_request_duration_seconds_bucket{instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.90, sum(rate(coredns_dns_request_duration_seconds_bucket{job=\"coredns\",instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -937,7 +937,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.50, sum(rate(coredns_dns_request_duration_seconds_bucket{instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(coredns_dns_request_duration_seconds_bucket{job=\"coredns\",instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1027,7 +1027,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_dns_requests_total{instance=~\"$instance\"}[5m])) by (type)",
+          "expr": "sum(rate(coredns_dns_requests_total{job=\"coredns\",instance=~\"$instance\"}[5m])) by (type)",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{type}}",
@@ -1115,7 +1115,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_cache_hits_total{instance=~\"$instance\", type=\"success\"}[5m])) / sum(rate(coredns_cache_requests_total{instance=~\"$instance\"}[5m]))",
+          "expr": "sum(rate(coredns_cache_hits_total{job=\"coredns\",instance=~\"$instance\", type=\"success\"}[5m])) / sum(rate(coredns_cache_requests_total{job=\"coredns\",instance=~\"$instance\"}[5m]))",
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
@@ -1129,7 +1129,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_cache_hits_total{instance=~\"$instance\", type=\"denial\"}[5m])) / sum(rate(coredns_cache_requests_total{instance=~\"$instance\"}[5m]))",
+          "expr": "sum(rate(coredns_cache_hits_total{job=\"coredns\",instance=~\"$instance\", type=\"denial\"}[5m])) / sum(rate(coredns_cache_requests_total{job=\"coredns\",instance=~\"$instance\"}[5m]))",
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
@@ -1143,45 +1143,17 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "(sum(rate(coredns_cache_requests_total{instance=~\"$instance\"}[5m])) - sum(rate(coredns_cache_hits_total{instance=~\"$instance\", type=\"success\"}[5m]))) / sum(rate(coredns_cache_requests_total{instance=~\"$instance\"}[5m]))",
+          "expr": "(sum(rate(coredns_cache_requests_total{job=\"coredns\",instance=~\"$instance\"}[5m])) - sum(rate(coredns_cache_hits_total{job=\"coredns\",instance=~\"$instance\"}[5m]))) / sum(rate(coredns_cache_requests_total{job=\"coredns\",instance=~\"$instance\"}[5m]))",
           "hide": false,
           "interval": "",
           "legendFormat": "misses",
           "refId": "C"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "exemplar": true,
-          "expr": "sum(rate(coredns_dnssec_cache_hits_total{instance=~\"$instance\"}[5m])) / sum(rate(coredns_cache_requests_total{instance=~\"$instance\"}[5m]))",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "hits: DNSSEC",
-          "refId": "D"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "exemplar": true,
-          "expr": "(sum(rate(coredns_cache_requests_total{instance=~\"$instance\"}[5m])) - sum(rate(coredns_dnssec_cache_hits_total{instance=~\"$instance\"}[5m]))) / sum(rate(coredns_cache_requests_total{instance=~\"$instance\"}[5m]))",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "misses: DNSSEC",
-          "refId": "E"
         }
       ],
       "title": "Cache (hitrate)",
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1235,35 +1207,12 @@
       },
       "id": 8,
       "options": {
-        "graph": {},
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
+        "mode": "markdown",
+        "content": "現在のCoreDNSは専用のDNSSECリクエスト・キャッシュ指標を公開しません。通常のリクエスト・キャッシュ指標を参照してください。"
       },
       "pluginVersion": "7.5.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "exemplar": true,
-          "expr": "sum(rate(coredns_dns_do_requests_total{instance=~\"$instance\"}[5m])) by (zone)",
-          "interval": "",
-          "intervalFactor": 2,
-          "legendFormat": "{{zone}}",
-          "refId": "A",
-          "step": 40
-        }
-      ],
-      "title": "Requests (DNSSEC by zone)",
-      "type": "timeseries"
+      "title": "DNSSEC metrics",
+      "type": "text"
     },
     {
       "datasource": {
@@ -1330,7 +1279,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_dns_responses_total{instance=~\"$instance\"}[5m])) by (rcode)",
+          "expr": "sum(rate(coredns_dns_responses_total{job=\"coredns\",instance=~\"$instance\"}[5m])) by (rcode)",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{rcode}}",
@@ -1418,7 +1367,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.99, sum(rate(coredns_dns_request_size_bytes_bucket{instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(coredns_dns_request_size_bytes_bucket{job=\"coredns\",instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "99%",
@@ -1431,7 +1380,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.90, sum(rate(coredns_dns_request_size_bytes_bucket{instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.90, sum(rate(coredns_dns_request_size_bytes_bucket{job=\"coredns\",instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
@@ -1445,7 +1394,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.50, sum(rate(coredns_dns_request_size_bytes_bucket{instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(coredns_dns_request_size_bytes_bucket{job=\"coredns\",instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
@@ -1535,7 +1484,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.99, sum(rate(coredns_dns_response_size_bytes_bucket{instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(coredns_dns_response_size_bytes_bucket{job=\"coredns\",instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "99%",
@@ -1548,7 +1497,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.90, sum(rate(coredns_dns_response_size_bytes_bucket{instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.90, sum(rate(coredns_dns_response_size_bytes_bucket{job=\"coredns\",instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
@@ -1562,7 +1511,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.50, sum(rate(coredns_dns_response_size_bytes_bucket{instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(coredns_dns_response_size_bytes_bucket{job=\"coredns\",instance=~\"$instance\", zone=\".\"}[5m])) by (le))",
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
@@ -1630,24 +1579,12 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(coredns_cache_entries{instance=~\"$instance\"}) by (type)",
+          "expr": "sum(coredns_cache_entries{job=\"coredns\",instance=~\"$instance\"}) by (type)",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{type}}",
           "refId": "A",
           "step": 40
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "exemplar": true,
-          "expr": "sum(coredns_dnssec_cache_entries{instance=~\"$instance\"})",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "DNSSEC",
-          "refId": "B"
         }
       ],
       "title": "Cache (size)",
@@ -1756,7 +1693,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_forward_requests_total{instance=~\"$instance\"}[5m]))",
+          "expr": "sum(rate(coredns_proxy_request_duration_seconds_count{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -1846,7 +1783,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_forward_conn_cache_hits_total{instance=~\"$instance\"}[5m])) / sum(rate(coredns_forward_requests_total{instance=~\"$instance\"}[5m]))",
+          "expr": "(sum(rate(coredns_proxy_conn_cache_hits_total{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m]))) / (sum(rate(coredns_proxy_conn_cache_hits_total{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m])) + sum(rate(coredns_proxy_conn_cache_misses_total{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m])))",
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
@@ -1860,7 +1797,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "(sum(rate(coredns_forward_requests_total{instance=~\"$instance\"}[5m])) - sum(rate(coredns_forward_conn_cache_hits_total{instance=~\"$instance\"}[5m]))) / sum(rate(coredns_forward_requests_total{instance=~\"$instance\"}[5m]))",
+          "expr": "(sum(rate(coredns_proxy_conn_cache_misses_total{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m]))) / (sum(rate(coredns_proxy_conn_cache_hits_total{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m])) + sum(rate(coredns_proxy_conn_cache_misses_total{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m])))",
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
@@ -1949,7 +1886,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.99, sum(rate(coredns_forward_request_duration_seconds_bucket{instance=~\"$instance\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(coredns_proxy_request_duration_seconds_bucket{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m])) by (le))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1964,7 +1901,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.90, sum(rate(coredns_forward_request_duration_seconds_bucket{instance=~\"$instance\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.90, sum(rate(coredns_proxy_request_duration_seconds_bucket{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m])) by (le))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1979,7 +1916,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "histogram_quantile(0.50, sum(rate(coredns_forward_request_duration_seconds_bucket{instance=~\"$instance\"}[5m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(coredns_proxy_request_duration_seconds_bucket{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m])) by (le))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -2058,7 +1995,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_forward_requests_total{instance=~\"$instance\"}[5m])) by (to)",
+          "expr": "sum(rate(coredns_proxy_request_duration_seconds_count{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m])) by (to)",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{to}}",
@@ -2150,7 +2087,7 @@
             "uid": "bdy6m43uy9ybkd"
           },
           "exemplar": true,
-          "expr": "sum(rate(coredns_forward_responses_total{instance=~\"$instance\"}[5m])) by (rcode)",
+          "expr": "sum(rate(coredns_proxy_request_duration_seconds_count{job=\"coredns\",proxy_name=\"forward\",instance=~\"$instance\"}[5m])) by (rcode)",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{rcode}}",
@@ -2162,7 +2099,7 @@
       "type": "piechart"
     }
   ],
-  "refresh": "5s",
+  "refresh": "1m",
   "schemaVersion": 42,
   "tags": [
     "dns",
@@ -2200,7 +2137,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
