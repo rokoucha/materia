@@ -59,3 +59,17 @@ JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正として
 
 サーバーのスキーマ検証・dry-run・保存を実施。237のPromQLを実行し構文エラーなし。225クエリで現在の系列を確認し、残りは未発生イベント・エラー等の系列なし。
 画像確認は`rendering plugin not available`で失敗。IABも認証先でクラッシュしたため、ブラウザーでの目視確認は未完了。
+
+## 統合ダッシュボード
+
+概要は移植版を基礎に、既存版の診断機能を以下へ統合する。旧5ダッシュボードは統合版の反映確認後に削除する。
+
+| 統合先 | 取り込む機能 | 旧UID |
+| --- | --- | --- |
+| APC RS 550VA | 状態・残時間、充電率／負荷ゲージ、電圧と履歴 | `zlnq0Cynk` |
+| Argo CD | Project／Application選択、状態一覧、reconcile／Git分布、コンポーネント診断 | `qPkgGHg7k` |
+| Environment | SwitchBot機器選択と電池、Envcolの温度・湿度・気圧・CO₂履歴 | `fdyds678jw45ca` |
+| OpenTelemetry Collector | Collector選択、processor入出力、バッチ分布、送信失敗／キュー、ランタイム | `BKf2sowmj` |
+| Materia Cluster | Namespace／Pod選択、Pod状態、requests／limits、ノード割り当て容量 | `sxhrdsz` |
+
+Node Exporter Fullはノードの詳細診断として独立させ、Materia Clusterからリンクする。KubernetesのPod選択はkube-state-metricsへ適用する。OTelのworkload集計はNamespace選択のみ、ノード・GPUはクラスタ全体を表示する。Argo CDのProject／Application選択はアプリケーション状態を対象とし、コントローラーの診断は全体を表示する。

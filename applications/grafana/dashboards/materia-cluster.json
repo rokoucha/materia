@@ -1,6 +1,6 @@
 {
   "title": "Materia Cluster",
-  "description": "materia-cluster の3ノードとGPUを俯瞰する運用ダッシュボード。ロール: materia-cluster:worker — Mackerel dashboardをもとに、Prometheus/Lokiの実データへ適応。",
+  "description": "ワークロード状態、Namespace/Podのリソース診断、ノード容量とGPUを統合。Node Exporterは専用の詳細診断へリンク。",
   "uid": "materia-materia-cluster",
   "schemaVersion": 39,
   "timezone": "browser",
@@ -16,7 +16,56 @@
   },
   "refresh": "1m",
   "templating": {
-    "list": []
+    "list": [
+      {
+        "name": "namespace",
+        "label": "Namespace",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "bdy6m43uy9ybkd"
+        },
+        "query": {
+          "query": "label_values(kube_pod_info, exported_namespace)",
+          "refId": "VariableQuery"
+        },
+        "definition": "label_values(kube_pod_info, exported_namespace)",
+        "refresh": 1,
+        "sort": 1,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": []
+      },
+      {
+        "name": "pod",
+        "label": "Pod",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "bdy6m43uy9ybkd"
+        },
+        "query": {
+          "query": "label_values(kube_pod_info{exported_namespace=~\"${namespace:regex}\"}, exported_pod)",
+          "refId": "VariableQuery"
+        },
+        "definition": "label_values(kube_pod_info{exported_namespace=~\"${namespace:regex}\"}, exported_pod)",
+        "refresh": 1,
+        "sort": 1,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": []
+      }
+    ]
   },
   "links": [
     {
@@ -34,13 +83,20 @@
       "asDropdown": true,
       "includeVars": false,
       "keepTime": true
+    },
+    {
+      "type": "link",
+      "title": "Node Exporter — Detailed Node Diagnostics",
+      "url": "/d/rYdddlPWk",
+      "keepTime": true,
+      "targetBlank": false
     }
   ],
   "panels": [
     {
       "title": "Running Pods",
       "type": "stat",
-      "description": "Running Pods。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Running Pods。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -48,7 +104,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(kube_pod_status_phase{phase=\"Running\"})",
+          "expr": "sum(kube_pod_status_phase{phase=\"Running\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"})",
           "legendFormat": "__auto",
           "range": true,
           "instant": false,
@@ -105,7 +161,7 @@
     {
       "title": "Not Ready Nodes",
       "type": "stat",
-      "description": "Not Ready Nodes。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Not Ready Nodes。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -170,7 +226,7 @@
     {
       "title": "Container Restarts (1h)",
       "type": "stat",
-      "description": "Container Restarts (1h)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Container Restarts (1h)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -178,7 +234,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(increase(kube_pod_container_status_restarts_total[1h]))",
+          "expr": "sum(increase(kube_pod_container_status_restarts_total{exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}[1h]))",
           "legendFormat": "__auto",
           "range": true,
           "instant": false,
@@ -233,24 +289,22 @@
       "interval": "1m"
     },
     {
+      "type": "row",
       "title": "Workload Health",
-      "type": "text",
-      "options": {
-        "mode": "markdown",
-        "content": "Pod・コンテナ・Workloadの異常と再起動を確認"
-      },
+      "collapsed": false,
+      "panels": [],
       "gridPos": {
         "x": 0,
         "y": 4,
         "w": 24,
-        "h": 3
+        "h": 1
       },
       "id": 4
     },
     {
       "title": "Problem Pods",
       "type": "timeseries",
-      "description": "Problem Pods。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Problem Pods。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -258,7 +312,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(kube_pod_status_phase{phase=~\"Pending|Failed|Unknown\"}) by (exported_namespace, phase)",
+          "expr": "sum(kube_pod_status_phase{phase=~\"Pending|Failed|Unknown\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}) by (exported_namespace, phase)",
           "legendFormat": "{{namespace}} / {{phase}}",
           "range": true,
           "instant": false,
@@ -305,7 +359,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 7,
+        "y": 5,
         "w": 12,
         "h": 8
       },
@@ -315,7 +369,7 @@
     {
       "title": "Waiting Containers by Reason",
       "type": "timeseries",
-      "description": "Waiting Containers by Reason。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Waiting Containers by Reason。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -323,7 +377,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(kube_pod_container_status_waiting_reason{reason!=\"ContainerCreating\"}) by (exported_namespace, reason)",
+          "expr": "sum(kube_pod_container_status_waiting_reason{reason!=\"ContainerCreating\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}) by (exported_namespace, reason)",
           "legendFormat": "{{namespace}} / {{reason}}",
           "range": true,
           "instant": false,
@@ -370,7 +424,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 7,
+        "y": 5,
         "w": 12,
         "h": 8
       },
@@ -380,7 +434,7 @@
     {
       "title": "Pods by Phase",
       "type": "timeseries",
-      "description": "Pods by Phase。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Pods by Phase。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -388,7 +442,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(kube_pod_status_phase) by (phase)",
+          "expr": "sum(kube_pod_status_phase{exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}) by (phase)",
           "legendFormat": "{{phase}}",
           "range": true,
           "instant": false,
@@ -435,7 +489,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 15,
+        "y": 13,
         "w": 8,
         "h": 8
       },
@@ -445,7 +499,7 @@
     {
       "title": "Unavailable Deployment Replicas",
       "type": "timeseries",
-      "description": "Unavailable Deployment Replicas。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Unavailable Deployment Replicas。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -453,7 +507,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(kube_deployment_status_replicas_unavailable) by (exported_namespace, deployment)",
+          "expr": "sum(kube_deployment_status_replicas_unavailable{exported_namespace=~\"${namespace:regex}\"}) by (exported_namespace, deployment)",
           "legendFormat": "{{namespace}} / {{deployment}}",
           "range": true,
           "instant": false,
@@ -500,7 +554,7 @@
       },
       "gridPos": {
         "x": 8,
-        "y": 15,
+        "y": 13,
         "w": 8,
         "h": 8
       },
@@ -510,7 +564,7 @@
     {
       "title": "Restarts by Namespace (1h)",
       "type": "timeseries",
-      "description": "Restarts by Namespace (1h)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Restarts by Namespace (1h)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -518,7 +572,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(increase(kube_pod_container_status_restarts_total[1h])) by (exported_namespace)",
+          "expr": "sum(increase(kube_pod_container_status_restarts_total{exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}[1h])) by (exported_namespace)",
           "legendFormat": "{{namespace}}",
           "range": true,
           "instant": false,
@@ -565,7 +619,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 15,
+        "y": 13,
         "w": 8,
         "h": 8
       },
@@ -575,7 +629,7 @@
     {
       "title": "CrashLoopBackOff Containers",
       "type": "timeseries",
-      "description": "CrashLoopBackOff Containers。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "CrashLoopBackOff Containers。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -583,7 +637,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(kube_pod_container_status_waiting_reason{reason=\"CrashLoopBackOff\"}) by (exported_namespace, exported_pod, container, reason)",
+          "expr": "sum(kube_pod_container_status_waiting_reason{reason=\"CrashLoopBackOff\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}) by (exported_namespace, exported_pod, container, reason)",
           "legendFormat": "{{namespace}} / {{pod}} / {{container}}",
           "range": true,
           "instant": false,
@@ -630,7 +684,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 23,
+        "y": 21,
         "w": 12,
         "h": 8
       },
@@ -640,7 +694,7 @@
     {
       "title": "Image Pull Error Containers",
       "type": "timeseries",
-      "description": "Image Pull Error Containers。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Image Pull Error Containers。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -648,7 +702,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(kube_pod_container_status_waiting_reason{reason=~\"ErrImagePull|ImagePullBackOff\"}) by (exported_namespace, exported_pod, container, reason)",
+          "expr": "sum(kube_pod_container_status_waiting_reason{reason=~\"ErrImagePull|ImagePullBackOff\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}) by (exported_namespace, exported_pod, container, reason)",
           "legendFormat": "{{namespace}} / {{pod}} / {{container}} / {{reason}}",
           "range": true,
           "instant": false,
@@ -695,7 +749,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 23,
+        "y": 21,
         "w": 12,
         "h": 8
       },
@@ -705,7 +759,7 @@
     {
       "title": "DaemonSet Unavailable",
       "type": "timeseries",
-      "description": "DaemonSet Unavailable。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "DaemonSet Unavailable。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -713,7 +767,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(kube_daemonset_status_number_unavailable) by (exported_namespace, daemonset)",
+          "expr": "sum(kube_daemonset_status_number_unavailable{exported_namespace=~\"${namespace:regex}\"}) by (exported_namespace, daemonset)",
           "legendFormat": "{{namespace}} / {{daemonset}}",
           "range": true,
           "instant": false,
@@ -760,7 +814,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 31,
+        "y": 29,
         "w": 6,
         "h": 8
       },
@@ -770,7 +824,7 @@
     {
       "title": "StatefulSet Not Ready",
       "type": "timeseries",
-      "description": "StatefulSet Not Ready。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "StatefulSet Not Ready。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -778,7 +832,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(kube_statefulset_replicas - kube_statefulset_status_replicas_ready) by (exported_namespace, statefulset)",
+          "expr": "sum(kube_statefulset_replicas{exported_namespace=~\"${namespace:regex}\"} - kube_statefulset_status_replicas_ready{exported_namespace=~\"${namespace:regex}\"}) by (exported_namespace, statefulset)",
           "legendFormat": "{{namespace}} / {{statefulset}}",
           "range": true,
           "instant": false,
@@ -825,7 +879,7 @@
       },
       "gridPos": {
         "x": 6,
-        "y": 31,
+        "y": 29,
         "w": 6,
         "h": 8
       },
@@ -835,7 +889,7 @@
     {
       "title": "Failed Jobs",
       "type": "timeseries",
-      "description": "Failed Jobs。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Failed Jobs。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -843,7 +897,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(kube_job_status_failed) by (exported_namespace, job_name)",
+          "expr": "sum(kube_job_status_failed{exported_namespace=~\"${namespace:regex}\"}) by (exported_namespace, job_name)",
           "legendFormat": "{{namespace}} / {{job_name}}",
           "range": true,
           "instant": false,
@@ -890,7 +944,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 31,
+        "y": 29,
         "w": 6,
         "h": 8
       },
@@ -900,7 +954,7 @@
     {
       "title": "Active Node Conditions",
       "type": "timeseries",
-      "description": "Active Node Conditions。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Active Node Conditions。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -955,7 +1009,7 @@
       },
       "gridPos": {
         "x": 18,
-        "y": 31,
+        "y": 29,
         "w": 6,
         "h": 8
       },
@@ -963,24 +1017,22 @@
       "interval": "1m"
     },
     {
+      "type": "row",
       "title": "Capacity & Scheduling",
-      "type": "text",
-      "options": {
-        "mode": "markdown",
-        "content": "Namespaceごとの実使用量とresource requests、ストレージ状態"
-      },
+      "collapsed": false,
+      "panels": [],
       "gridPos": {
         "x": 0,
-        "y": 39,
+        "y": 37,
         "w": 24,
-        "h": 3
+        "h": 1
       },
       "id": 16
     },
     {
       "title": "Pod CPU by Workload",
       "type": "timeseries",
-      "description": "Pod CPU by Workload。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Namespaceで選択したOTelのjob単位の集計。Pod選択はこの系列には適用しない。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -988,7 +1040,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (job) (k8s_pod_cpu_usage)",
+          "expr": "sum by (job) (k8s_pod_cpu_usage{job=~\"(${namespace:regex})/.*\"})",
           "legendFormat": "{{k8s_namespace_name}}",
           "range": true,
           "instant": false,
@@ -1035,7 +1087,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 42,
+        "y": 38,
         "w": 12,
         "h": 8
       },
@@ -1045,7 +1097,7 @@
     {
       "title": "Pod Memory by Workload",
       "type": "timeseries",
-      "description": "Pod Memory by Workload。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Namespaceで選択したOTelのjob単位の集計。Pod選択はこの系列には適用しない。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1053,7 +1105,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (job) (k8s_pod_memory_working_set_bytes)",
+          "expr": "sum by (job) (k8s_pod_memory_working_set_bytes{job=~\"(${namespace:regex})/.*\"})",
           "legendFormat": "{{k8s_namespace_name}}",
           "range": true,
           "instant": false,
@@ -1100,7 +1152,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 42,
+        "y": 38,
         "w": 12,
         "h": 8
       },
@@ -1108,139 +1160,9 @@
       "interval": "1m"
     },
     {
-      "title": "CPU Requests by Namespace",
-      "type": "timeseries",
-      "description": "CPU Requests by Namespace。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(kube_pod_container_resource_requests{resource=\"cpu\"}) by (exported_namespace)",
-          "legendFormat": "{{namespace}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 50,
-        "w": 8,
-        "h": 8
-      },
-      "id": 19,
-      "interval": "1m"
-    },
-    {
-      "title": "Memory Requests by Namespace",
-      "type": "timeseries",
-      "description": "Memory Requests by Namespace。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(kube_pod_container_resource_requests{resource=\"memory\"}) by (exported_namespace)",
-          "legendFormat": "{{namespace}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 50,
-        "w": 8,
-        "h": 8
-      },
-      "id": 20,
-      "interval": "1m"
-    },
-    {
       "title": "PVC by Phase",
       "type": "timeseries",
-      "description": "PVC by Phase。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "PVC by Phase。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1248,7 +1170,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(kube_persistentvolumeclaim_status_phase) by (exported_namespace, phase)",
+          "expr": "sum(kube_persistentvolumeclaim_status_phase{exported_namespace=~\"${namespace:regex}\"}) by (exported_namespace, phase)",
           "legendFormat": "{{namespace}} / {{phase}}",
           "range": true,
           "instant": false,
@@ -1295,7 +1217,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 50,
+        "y": 46,
         "w": 8,
         "h": 8
       },
@@ -1303,24 +1225,22 @@
       "interval": "1m"
     },
     {
+      "type": "row",
       "title": "Node Infrastructure",
-      "type": "text",
-      "options": {
-        "mode": "markdown",
-        "content": "物理ノードのCPU・メモリ・ロード・ネットワーク"
-      },
+      "collapsed": false,
+      "panels": [],
       "gridPos": {
         "x": 0,
-        "y": 58,
+        "y": 54,
         "w": 24,
-        "h": 3
+        "h": 1
       },
       "id": 22
     },
     {
       "title": "CPU User",
       "type": "timeseries",
-      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
+      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1375,7 +1295,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 61,
+        "y": 55,
         "w": 12,
         "h": 8
       },
@@ -1385,7 +1305,7 @@
     {
       "title": "Memory Used",
       "type": "timeseries",
-      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
+      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1440,7 +1360,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 61,
+        "y": 55,
         "w": 12,
         "h": 8
       },
@@ -1450,7 +1370,7 @@
     {
       "title": "Load Average (5 min)",
       "type": "timeseries",
-      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
+      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1505,7 +1425,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 69,
+        "y": 63,
         "w": 8,
         "h": 8
       },
@@ -1515,7 +1435,7 @@
     {
       "title": "CPU System",
       "type": "timeseries",
-      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
+      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1570,7 +1490,7 @@
       },
       "gridPos": {
         "x": 8,
-        "y": 69,
+        "y": 63,
         "w": 8,
         "h": 8
       },
@@ -1580,7 +1500,7 @@
     {
       "title": "CPU I/O Wait",
       "type": "timeseries",
-      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
+      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1635,7 +1555,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 69,
+        "y": 63,
         "w": 8,
         "h": 8
       },
@@ -1645,7 +1565,7 @@
     {
       "title": "CPU Package Temperature (°C)",
       "type": "timeseries",
-      "description": "CPU Package Temperature (°C)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "CPU Package Temperature (°C)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1700,7 +1620,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 77,
+        "y": 71,
         "w": 24,
         "h": 8
       },
@@ -1710,7 +1630,7 @@
     {
       "title": "Cilium Network RX",
       "type": "timeseries",
-      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
+      "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1765,7 +1685,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 85,
+        "y": 79,
         "w": 24,
         "h": 8
       },
@@ -1775,7 +1695,7 @@
     {
       "title": "GPU Nodes",
       "type": "stat",
-      "description": "GPU Nodes。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "GPU Nodes。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1830,7 +1750,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 93,
+        "y": 87,
         "w": 6,
         "h": 4
       },
@@ -1840,7 +1760,7 @@
     {
       "title": "GPUs",
       "type": "stat",
-      "description": "GPUs。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "GPUs。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1895,7 +1815,7 @@
       },
       "gridPos": {
         "x": 6,
-        "y": 93,
+        "y": 87,
         "w": 6,
         "h": 4
       },
@@ -1905,7 +1825,7 @@
     {
       "title": "Peak GPU Utilization",
       "type": "stat",
-      "description": "Peak GPU Utilization。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Peak GPU Utilization。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -1962,7 +1882,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 93,
+        "y": 87,
         "w": 6,
         "h": 4
       },
@@ -1972,7 +1892,7 @@
     {
       "title": "GPU Power",
       "type": "stat",
-      "description": "GPU Power。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "GPU Power。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -2027,7 +1947,7 @@
       },
       "gridPos": {
         "x": 18,
-        "y": 93,
+        "y": 87,
         "w": 6,
         "h": 4
       },
@@ -2035,24 +1955,22 @@
       "interval": "1m"
     },
     {
+      "type": "row",
       "title": "GPU Utilization",
-      "type": "text",
-      "options": {
-        "mode": "markdown",
-        "content": "GPUエンジンの使用率。AMD APUは全体、Intel iGPUはrender/video/copy/video-enhance別に取得。"
-      },
+      "collapsed": false,
+      "panels": [],
       "gridPos": {
         "x": 0,
-        "y": 97,
+        "y": 91,
         "w": 24,
-        "h": 3
+        "h": 1
       },
       "id": 34
     },
     {
       "title": "Peak Engine Utilization by Node",
       "type": "timeseries",
-      "description": "Peak Engine Utilization by Node。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Peak Engine Utilization by Node。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -2107,8 +2025,8 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 100,
-        "w": 8,
+        "y": 92,
+        "w": 12,
         "h": 8
       },
       "id": 35,
@@ -2117,7 +2035,7 @@
     {
       "title": "Engine Utilization",
       "type": "timeseries",
-      "description": "Engine Utilization。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "Engine Utilization。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -2171,33 +2089,31 @@
         }
       },
       "gridPos": {
-        "x": 8,
-        "y": 100,
-        "w": 16,
+        "x": 12,
+        "y": 92,
+        "w": 12,
         "h": 8
       },
       "id": 36,
       "interval": "1m"
     },
     {
+      "type": "row",
       "title": "GPU Temperature, Clock & Power",
-      "type": "text",
-      "options": {
-        "mode": "markdown",
-        "content": "温度は現在AMD GPU、クロックは全GPU、電力はi915ノードで取得。"
-      },
+      "collapsed": false,
+      "panels": [],
       "gridPos": {
         "x": 0,
-        "y": 108,
+        "y": 100,
         "w": 24,
-        "h": 3
+        "h": 1
       },
       "id": 37
     },
     {
       "title": "GPU Temperature (°C)",
       "type": "timeseries",
-      "description": "GPU Temperature (°C)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "GPU Temperature (°C)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -2252,7 +2168,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 111,
+        "y": 101,
         "w": 8,
         "h": 8
       },
@@ -2262,7 +2178,7 @@
     {
       "title": "GPU Frequency",
       "type": "timeseries",
-      "description": "GPU Frequency。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "GPU Frequency。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -2317,7 +2233,7 @@
       },
       "gridPos": {
         "x": 8,
-        "y": 111,
+        "y": 101,
         "w": 8,
         "h": 8
       },
@@ -2327,7 +2243,7 @@
     {
       "title": "GPU Power by Node",
       "type": "timeseries",
-      "description": "GPU Power by Node。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "GPU Power by Node。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -2382,7 +2298,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 111,
+        "y": 101,
         "w": 8,
         "h": 8
       },
@@ -2390,24 +2306,22 @@
       "interval": "1m"
     },
     {
+      "type": "row",
       "title": "GPU Memory & Availability",
-      "type": "text",
-      "options": {
-        "mode": "markdown",
-        "content": "内蔵GPUの共有メモリとExporterから見えるデバイス数。"
-      },
+      "collapsed": false,
+      "panels": [],
       "gridPos": {
         "x": 0,
-        "y": 119,
+        "y": 109,
         "w": 24,
-        "h": 3
+        "h": 1
       },
       "id": 41
     },
     {
       "title": "GPU Memory Used",
       "type": "timeseries",
-      "description": "GPU Memory Used。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "GPU Memory Used。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -2462,7 +2376,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 122,
+        "y": 110,
         "w": 8,
         "h": 8
       },
@@ -2472,7 +2386,7 @@
     {
       "title": "GPU Memory Total",
       "type": "timeseries",
-      "description": "GPU Memory Total。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "GPU Memory Total。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -2527,7 +2441,7 @@
       },
       "gridPos": {
         "x": 8,
-        "y": 122,
+        "y": 110,
         "w": 8,
         "h": 8
       },
@@ -2537,7 +2451,7 @@
     {
       "title": "GPU Availability",
       "type": "state-timeline",
-      "description": "GPU Availability。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "GPU Availability。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -2605,7 +2519,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 122,
+        "y": 110,
         "w": 8,
         "h": 8
       },
@@ -2615,7 +2529,7 @@
     {
       "title": "Logs — Selected Time Range",
       "type": "logs",
-      "description": "同じ選択期間のログ。最大100行。",
+      "description": "同じ選択期間のログ。最大100行。 Namespace/PodはKubernetesのワークロード指標へ適用。ノード・GPUはクラスタ全体。",
       "datasource": {
         "type": "loki",
         "uid": "loki"
@@ -2630,7 +2544,7 @@
       ],
       "gridPos": {
         "x": 0,
-        "y": 130,
+        "y": 118,
         "w": 24,
         "h": 10
       },
@@ -2644,19 +2558,396 @@
       "id": 45
     },
     {
-      "title": "Telemetry Coverage",
-      "type": "text",
+      "type": "row",
+      "title": "Namespace & Pod Resource Diagnosis",
+      "collapsed": false,
+      "panels": [],
       "gridPos": {
         "x": 0,
-        "y": 140,
+        "y": 128,
         "w": 24,
-        "h": 5
-      },
-      "options": {
-        "mode": "markdown",
-        "content": "Prometheusで取得できないため省略したMackerel指標: Cluster Alerts。\n\nイベント指標は未発生時に系列がなく、No dataとなる場合があります。"
+        "h": 1
       },
       "id": 46
+    },
+    {
+      "title": "CPU Requests / Limits",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "CPU Requests / Limits。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (exported_namespace) (kube_pod_container_resource_requests{resource=\"cpu\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"})",
+          "legendFormat": "{{exported_namespace}} requests",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (exported_namespace) (kube_pod_container_resource_limits{resource=\"cpu\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"})",
+          "legendFormat": "{{exported_namespace}} limits",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "cores",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 129,
+        "w": 24,
+        "h": 7
+      },
+      "id": 47
+    },
+    {
+      "title": "MEMORY Requests / Limits",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "MEMORY Requests / Limits。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (exported_namespace) (kube_pod_container_resource_requests{resource=\"memory\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"})",
+          "legendFormat": "{{exported_namespace}} requests",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (exported_namespace) (kube_pod_container_resource_limits{resource=\"memory\",exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"})",
+          "legendFormat": "{{exported_namespace}} limits",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 136,
+        "w": 24,
+        "h": 7
+      },
+      "id": 48
+    },
+    {
+      "title": "Pod Phase",
+      "type": "table",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Pod Placement & Phase。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max by (exported_namespace, exported_pod, phase) (kube_pod_status_phase{exported_namespace=~\"${namespace:regex}\",exported_pod=~\"${pod:regex}\"}) == 1",
+          "legendFormat": "__auto",
+          "range": false,
+          "instant": true,
+          "interval": "1m",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "includeByName": {
+              "exported_namespace": true,
+              "exported_pod": true,
+              "phase": true
+            },
+            "renameByName": {
+              "exported_namespace": "Namespace",
+              "exported_pod": "Pod",
+              "phase": "Phase"
+            }
+          }
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 143,
+        "w": 24,
+        "h": 10
+      },
+      "id": 49
+    },
+    {
+      "type": "row",
+      "title": "Node Capacity",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 153,
+        "w": 24,
+        "h": 1
+      },
+      "id": 50
+    },
+    {
+      "title": "Node CPU Requested / Allocatable",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Node CPU Requested / Allocatable。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (node) (kube_pod_container_resource_requests{resource=\"cpu\"})",
+          "legendFormat": "{{node}} requested",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (node) (kube_node_status_allocatable{resource=\"cpu\"})",
+          "legendFormat": "{{node}} allocatable",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "cores",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 154,
+        "w": 24,
+        "h": 7
+      },
+      "id": 51
+    },
+    {
+      "title": "Node MEMORY Requested / Allocatable",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Node MEMORY Requested / Allocatable。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (node) (kube_pod_container_resource_requests{resource=\"memory\"})",
+          "legendFormat": "{{node}} requested",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (node) (kube_node_status_allocatable{resource=\"memory\"})",
+          "legendFormat": "{{node}} allocatable",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 161,
+        "w": 24,
+        "h": 7
+      },
+      "id": 52
     }
-  ]
+  ],
+  "version": 1
 }

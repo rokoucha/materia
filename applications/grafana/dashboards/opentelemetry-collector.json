@@ -1,6 +1,6 @@
 {
   "title": "OpenTelemetry Collector",
-  "description": "OpenTelemetry Collector — Mackerel dashboardをもとに、Prometheus/Lokiの実データへ適応。",
+  "description": "Collector選択、受信・処理・送信、バッチ分布、キューとランタイムを統合。旧ダッシュボードの動的suffix判定を実際のメトリクス名に置き換える。",
   "uid": "materia-opentelemetry-collector",
   "schemaVersion": 39,
   "timezone": "browser",
@@ -16,7 +16,32 @@
   },
   "refresh": "1m",
   "templating": {
-    "list": []
+    "list": [
+      {
+        "name": "collector",
+        "label": "Collector",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "bdy6m43uy9ybkd"
+        },
+        "query": {
+          "query": "label_values(otelcol_process_cpu_seconds_total, job)",
+          "refId": "VariableQuery"
+        },
+        "definition": "label_values(otelcol_process_cpu_seconds_total, job)",
+        "refresh": 1,
+        "sort": 1,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": []
+      }
+    ]
   },
   "links": [
     {
@@ -38,33 +63,83 @@
   ],
   "panels": [
     {
-      "title": "Receiver",
-      "type": "text",
+      "title": "Collector Instances",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Collector Instances。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "count(otelcol_process_cpu_seconds_total{job=~\"${collector:regex}\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
       "options": {
-        "mode": "markdown",
-        "content": "<br>"
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "wideLayout": true
       },
       "gridPos": {
         "x": 0,
         "y": 0,
-        "w": 4,
-        "h": 3
+        "w": 6,
+        "h": 5
       },
       "id": 1
     },
     {
-      "title": "Accepted Spans Rate",
-      "type": "timeseries",
-      "description": "Accepted Spans Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "title": "Receiver Refusals /s",
+      "type": "stat",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Receiver Refusals /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(irate(otelcol_receiver_accepted_spans_total{job=~\".*/otelcol\"}[$__rate_interval])) by (receiver)",
-          "legendFormat": "{{receiver}}",
+          "expr": "(sum(rate(otelcol_receiver_refused_spans_total{job=~\"${collector:regex}\"}[$__rate_interval])) or (0 * sum(otelcol_process_cpu_seconds_total{job=~\"${collector:regex}\"}))) + (sum(rate(otelcol_receiver_refused_metric_points_total{job=~\"${collector:regex}\"}[$__rate_interval])) or (0 * sum(otelcol_process_cpu_seconds_total{job=~\"${collector:regex}\"}))) + (sum(rate(otelcol_receiver_refused_log_records_total{job=~\"${collector:regex}\"}[$__rate_interval])) or (0 * sum(otelcol_process_cpu_seconds_total{job=~\"${collector:regex}\"})))",
+          "legendFormat": "__auto",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -72,7 +147,220 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "ops",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 5
+      },
+      "id": 2
+    },
+    {
+      "title": "Exporter Failures /s",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Exporter Failures /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(sum(rate(otelcol_exporter_enqueue_failed_spans_total{job=~\"${collector:regex}\"}[$__rate_interval])) or (0 * sum(otelcol_process_cpu_seconds_total{job=~\"${collector:regex}\"}))) + (sum(rate(otelcol_exporter_enqueue_failed_metric_points_total{job=~\"${collector:regex}\"}[$__rate_interval])) or (0 * sum(otelcol_process_cpu_seconds_total{job=~\"${collector:regex}\"}))) + (sum(rate(otelcol_exporter_enqueue_failed_log_records_total{job=~\"${collector:regex}\"}[$__rate_interval])) or (0 * sum(otelcol_process_cpu_seconds_total{job=~\"${collector:regex}\"}))) + (sum(rate(otelcol_exporter_send_failed_spans_total{job=~\"${collector:regex}\"}[$__rate_interval])) or (0 * sum(otelcol_process_cpu_seconds_total{job=~\"${collector:regex}\"}))) + (sum(rate(otelcol_exporter_send_failed_metric_points_total{job=~\"${collector:regex}\"}[$__rate_interval])) or (0 * sum(otelcol_process_cpu_seconds_total{job=~\"${collector:regex}\"}))) + (sum(rate(otelcol_exporter_send_failed_log_records_total{job=~\"${collector:regex}\"}[$__rate_interval])) or (0 * sum(otelcol_process_cpu_seconds_total{job=~\"${collector:regex}\"})))",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 5
+      },
+      "id": 3
+    },
+    {
+      "title": "Peak Queue Usage",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Peak Queue Usage。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(100 * otelcol_exporter_queue_size{job=~\"${collector:regex}\"} / (otelcol_exporter_queue_capacity{job=~\"${collector:regex}\"} > 0))",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 5
+      },
+      "id": 4
+    },
+    {
+      "type": "row",
+      "title": "Receivers — Accepted / Refused",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 1
+      },
+      "id": 5
+    },
+    {
+      "title": "Spans /s",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Spans /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (job, receiver) (rate(otelcol_receiver_accepted_spans_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{receiver}} accepted",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (job, receiver) (rate(otelcol_receiver_refused_spans_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{receiver}} refused",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
           "color": {
             "mode": "palette-classic"
           },
@@ -110,26 +398,34 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 3,
-        "w": 8,
-        "h": 8
+        "y": 6,
+        "w": 24,
+        "h": 7
       },
-      "id": 2,
-      "interval": "1m"
+      "id": 6
     },
     {
-      "title": "Accepted Metric Points Rate",
+      "title": "Metric Points /s",
       "type": "timeseries",
-      "description": "Accepted Metric Points Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Metric Points /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(irate(otelcol_receiver_accepted_metric_points_total{job=~\".*/otelcol\"}[$__rate_interval])) by (receiver)",
-          "legendFormat": "{{receiver}}",
+          "expr": "sum by (job, receiver) (rate(otelcol_receiver_accepted_metric_points_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{receiver}} accepted",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (job, receiver) (rate(otelcol_receiver_refused_metric_points_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{receiver}} refused",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -137,137 +433,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 3,
-        "w": 8,
-        "h": 8
-      },
-      "id": 3,
-      "interval": "1m"
-    },
-    {
-      "title": "Accepted Log Records Rate",
-      "type": "timeseries",
-      "description": "Accepted Log Records Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_receiver_accepted_log_records_total{job=~\".*/otelcol\"}[$__rate_interval])) by (receiver)",
-          "legendFormat": "{{receiver}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 16,
-        "y": 3,
-        "w": 8,
-        "h": 8
-      },
-      "id": 4,
-      "interval": "1m"
-    },
-    {
-      "title": "Rejected Spans Rate",
-      "type": "timeseries",
-      "description": "Rejected Spans Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_receiver_refused_spans_total{job=~\".*/otelcol\"}[$__rate_interval])) by (receiver)",
-          "legendFormat": "{{receiver}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
+          "unit": "ops",
           "color": {
             "mode": "palette-classic"
           },
@@ -305,26 +471,34 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 11,
-        "w": 8,
-        "h": 8
+        "y": 13,
+        "w": 24,
+        "h": 7
       },
-      "id": 5,
-      "interval": "1m"
+      "id": 7
     },
     {
-      "title": "Rejected Metric Points Rate",
+      "title": "Log Records /s",
       "type": "timeseries",
-      "description": "Rejected Metric Points Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Log Records /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(irate(otelcol_receiver_refused_metric_points_total{job=~\".*/otelcol\"}[$__rate_interval])) by (receiver)",
-          "legendFormat": "{{receiver}}",
+          "expr": "sum by (job, receiver) (rate(otelcol_receiver_accepted_log_records_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{receiver}} accepted",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (job, receiver) (rate(otelcol_receiver_refused_log_records_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{receiver}} refused",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -332,7 +506,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "ops",
           "color": {
             "mode": "palette-classic"
           },
@@ -367,109 +541,50 @@
             "max"
           ]
         }
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 11,
-        "w": 8,
-        "h": 8
-      },
-      "id": 6,
-      "interval": "1m"
-    },
-    {
-      "title": "Rejected Log Records Rate",
-      "type": "timeseries",
-      "description": "Rejected Log Records Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_receiver_refused_log_records_total{job=~\".*/otelcol\"}[$__rate_interval])) by (receiver)",
-          "legendFormat": "{{receiver}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 16,
-        "y": 11,
-        "w": 8,
-        "h": 8
-      },
-      "id": 7,
-      "interval": "1m"
-    },
-    {
-      "title": "Processors",
-      "type": "text",
-      "options": {
-        "mode": "markdown",
-        "content": "<br>"
       },
       "gridPos": {
         "x": 0,
-        "y": 19,
-        "w": 4,
-        "h": 3
+        "y": 20,
+        "w": 24,
+        "h": 7
       },
       "id": 8
     },
     {
-      "title": "Accepted Spans Rate",
+      "type": "row",
+      "title": "Processors — Incoming / Outgoing",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 24,
+        "h": 1
+      },
+      "id": 9
+    },
+    {
+      "title": "Spans Processor Items /s",
       "type": "timeseries",
-      "description": "Accepted Spans Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Spans Processor Items /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(irate(otelcol_processor_memory_limiter_accepted_spans_total[$__rate_interval])) by (processor)",
-          "legendFormat": "{{processor}}",
+          "expr": "sum by (job, processor) (rate(otelcol_processor_incoming_items_total{job=~\"${collector:regex}\",otel_signal=\"traces\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{processor}} in",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (job, processor) (rate(otelcol_processor_outgoing_items_total{job=~\"${collector:regex}\",otel_signal=\"traces\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{processor}} out",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -477,7 +592,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "ops",
           "color": {
             "mode": "palette-classic"
           },
@@ -515,26 +630,34 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 22,
-        "w": 8,
-        "h": 8
+        "y": 28,
+        "w": 24,
+        "h": 7
       },
-      "id": 9,
-      "interval": "1m"
+      "id": 10
     },
     {
-      "title": "Accepted Metric Points Rate",
+      "title": "Metric Points Processor Items /s",
       "type": "timeseries",
-      "description": "Accepted Metric Points Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Metric Points Processor Items /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(irate(otelcol_processor_memory_limiter_accepted_metric_points_total[$__rate_interval])) by (processor)",
-          "legendFormat": "{{processor}}",
+          "expr": "sum by (job, processor) (rate(otelcol_processor_incoming_items_total{job=~\"${collector:regex}\",otel_signal=\"metrics\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{processor}} in",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (job, processor) (rate(otelcol_processor_outgoing_items_total{job=~\"${collector:regex}\",otel_signal=\"metrics\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{processor}} out",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -542,137 +665,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 22,
-        "w": 8,
-        "h": 8
-      },
-      "id": 10,
-      "interval": "1m"
-    },
-    {
-      "title": "Accepted Log Records rate",
-      "type": "timeseries",
-      "description": "Accepted Log Records rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_processor_memory_limiter_accepted_log_records_total[$__rate_interval])) by (processor)",
-          "legendFormat": "{{processor}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 16,
-        "y": 22,
-        "w": 8,
-        "h": 8
-      },
-      "id": 11,
-      "interval": "1m"
-    },
-    {
-      "title": "Refused Spans Rate",
-      "type": "timeseries",
-      "description": "Refused Spans Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_processor_memory_limiter_refused_spans_total[$__rate_interval])) by (processor)",
-          "legendFormat": "{{processor}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
+          "unit": "ops",
           "color": {
             "mode": "palette-classic"
           },
@@ -710,26 +703,34 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 30,
-        "w": 8,
-        "h": 8
+        "y": 35,
+        "w": 24,
+        "h": 7
       },
-      "id": 12,
-      "interval": "1m"
+      "id": 11
     },
     {
-      "title": "Refused Metric Points Rate",
+      "title": "Log Records Processor Items /s",
       "type": "timeseries",
-      "description": "Refused Metric Points Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Log Records Processor Items /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(irate(otelcol_processor_memory_limiter_refused_metric_points_total[$__rate_interval])) by (processor)",
-          "legendFormat": "{{processor}}",
+          "expr": "sum by (job, processor) (rate(otelcol_processor_incoming_items_total{job=~\"${collector:regex}\",otel_signal=\"logs\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{processor}} in",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (job, processor) (rate(otelcol_processor_outgoing_items_total{job=~\"${collector:regex}\",otel_signal=\"logs\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{processor}} out",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -737,7 +738,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "ops",
           "color": {
             "mode": "palette-classic"
           },
@@ -774,30 +775,44 @@
         }
       },
       "gridPos": {
-        "x": 8,
-        "y": 30,
-        "w": 8,
-        "h": 8
+        "x": 0,
+        "y": 42,
+        "w": 24,
+        "h": 7
       },
-      "id": 13,
-      "interval": "1m"
+      "id": 12
     },
     {
-      "title": "Refused Log Records Rate",
-      "type": "timeseries",
-      "description": "Refused Log Records Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "type": "row",
+      "title": "Batching",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 49,
+        "w": 24,
+        "h": 1
+      },
+      "id": 13
+    },
+    {
+      "title": "Batch Send Size Distribution",
+      "type": "heatmap",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Batch Send Size Distribution。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(irate(otelcol_processor_memory_limiter_refused_log_records_total[$__rate_interval])) by (processor)",
-          "legendFormat": "{{processor}}",
+          "expr": "sum by (le) (increase(otelcol_processor_batch_batch_send_size_bucket{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{le}}",
           "range": true,
           "instant": false,
-          "interval": "1m"
+          "interval": "1m",
+          "format": "heatmap"
         }
       ],
       "fieldConfig": {
@@ -825,40 +840,46 @@
         "overrides": []
       },
       "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
+        "calculate": false,
+        "cellGap": 1,
+        "color": {
+          "mode": "scheme",
+          "scheme": "Spectral",
+          "steps": 64,
+          "reverse": false
+        },
+        "yAxis": {
+          "unit": "short"
         },
         "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
+          "show": true
+        },
+        "tooltip": {
+          "show": true,
+          "mode": "single"
         }
       },
       "gridPos": {
-        "x": 16,
-        "y": 30,
-        "w": 8,
+        "x": 0,
+        "y": 50,
+        "w": 12,
         "h": 8
       },
-      "id": 14,
-      "interval": "1m"
+      "id": 14
     },
     {
       "title": "Batch Send Size p95",
       "type": "timeseries",
-      "description": "Batch Send Size。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Batch Send Size p95。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "histogram_quantile(0.95, sum by (le, job) (rate(otelcol_processor_batch_batch_send_size_bucket[$__rate_interval])))",
+          "expr": "histogram_quantile(0.95, sum by (le, job) (rate(otelcol_processor_batch_batch_send_size_bucket{job=~\"${collector:regex}\"}[$__rate_interval])))",
           "legendFormat": "{{job}}",
           "range": true,
           "instant": false,
@@ -904,27 +925,35 @@
         }
       },
       "gridPos": {
-        "x": 0,
-        "y": 38,
-        "w": 8,
+        "x": 12,
+        "y": 50,
+        "w": 12,
         "h": 8
       },
-      "id": 15,
-      "interval": "1m"
+      "id": 15
     },
     {
-      "title": "Batch Metrics Count 1",
+      "title": "Batch Sends /s",
       "type": "timeseries",
-      "description": "Batch Metrics Count 1。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Batch Sends /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(irate(otelcol_processor_batch_batch_send_size_count{job=~\".*/otelcol\"}[$__rate_interval])) by (processor)",
-          "legendFormat": "{{processor}}",
+          "expr": "sum by (job, processor) (rate(otelcol_processor_batch_batch_size_trigger_send_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{processor}} size",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (job, processor) (rate(otelcol_processor_batch_timeout_trigger_send_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{processor}} timeout",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -932,7 +961,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "ops",
           "color": {
             "mode": "palette-classic"
           },
@@ -967,823 +996,284 @@
             "max"
           ]
         }
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 38,
-        "w": 8,
-        "h": 8
-      },
-      "id": 16,
-      "interval": "1m"
-    },
-    {
-      "title": "Batch Metrics Batch Size 2",
-      "type": "timeseries",
-      "description": "Batch Metrics Batch Size 2。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_processor_batch_batch_size_trigger_send_total{job=~\".*/otelcol\"}[$__rate_interval])) by (processor)",
-          "legendFormat": "{{processor}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 16,
-        "y": 38,
-        "w": 8,
-        "h": 8
-      },
-      "id": 17,
-      "interval": "1m"
-    },
-    {
-      "title": "Batch Metrics Sum 1",
-      "type": "timeseries",
-      "description": "Batch Metrics Sum 1。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_processor_batch_batch_send_size_sum{job=~\".*/otelcol\"}[$__rate_interval])) by (processor)",
-          "legendFormat": "{{processor}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 46,
-        "w": 8,
-        "h": 8
-      },
-      "id": 18,
-      "interval": "1m"
-    },
-    {
-      "title": "Batch Metrics Timeout 2",
-      "type": "timeseries",
-      "description": "Batch Metrics Timeout 2。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_processor_batch_timeout_trigger_send_total{job=~\".*/otelcol\"}[$__rate_interval])) by (processor)",
-          "legendFormat": "{{processor}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 16,
-        "y": 46,
-        "w": 8,
-        "h": 8
-      },
-      "id": 19,
-      "interval": "1m"
-    },
-    {
-      "title": "Exporter",
-      "type": "text",
-      "options": {
-        "mode": "markdown",
-        "content": "<br>"
       },
       "gridPos": {
         "x": 0,
-        "y": 54,
-        "w": 4,
-        "h": 3
+        "y": 58,
+        "w": 24,
+        "h": 7
+      },
+      "id": 16
+    },
+    {
+      "type": "row",
+      "title": "Exporters — Sent / Failed",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 65,
+        "w": 24,
+        "h": 1
+      },
+      "id": 17
+    },
+    {
+      "title": "Spans Exported /s",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Spans Exported /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (job, exporter) (rate(otelcol_exporter_sent_spans_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{exporter}} sent",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (job, exporter) (rate(otelcol_exporter_enqueue_failed_spans_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{exporter}} enqueue failed",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "C",
+          "expr": "sum by (job, exporter) (rate(otelcol_exporter_send_failed_spans_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{exporter}} send failed",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 66,
+        "w": 24,
+        "h": 7
+      },
+      "id": 18
+    },
+    {
+      "title": "Metric Points Exported /s",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Metric Points Exported /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (job, exporter) (rate(otelcol_exporter_sent_metric_points_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{exporter}} sent",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (job, exporter) (rate(otelcol_exporter_enqueue_failed_metric_points_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{exporter}} enqueue failed",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "C",
+          "expr": "sum by (job, exporter) (rate(otelcol_exporter_send_failed_metric_points_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{exporter}} send failed",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 73,
+        "w": 24,
+        "h": 7
+      },
+      "id": 19
+    },
+    {
+      "title": "Log Records Exported /s",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Log Records Exported /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (job, exporter) (rate(otelcol_exporter_sent_log_records_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{exporter}} sent",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "B",
+          "expr": "sum by (job, exporter) (rate(otelcol_exporter_enqueue_failed_log_records_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{exporter}} enqueue failed",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        },
+        {
+          "refId": "C",
+          "expr": "sum by (job, exporter) (rate(otelcol_exporter_send_failed_log_records_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{job}} / {{exporter}} send failed",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 80,
+        "w": 24,
+        "h": 7
       },
       "id": 20
     },
     {
-      "title": "Sent Spans Rate",
+      "title": "Exporter Queue Usage",
       "type": "timeseries",
-      "description": "Sent Spans Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Exporter Queue Usage。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(irate(otelcol_exporter_sent_spans_total{job=~\".*/otelcol\"}[$__rate_interval])) by (exporter)",
-          "legendFormat": "{{exporter}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 57,
-        "w": 8,
-        "h": 8
-      },
-      "id": 21,
-      "interval": "1m"
-    },
-    {
-      "title": "Sent Metric Points Rate",
-      "type": "timeseries",
-      "description": "Sent Metric Points Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_exporter_sent_metric_points_total{job=~\".*/otelcol\"}[$__rate_interval])) by (exporter)",
-          "legendFormat": "{{exporter}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 57,
-        "w": 8,
-        "h": 8
-      },
-      "id": 22,
-      "interval": "1m"
-    },
-    {
-      "title": "Sent Log Records Rate",
-      "type": "timeseries",
-      "description": "Sent Log Records Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_exporter_sent_log_records_total{job=~\".*/otelcol\"}[$__rate_interval])) by (exporter)",
-          "legendFormat": "{{exporter}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 16,
-        "y": 57,
-        "w": 8,
-        "h": 8
-      },
-      "id": 23,
-      "interval": "1m"
-    },
-    {
-      "title": "Enqueue Failed Spans Rate",
-      "type": "timeseries",
-      "description": "Enqueue Failed Spans Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_exporter_enqueue_failed_spans_total{job=~\".*/otelcol\"}[$__rate_interval])) by (exporter)",
-          "legendFormat": "{{exporter}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 65,
-        "w": 8,
-        "h": 8
-      },
-      "id": 24,
-      "interval": "1m"
-    },
-    {
-      "title": "Enqueue Failed Metric Points Rate",
-      "type": "timeseries",
-      "description": "Enqueue Failed Metric Points Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_exporter_enqueue_failed_metric_points_total{job=~\".*/otelcol\"}[$__rate_interval])) by (exporter)",
-          "legendFormat": "__auto",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 65,
-        "w": 8,
-        "h": 8
-      },
-      "id": 25,
-      "interval": "1m"
-    },
-    {
-      "title": "Enqueue Failed Log Records Rate",
-      "type": "timeseries",
-      "description": "Enqueue Failed Log Records Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_exporter_enqueue_failed_log_records_total{job=~\".*/otelcol\"}[$__rate_interval])) by (exporter)",
-          "legendFormat": "{{exporter}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 16,
-        "y": 65,
-        "w": 8,
-        "h": 8
-      },
-      "id": 26,
-      "interval": "1m"
-    },
-    {
-      "title": "Send Failed Spans Rate",
-      "type": "timeseries",
-      "description": "Send Failed Spans Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_exporter_send_failed_spans_total{job=~\".*/otelcol\"}[$__rate_interval])) by (exporter)",
-          "legendFormat": "{{exporter}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 73,
-        "w": 8,
-        "h": 8
-      },
-      "id": 27,
-      "interval": "1m"
-    },
-    {
-      "title": "Send Failed Metric Points Rate",
-      "type": "timeseries",
-      "description": "Send Failed Metric Points Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_exporter_send_failed_metric_points_total{job=~\".*/otelcol\"}[$__rate_interval])) by (exporter)",
-          "legendFormat": "{{exporter}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 73,
-        "w": 8,
-        "h": 8
-      },
-      "id": 28,
-      "interval": "1m"
-    },
-    {
-      "title": "Send Failed Log Records Rate",
-      "type": "timeseries",
-      "description": "Send Failed Log Records Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(irate(otelcol_exporter_send_failed_log_records_total{job=~\".*/otelcol\"}[$__rate_interval])) by (exporter)",
-          "legendFormat": "{{exporter}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
-        }
-      },
-      "gridPos": {
-        "x": 16,
-        "y": 73,
-        "w": 8,
-        "h": 8
-      },
-      "id": 29,
-      "interval": "1m"
-    },
-    {
-      "title": "Exporter Queue Utilization",
-      "type": "timeseries",
-      "description": "Exporter Queue Utilization。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "100 * otelcol_exporter_queue_size / otelcol_exporter_queue_capacity",
+          "expr": "100 * otelcol_exporter_queue_size{job=~\"${collector:regex}\"} / (otelcol_exporter_queue_capacity{job=~\"${collector:regex}\"} > 0)",
           "legendFormat": "{{job}} / {{exporter}}",
           "range": true,
           "instant": false,
@@ -1830,17 +1320,563 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 81,
+        "y": 87,
         "w": 12,
         "h": 8
       },
-      "id": 30,
-      "interval": "1m"
+      "id": 21
     },
     {
-      "title": "Logs — Selected Time Range",
+      "title": "Queued Items",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Queued Items。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "otelcol_exporter_queue_size{job=~\"${collector:regex}\"}",
+          "legendFormat": "{{job}} / {{exporter}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 87,
+        "w": 12,
+        "h": 8
+      },
+      "id": 22
+    },
+    {
+      "type": "row",
+      "title": "Collector Runtime",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 95,
+        "w": 24,
+        "h": 1
+      },
+      "id": 23
+    },
+    {
+      "title": "Resident Memory",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Resident Memory。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max by (job, instance) ({__name__=~\"otelcol_process_memory_rss(_bytes)?\",job=~\"${collector:regex}\"})",
+          "legendFormat": "{{job}} / {{instance}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 96,
+        "w": 12,
+        "h": 8
+      },
+      "id": 24
+    },
+    {
+      "title": "CPU Usage",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "CPU Usage。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(otelcol_process_cpu_seconds_total{job=~\"${collector:regex}\"}[$__rate_interval])",
+          "legendFormat": "{{job}} / {{instance}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "cores",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 96,
+        "w": 12,
+        "h": 8
+      },
+      "id": 25
+    },
+    {
+      "title": "Uptime",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Uptime。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max by (job, instance) ({__name__=~\"otelcol_process_uptime(_seconds)?_total\",job=~\"${collector:regex}\"})",
+          "legendFormat": "{{job}} / {{instance}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 104,
+        "w": 12,
+        "h": 8
+      },
+      "id": 26
+    },
+    {
+      "title": "Runtime Heap",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Runtime Heap。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "otelcol_process_runtime_heap_alloc_bytes{job=~\"${collector:regex}\"}",
+          "legendFormat": "{{job}} / {{instance}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 104,
+        "w": 12,
+        "h": 8
+      },
+      "id": 27
+    },
+    {
+      "type": "row",
+      "title": "Memory Limiter Refusals",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 112,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [
+        {
+          "title": "Memory Limiter Refused spans /s",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "description": "Memory Limiter Refused spans /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+          "interval": "1m",
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (job, processor) (rate(otelcol_processor_memory_limiter_refused_spans_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+              "legendFormat": "{{job}} / {{processor}}",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "ops",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 113,
+            "w": 12,
+            "h": 8
+          },
+          "id": 29
+        },
+        {
+          "title": "Memory Limiter Refused metric_points /s",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "description": "Memory Limiter Refused metric_points /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+          "interval": "1m",
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (job, processor) (rate(otelcol_processor_memory_limiter_refused_metric_points_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+              "legendFormat": "{{job}} / {{processor}}",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "ops",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 113,
+            "w": 12,
+            "h": 8
+          },
+          "id": 30
+        },
+        {
+          "title": "Memory Limiter Refused log_records /s",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "description": "Memory Limiter Refused log_records /s。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+          "interval": "1m",
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (job, processor) (rate(otelcol_processor_memory_limiter_refused_log_records_total{job=~\"${collector:regex}\"}[$__rate_interval]))",
+              "legendFormat": "{{job}} / {{processor}}",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "ops",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 121,
+            "w": 24,
+            "h": 8
+          },
+          "id": 31
+        }
+      ],
+      "id": 28
+    },
+    {
+      "title": "Cluster Agent Logs",
       "type": "logs",
-      "description": "同じ選択期間のログ。最大100行。",
+      "description": "clusteragentのログ。Collectorメトリクスの選択とは独立したログソース。",
       "datasource": {
         "type": "loki",
         "uid": "loki"
@@ -1855,7 +1891,7 @@
       ],
       "gridPos": {
         "x": 0,
-        "y": 89,
+        "y": 113,
         "w": 24,
         "h": 10
       },
@@ -1866,22 +1902,8 @@
         "sortOrder": "Descending",
         "enableLogDetails": true
       },
-      "id": 31
-    },
-    {
-      "title": "Telemetry Coverage",
-      "type": "text",
-      "gridPos": {
-        "x": 0,
-        "y": 99,
-        "w": 24,
-        "h": 5
-      },
-      "options": {
-        "mode": "markdown",
-        "content": "Prometheusで取得できないため省略したMackerel指標: Dropped Spans Rate (otelcol_processor_dropped_spans), Dropped Metric Points Rate (otelcol_processor_dropped_metric_points), Dropped Log Records Rate (otelcol_processor_dropped_log_records)。\n\nイベント指標は未発生時に系列がなく、No dataとなる場合があります。"
-      },
       "id": 32
     }
-  ]
+  ],
+  "version": 1
 }

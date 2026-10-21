@@ -1,6 +1,6 @@
 {
   "title": "APC RS 550VA",
-  "description": "APC RS 550VA — Mackerel dashboardをもとに、Prometheus/Lokiの実データへ適応。",
+  "description": "UPSの状態・残時間・負荷と充電率を先頭に、バッテリーと電圧の推移をまとめた統合ダッシュボード。",
   "uid": "materia-apc-rs-550va",
   "schemaVersion": 39,
   "timezone": "browser",
@@ -38,18 +38,19 @@
   ],
   "panels": [
     {
-      "title": "Battery Time Left",
+      "title": "UPS Status",
       "type": "stat",
-      "description": "Battery Time Left。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "UPSが報告したstatusラベル。ONLINE / ONBATTなどの実際の状態を表示。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "avg(apcupsd_battery_time_left_seconds{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"}/60)",
-          "legendFormat": "__auto",
+          "expr": "apcupsd_info{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"}",
+          "legendFormat": "{{status}}",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -57,7 +58,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "m",
+          "unit": "short",
           "color": {
             "mode": "palette-classic"
           },
@@ -75,8 +76,7 @@
                 "value": null
               }
             ]
-          },
-          "decimals": 1
+          }
         },
         "overrides": []
       },
@@ -88,32 +88,32 @@
           "fields": "",
           "values": false
         },
-        "graphMode": "area",
         "colorMode": "value",
-        "textMode": "auto",
+        "graphMode": "area",
+        "textMode": "name",
         "wideLayout": true
       },
       "gridPos": {
         "x": 0,
         "y": 0,
         "w": 6,
-        "h": 4
+        "h": 5
       },
-      "id": 1,
-      "interval": "1m"
+      "id": 1
     },
     {
-      "title": "Load",
+      "title": "Battery Runtime",
       "type": "stat",
-      "description": "Load。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Battery Runtime。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "avg(apcupsd_ups_load_percent{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
+          "expr": "avg(apcupsd_battery_time_left_seconds{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
           "legendFormat": "__auto",
           "range": true,
           "instant": false,
@@ -122,7 +122,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
+          "unit": "s",
           "color": {
             "mode": "palette-classic"
           },
@@ -140,10 +140,7 @@
                 "value": null
               }
             ]
-          },
-          "decimals": 0,
-          "min": 0,
-          "max": 100
+          }
         },
         "overrides": []
       },
@@ -155,8 +152,8 @@
           "fields": "",
           "values": false
         },
-        "graphMode": "area",
         "colorMode": "value",
+        "graphMode": "area",
         "textMode": "auto",
         "wideLayout": true
       },
@@ -164,120 +161,61 @@
         "x": 6,
         "y": 0,
         "w": 6,
-        "h": 4
+        "h": 5
       },
-      "id": 2,
-      "interval": "1m"
+      "id": 2
     },
     {
-      "title": "Line Voltage",
-      "type": "stat",
-      "description": "Line Voltage。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "avg(apcupsd_line_volts{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
-          "legendFormat": "__auto",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
+          "max": 100,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
-          "decimals": 0
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "graphMode": "area",
-        "colorMode": "value",
-        "textMode": "auto",
-        "wideLayout": true
+          "unit": "percent"
+        }
       },
       "gridPos": {
         "x": 12,
         "y": 0,
         "w": 6,
-        "h": 4
+        "h": 5
       },
       "id": 3,
-      "interval": "1m"
-    },
-    {
-      "title": "Battery Voltage",
-      "type": "stat",
-      "description": "Battery Voltage。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "avg(apcupsd_battery_volts{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
-          "legendFormat": "__auto",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "decimals": 1
-        },
-        "overrides": []
-      },
       "options": {
+        "barShape": "flat",
+        "barWidthFactor": 0.5,
+        "effects": {
+          "barGlow": false,
+          "centerGlow": false,
+          "gradient": false
+        },
+        "endpointMarker": "point",
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -285,19 +223,132 @@
           "fields": "",
           "values": false
         },
-        "graphMode": "area",
-        "colorMode": "value",
-        "textMode": "auto",
-        "wideLayout": true
+        "segmentCount": 1,
+        "segmentSpacing": 0.3,
+        "shape": "gauge",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "sparkline": false,
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "editorMode": "code",
+          "expr": "avg(apcupsd_ups_load_percent{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
+          "interval": "",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Load",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 20
+              },
+              {
+                "color": "green",
+                "value": 40
+              }
+            ]
+          },
+          "unit": "percent"
+        }
       },
       "gridPos": {
         "x": 18,
         "y": 0,
         "w": 6,
-        "h": 4
+        "h": 5
       },
       "id": 4,
-      "interval": "1m"
+      "options": {
+        "barShape": "flat",
+        "barWidthFactor": 0.5,
+        "effects": {
+          "barGlow": false,
+          "centerGlow": false,
+          "gradient": false
+        },
+        "endpointMarker": "point",
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "segmentCount": 1,
+        "segmentSpacing": 0.3,
+        "shape": "gauge",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "sparkline": false,
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "editorMode": "code",
+          "expr": "avg(apcupsd_battery_charge_percent{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
+          "interval": "",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Battery Charge",
+      "type": "gauge"
+    },
+    {
+      "type": "row",
+      "title": "Battery & Power History",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 1
+      },
+      "id": 5
     },
     {
       "title": "Battery Charge",
@@ -357,11 +408,11 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 4,
+        "y": 6,
         "w": 12,
         "h": 8
       },
-      "id": 5,
+      "id": 6,
       "interval": "1m"
     },
     {
@@ -422,11 +473,11 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 4,
+        "y": 6,
         "w": 12,
         "h": 8
       },
-      "id": 6,
+      "id": 7,
       "interval": "1m"
     },
     {
@@ -487,11 +538,11 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 12,
+        "y": 14,
         "w": 12,
         "h": 8
       },
-      "id": 7,
+      "id": 8,
       "interval": "1m"
     },
     {
@@ -552,71 +603,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 12,
-        "w": 12,
-        "h": 8
-      },
-      "id": 8,
-      "interval": "1m"
-    },
-    {
-      "title": "UPS Status",
-      "type": "stat",
-      "description": "UPS Status。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "bdy6m43uy9ybkd"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "apcupsd_info",
-          "legendFormat": "{{status}}",
-          "range": true,
-          "instant": false,
-          "interval": "1m"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 1,
-            "fillOpacity": 10,
-            "spanNulls": false
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "graphMode": "area",
-        "colorMode": "value",
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 20,
+        "y": 14,
         "w": 12,
         "h": 8
       },
@@ -680,13 +667,215 @@
         }
       },
       "gridPos": {
-        "x": 12,
-        "y": 20,
-        "w": 12,
+        "x": 0,
+        "y": 22,
+        "w": 24,
         "h": 8
       },
       "id": 10,
       "interval": "1m"
+    },
+    {
+      "type": "row",
+      "title": "Electrical Readings",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 30,
+        "w": 24,
+        "h": 1
+      },
+      "id": 11
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 120,
+          "min": 80,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 96
+              },
+              {
+                "color": "green",
+                "value": 98
+              },
+              {
+                "color": "yellow",
+                "value": 102
+              },
+              {
+                "color": "red",
+                "value": 104
+              }
+            ]
+          },
+          "unit": "volt"
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 31,
+        "w": 12,
+        "h": 5
+      },
+      "id": 12,
+      "options": {
+        "barShape": "flat",
+        "barWidthFactor": 0.5,
+        "effects": {
+          "barGlow": false,
+          "centerGlow": false,
+          "gradient": false
+        },
+        "endpointMarker": "point",
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "segmentCount": 1,
+        "segmentSpacing": 0.3,
+        "shape": "gauge",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "sparkline": false,
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "editorMode": "code",
+          "expr": "avg(apcupsd_line_volts{ups=\"BR550S\"})",
+          "interval": "",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Line Voltage",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 20,
+          "min": 4,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 8
+              },
+              {
+                "color": "green",
+                "value": 10
+              },
+              {
+                "color": "#EAB839",
+                "value": 14
+              },
+              {
+                "color": "red",
+                "value": 16
+              }
+            ]
+          },
+          "unit": "volt"
+        }
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 31,
+        "w": 12,
+        "h": 5
+      },
+      "id": 13,
+      "options": {
+        "barShape": "flat",
+        "barWidthFactor": 0.5,
+        "effects": {
+          "barGlow": false,
+          "centerGlow": false,
+          "gradient": false
+        },
+        "endpointMarker": "point",
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "segmentCount": 1,
+        "segmentSpacing": 0.3,
+        "shape": "gauge",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "sparkline": false,
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "editorMode": "code",
+          "expr": "avg(apcupsd_battery_volts{ups=\"BR550S\"})",
+          "interval": "",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Battery Voltage",
+      "type": "gauge"
     }
-  ]
+  ],
+  "version": 1
 }
