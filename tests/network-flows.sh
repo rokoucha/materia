@@ -20,8 +20,12 @@ root, target = map(Path, sys.argv[1:])
 s = (root / 'applications/network-flows/config/sfacctd.conf').read_text()
 s = s.replace('sql_refresh_time: 60', 'sql_refresh_time: 2') + '\nsql_passwd: disposable-test\n'
 (target / 'sfacctd.conf').write_text(s)
+import re
+image = re.search(r'image: (pmacct/sfacctd:[^\s]+)', (root / 'applications/network-flows/resources/deployment.yaml').read_text()).group(1)
+(target / 'image').write_text(image)
 (target / 'maps/networks.lst').write_text('13335,1.1.1.0/24\n13335,2606:4700::/32\n')
 PY
+collector_image="$(cat "$config/image")"
 docker network create "$name" >/dev/null
 docker run -d --name "$name-db" --network "$name" --network-alias postgresql-rw \
   -e POSTGRES_PASSWORD=disposable-test -e POSTGRES_DB=flows -e POSTGRES_USER=flows postgres:18.1 >/dev/null
@@ -35,7 +39,7 @@ docker exec -i "$name-db" psql -U flows -d flows -v ON_ERROR_STOP=1 \
   < "$root/applications/network-flows/config/schema.sql" >/dev/null
 docker run -d --name "$name-collector" --network "$name" --network-alias collector \
   --user 10001:10001 --cap-drop ALL --security-opt=no-new-privileges \
-  -v "$config:/etc/pmacct:ro" -v "$config/maps:/maps" pmacct/sfacctd:v1.8.0 >/dev/null
+  -v "$config:/etc/pmacct:ro" -v "$config/maps:/maps" "$collector_image" >/dev/null
 for _ in {1..30}; do
   if docker logs "$name-collector" 2>&1 | grep -q 'waiting for sFlow'; then break; fi
   sleep 1
