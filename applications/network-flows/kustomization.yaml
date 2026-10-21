@@ -4,7 +4,7 @@ namespace: network-flows
 resources:
   - resources/postgresql.yaml
   - resources/reader-secret.yaml
-  - resources/deployment.yaml
+  - resources/daemonset.yaml
   - resources/service.yaml
   - resources/network-policy.yaml
   - resources/retention.yaml
