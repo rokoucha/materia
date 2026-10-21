@@ -136,7 +136,12 @@ spec:
     ingress: false
     egress: false
   ingress:
-    - fromEntities: [host, remote-node]
+    # Tunnel forwarding retains world identity after SNAT to CiliumInternalIP.
+    # Keep these /32s aligned with CiliumNode addresses when rebuilding nodes.
+    - fromCIDR:
+        - 10.244.2.81/32
+        - 10.244.1.182/32
+        - 10.244.0.181/32
       toPorts:
         - ports:
             - port: "6343"
