@@ -1,0 +1,28 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgresql
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.1-minimal-trixie
+  instances: 1
+  enablePDB: false
+  bootstrap:
+    initdb:
+      database: flows
+      owner: flows
+  managed:
+    roles:
+      - name: flow_reader
+        ensure: present
+        login: true
+        passwordSecret:
+          name: flow-reader
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+  storage:
+    storageClass: beryllium-iscsi
+    size: 10Gi

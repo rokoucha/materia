@@ -12,6 +12,7 @@ resources:
   - ./mastodon.yaml
   - ./miniflux.yaml
   - ./mirakurun.yaml
+  - ./network-flows.yaml
   - ./nginx.yaml
   - ./otel-external.yaml
   - ./prometheus.yaml

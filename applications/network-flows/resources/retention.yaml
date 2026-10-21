@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: retention
+spec:
+  schedule: '17 * * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 300
+      template:
+        metadata:
+          labels:
+            app: retention
+        spec:
+          automountServiceAccountToken: false
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: prune
+              image: ghcr.io/cloudnative-pg/postgresql:18.1-minimal-trixie
+              command: [psql, -v, ON_ERROR_STOP=1, -c]
+              args:
+                - |
+                  DELETE FROM upload WHERE stamp_inserted < (now() AT TIME ZONE 'UTC') - interval '7 days';
+                  DELETE FROM download WHERE stamp_inserted < (now() AT TIME ZONE 'UTC') - interval '7 days';
+              env:
+                - name: PGHOST
+                  value: postgresql-rw
+                - name: PGDATABASE
+                  value: flows
+                - name: PGUSER
+                  value: flows
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgresql-app
+                      key: password
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: [ALL]
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 128Mi

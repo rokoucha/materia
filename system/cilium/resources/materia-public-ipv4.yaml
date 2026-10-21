@@ -11,6 +11,7 @@ spec:
   blocks:
     - cidr: 172.16.3.10/32
     - cidr: 172.16.3.11/32
+    - cidr: 172.16.3.12/32
   serviceSelector:
     matchLabels:
       chlorinate.rokoucha.com/lb: public

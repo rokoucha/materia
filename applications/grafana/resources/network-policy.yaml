@@ -45,6 +45,9 @@ spec:
               protocol: UDP
             - port: "53"
               protocol: TCP
+          rules:
+            dns:
+              - matchPattern: '*'
     - toEndpoints:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: loki
@@ -89,4 +92,20 @@ spec:
       toPorts:
         - ports:
             - port: "8443"
+              protocol: TCP
+
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: network-flows
+            k8s:cnpg.io/cluster: postgresql
+      toPorts:
+        - ports:
+            - port: "5432"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: grafana.com
+        - matchName: storage.googleapis.com
+      toPorts:
+        - ports:
+            - port: "443"
               protocol: TCP

@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: network-flows
+resources:
+  - resources/postgresql.yaml
+  - resources/reader-secret.yaml
+  - resources/deployment.yaml
+  - resources/service.yaml
+  - resources/network-policy.yaml
+  - resources/retention.yaml
+configMapGenerator:
+  - name: collector-config
+    files:
+      - config/sfacctd.conf
+      - config/direction.map
+      - config/update-asn.py
+  - name: schema
+    files:
+      - config/schema.sql
