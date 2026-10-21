@@ -2099,7 +2099,7 @@
       "type": "piechart"
     }
   ],
-  "refresh": "5s",
+  "refresh": "1m",
   "schemaVersion": 42,
   "tags": [
     "dns",
@@ -2137,7 +2137,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {

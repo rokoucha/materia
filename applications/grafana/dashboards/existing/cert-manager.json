@@ -502,7 +502,7 @@
       "valueName": "avg"
     }
   ],
-  "refresh": "",
+  "refresh": "1m",
   "schemaVersion": 42,
   "tags": [
     "k8s"

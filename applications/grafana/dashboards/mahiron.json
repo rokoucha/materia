@@ -11,7 +11,7 @@
     "mahiron"
   ],
   "time": {
-    "from": "now-6h",
+    "from": "now-24h",
     "to": "now"
   },
   "refresh": "1m",

@@ -12,7 +12,7 @@ JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正として
 
 新しいダッシュボードを追加する場合は、`kustomization.yaml`のConfigMapファイル一覧と、必要に応じて`values.yaml`のprovider・mountも更新する。ConfigMapはサービス単位にまとめ、1 MiB上限を超えないようにする。大きいConfigMapのapply annotation上限を避けるため、生成ConfigMapにはServerSideApplyを指定する。
 
-移植分のPrometheus UID: `bdy6m43uy9ybkd`、Loki UID: `loki`。1分更新・初期表示6時間。別環境へ移す場合はUIDを変更する。
+移植分のPrometheus UID: `bdy6m43uy9ybkd`、Loki UID: `loki`。全15画面で1分更新・初期表示24時間。別環境へ移す場合はUIDを変更する。
 
 ## Mackerelからの移植分
 
