@@ -66,21 +66,22 @@ class DatabaseTests(unittest.TestCase):
             self.assertEqual(rows[0][:2], ('laptop', 'Cloudflare'))
             dashboard = json.loads(Path('/dashboard/network-flows.json').read_text())
             panels = dashboard['panels'] + [p for row in dashboard['panels'] for p in row.get('panels', [])]
-            for selected_device in ('all', '02:00:00:00:00:01', '02:00:00:00:00:ff'):
-                for panel in panels:
-                    for target in panel.get('targets', []):
-                        if 'rawSql' not in target:
-                            continue
-                        sql = target['rawSql']
-                        sql = re.sub(r"\$__timeFilter\(([^)]+)\)", r"\1 > now() - interval '1 day'", sql)
-                        sql = re.sub(r"\$__timeGroupAlias\(time,'5m',0\)", 'to_timestamp(floor(extract(epoch from time)/300)*300) AS "time"', sql)
-                        for key, value in [('direction', 'download'), ('top', '10'), ('device', selected_device)]:
-                            sql = sql.replace('${' + key + ':sqlstring}', "'" + value + "'")
-                        with self.subTest(panel=panel['title'], device=selected_device):
-                            result = db.execute(sql).fetchall()
-                            if panel['id']==3:
-                                expected = 0 if selected_device.endswith(':ff') else 200000
-                                self.assertEqual(sum(row[3] for row in result), expected)
+            for selected_network in ('all', 'home', 'server'):
+                for selected_device in ('all', '02:00:00:00:00:01', '02:00:00:00:00:ff'):
+                    for panel in panels:
+                        for target in panel.get('targets', []):
+                            if 'rawSql' not in target:
+                                continue
+                            sql = target['rawSql']
+                            sql = re.sub(r"\$__timeFilter\(([^)]+)\)", r"\1 > now() - interval '1 day'", sql)
+                            sql = re.sub(r"\$__timeGroupAlias\(time,'5m',0\)", 'to_timestamp(floor(extract(epoch from time)/300)*300) AS "time"', sql)
+                            for key, value in [('direction', 'download'), ('top', '10'), ('device', selected_device), ('network', selected_network)]:
+                                sql = sql.replace('${' + key + ':sqlstring}', "'" + value + "'")
+                            with self.subTest(panel=panel['title'], device=selected_device, network=selected_network):
+                                result = db.execute(sql).fetchall()
+                                if panel['id']==3:
+                                    expected = 0 if selected_device.endswith(':ff') or selected_network == 'server' else 200000
+                                    self.assertEqual(sum(row[3] for row in result), expected)
             self.assertEqual(db.execute('SELECT count(*) FROM traffic WHERE remote_ip IS NOT NULL').fetchone()[0], 5)
             db.execute("UPDATE device_names SET updated_at=now()-interval '2 days'")
             self.assertEqual(db.execute('SELECT bool_and(label=mac::text) FROM device_labels').fetchone()[0], True)

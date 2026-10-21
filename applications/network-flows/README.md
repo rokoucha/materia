@@ -1,7 +1,11 @@
-# Home network flows
+# Network flows
 
-chlorine samples VLAN 10 in both directions at 1:100 with Host sFlow. Only the
-LAN interface is sampled; MAP-E, WARP and WAN encapsulation are not counted again.
+chlorine samples the LAN trunk once in both directions at 1:100 with Host sFlow.
+802.1Q VLAN IDs distinguish management (untagged), home (10), server (20) and
+materia (30). VLAN 200 (ISP) and other VLANs are excluded from the traffic view.
+Do not also sample the VLAN devices: that would count the same frames twice.
+WAN, MAP-E and WARP interfaces are not sampled. Only traffic crossing chlorine
+is visible; traffic switched directly between devices is not observed.
 UDP/6343 goes to the internal-only IPv4 LB `172.16.3.12`; NodePorts are disabled
 and the Service source range allows only chlorine (`172.16.3.1`). L2 announcements
 use `externalTrafficPolicy: Local` with one collector on every eligible L2
@@ -21,10 +25,10 @@ maps are downloaded at startup and atomically refreshed daily (the previous map
 survives a failed refresh). ASN values are resolved at ingestion; a separate small enrichment worker refreshes
 IPtoASN organization names daily. Restarting a Pod requires a successful initial ASN download.
 
-Grafana's `Traffic / Home network` dashboard groups devices by MAC, so IPv6
+Grafana's `Traffic / Network` dashboard groups devices by MAC, so IPv6
 privacy addresses do not create separate device nodes. The address table retains
 IP detail. Device labels use chlorine's active DHCP hostname via MAC-specific
-`home.arpa` DNS aliases, refreshed every minute. This also names IPv6 privacy
+`home.arpa` DNS aliases, refreshed every minute. Management and server DHCP leases use the same aliases; materia devices without DHCP names fall back to MACs. This also names IPv6 privacy
 addresses without joining historical IPv4 leases. Devices that omit their DHCP
 hostname fall back to their MAC; randomized MACs remain separate devices. Duplicate
 hostnames include the MAC to distinguish them. AS labels use organization names,
@@ -84,8 +88,20 @@ AS time series](https://github.com/akvorado/akvorado/blob/main/console/data/docs
 and [ntopng's top talkers and host drilldown](https://www.ntop.org/guides/ntopng/user_interface/network_interface/dashboard/dashboard.html).
 It uses Grafana's built-in panels plus the existing NetSage Sankey plugin.
 
-The same dashboard includes Chlorine Router health and measured VLAN-10 bandwidth,
-plus Ping Pong latency and expandable diagnostics. Device and Direction apply to
+The same dashboard includes Chlorine Router health and measured LAN VLAN bandwidth,
+plus Ping Pong latency and expandable diagnostics. Network, Device and Direction apply to
 flow panels only; router/probe panels always cover the whole network. Shared time
 range and crosshair support comparison without equating interface totals with
 sampled external-flow counters.
+
+## Network selection and rollout
+
+Network filters all flow panels and the Device list. All networks is the default.
+Historical rows retain network `home` through a default VLAN 10 column migration.
+Stop chlorine’s hsflowd during the cutover, deploy the collector/schema and dashboard,
+then activate chlorine’s trunk configuration and restart hsflowd. This avoids
+classifying untagged samples from the old home-VLAN capture as management traffic. Keep the
+stable dashboard UID so existing links continue to work. Interface bandwidth sums
+VLANs 10/20/30; management cannot be isolated from ISP/VLAN traffic with the parent
+interface counter and is omitted from that measured total. Router and probe panels
+remain global. Verify VLAN attribution and ISP exclusion after exporter rollout.

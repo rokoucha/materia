@@ -14,6 +14,16 @@ CREATE TABLE IF NOT EXISTS download (
   stamp_inserted timestamp without time zone NOT NULL,
   stamp_updated timestamp without time zone
 );
+-- Existing rows were collected exclusively on VLAN 10.
+ALTER TABLE upload ADD COLUMN IF NOT EXISTS vlan integer NOT NULL DEFAULT 10;
+ALTER TABLE download ADD COLUMN IF NOT EXISTS vlan integer NOT NULL DEFAULT 10;
+
+CREATE OR REPLACE FUNCTION flow_network(vlan integer)
+RETURNS text LANGUAGE sql IMMUTABLE STRICT PARALLEL SAFE AS $$
+  SELECT CASE vlan WHEN 0 THEN 'management' WHEN 10 THEN 'home'
+                   WHEN 20 THEN 'server' WHEN 30 THEN 'materia' END
+$$;
+
 CREATE INDEX IF NOT EXISTS upload_time ON upload (stamp_inserted);
 CREATE INDEX IF NOT EXISTS download_time ON download (stamp_inserted);
 
@@ -32,12 +42,12 @@ $$;
 CREATE OR REPLACE VIEW traffic AS
 SELECT stamp_inserted AT TIME ZONE 'UTC' AS time,
        'upload'::text AS direction, mac_src AS device_mac, ip_src AS device_ip,
-       as_dst AS remote_as, port_dst AS service_port, ip_proto, packets, bytes, ip_dst AS remote_ip
-FROM upload WHERE is_external(ip_dst, ip_src)
+       as_dst AS remote_as, port_dst AS service_port, ip_proto, packets, bytes, ip_dst AS remote_ip, flow_network(vlan) AS network
+FROM upload WHERE flow_network(vlan) IS NOT NULL AND is_external(ip_dst, ip_src)
 UNION ALL
 SELECT stamp_inserted AT TIME ZONE 'UTC', 'download', mac_dst, ip_dst,
-       as_src, port_src, ip_proto, packets, bytes, ip_src
-FROM download WHERE is_external(ip_src, ip_dst);
+       as_src, port_src, ip_proto, packets, bytes, ip_src, flow_network(vlan)
+FROM download WHERE flow_network(vlan) IS NOT NULL AND is_external(ip_src, ip_dst);
 
 CREATE TABLE IF NOT EXISTS as_names (
   asn bigint PRIMARY KEY, name text NOT NULL, updated_at timestamptz NOT NULL DEFAULT now()
