@@ -35,10 +35,6 @@ def sample(sequence, source, destination, upload=True, routed=True):
 
 def main():
     target = sys.argv[1]
-    if "--empty" in sys.argv:
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-            sock.sendto(words(5, 1) + socket.inet_aton("172.16.1.1") + words(0, 100, 1000, 0), (target, 6343))
-        return
     cases = [
         ("172.16.1.100", "1.1.1.1", True, True),
         ("1.1.1.1", "172.16.1.100", False, True),
@@ -49,6 +45,8 @@ def main():
         ("172.16.1.100", "1.1.1.1", True, False),
         ("240b:10:abcd:1201::100", "2606:4700:4700::1111", True, True),
     ]
+    if "--wake" in sys.argv:
+        cases = [("172.16.1.200", "8.8.8.8", True, True), ("8.8.8.8", "172.16.1.200", False, True)]
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         for sequence, case in enumerate(cases, 1):
             sock.sendto(sample(sequence, *case), (target, 6343))

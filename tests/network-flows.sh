@@ -76,7 +76,7 @@ printf '64512,1.1.1.0/24\n64512,2606:4700::/32\n' > "$config/maps/networks.lst"
 loaded="$(docker logs "$name-collector" 2>&1 | grep -Fc '[/maps/networks.lst] map successfully')"
 docker kill --signal USR2 "$name-collector" >/dev/null
 docker run --rm --network "$name" -v "$root/tests/network_flows_packets.py:/packets.py:ro" \
-  python:3.14.0-slim-bookworm python /packets.py collector --empty
+  python:3.14.0-slim-bookworm python /packets.py collector --wake
 for _ in {1..30}; do
   reloaded="$(docker logs "$name-collector" 2>&1 | grep -Fc '[/maps/networks.lst] map successfully')"
   if (( reloaded >= loaded + 3 )); then break; fi
