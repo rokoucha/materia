@@ -4,11 +4,15 @@ chlorine samples VLAN 10 in both directions at 1:100 with Host sFlow. Only the
 LAN interface is sampled; MAP-E, WARP and WAN encapsulation are not counted again.
 UDP/6343 goes to the internal-only IPv4 LB `172.16.3.12`; NodePorts are disabled
 and the Service source range allows only chlorine (`172.16.3.1`). L2 announcements
-use `externalTrafficPolicy: Cluster`. Across VXLAN, forwarded traffic has the
-node's `CiliumInternalIP` as its source and world identity. The Pod policy permits
-only the three current node /32s on UDP/6343; update them if rebuilding a node
-reallocates its CiliumInternalIP. The LB source range still checks chlorine before
-SNAT. No broad Pod CIDR or world ingress is allowed.
+use `externalTrafficPolicy: Local` with one collector on every eligible L2
+announcement node (the control-plane nodes). This keeps chlorine's source IP
+through to the Pod and needs no node/world ingress exception. Keep the DaemonSet
+node selector aligned with the L2 announcement policy when adding nodes. L2
+announcements do not track local endpoint readiness: a receiver restart on the
+announcing node can briefly lose UDP samples. Each receiver uses about 460MiB
+with the full ASN map; three nodes use about 1.4GiB in total. A datagram is sent to
+one announcing node, not copied to all receivers. Schema setup uses a database
+advisory lock to serialize receiver startup.
 
 `sfacctd` identifies upload/download using chlorine's LAN MAC
 `00:e0:b4:6c:80:87`. Replace the direction map if the router NIC changes. It stores

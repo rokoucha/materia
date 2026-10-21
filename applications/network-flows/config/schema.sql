@@ -1,3 +1,5 @@
+SELECT pg_advisory_lock(6343);
+
 CREATE TABLE IF NOT EXISTS upload (
   mac_src macaddr NOT NULL, ip_src inet NOT NULL, ip_dst inet NOT NULL,
   as_dst bigint NOT NULL, port_dst integer NOT NULL, ip_proto smallint NOT NULL,
@@ -40,3 +42,5 @@ FROM download WHERE is_external(ip_src, ip_dst);
 GRANT CONNECT ON DATABASE flows TO flow_reader;
 GRANT USAGE ON SCHEMA public TO flow_reader;
 GRANT SELECT ON traffic TO flow_reader;
+
+SELECT pg_advisory_unlock(6343);

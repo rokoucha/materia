@@ -25,7 +25,7 @@ s = (root / 'applications/network-flows/config/sfacctd.conf').read_text()
 s = s.replace('sql_refresh_time: 60', 'sql_refresh_time: 2') + '\nsql_passwd: disposable-test\n'
 (target / 'sfacctd.conf').write_text(s)
 import re
-image = re.search(r'image: (pmacct/sfacctd:[^\s]+)', (root / 'applications/network-flows/resources/deployment.yaml').read_text()).group(1)
+image = re.search(r'image: (pmacct/sfacctd:[^\s]+)', (root / 'applications/network-flows/resources/daemonset.yaml').read_text()).group(1)
 (target / 'image').write_text(image)
 (target / 'maps/networks.lst').write_text('13335,1.1.1.0/24\n13335,2606:4700::/32\n')
 PY
