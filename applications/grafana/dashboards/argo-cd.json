@@ -173,7 +173,7 @@
         "defaults": {
           "unit": "short",
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
           "custom": {
             "drawStyle": "line",
@@ -187,6 +187,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 1e-06
               }
             ]
           },
@@ -238,7 +242,7 @@
         "defaults": {
           "unit": "short",
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
           "custom": {
             "drawStyle": "line",
@@ -252,6 +256,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 1e-06
               }
             ]
           },
@@ -492,7 +500,7 @@
     {
       "title": "Orphaned Resources",
       "type": "timeseries",
-      "description": "Orphaned Resources。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "孤立リソース数の上位10 Application。Project/Application選択とは独立した全体の診断。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -500,7 +508,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(argocd_app_orphaned_resources_count) by (name)",
+          "expr": "topk(10, sum by (name) (argocd_app_orphaned_resources_count))",
           "legendFormat": "{{name}}",
           "range": true,
           "instant": false,
@@ -1255,7 +1263,7 @@
         {
           "refId": "A",
           "expr": "sum(increase(argocd_notifications_trigger_eval_total[1h])) by (trigger)",
-          "legendFormat": "{{trigger}} / 1h",
+          "legendFormat": "evaluations / 1h",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -1394,6 +1402,14 @@
               "health_status": "Health",
               "sync_status": "Sync",
               "autosync_enabled": "Auto sync"
+            },
+            "indexByName": {
+              "name": 0,
+              "project": 1,
+              "dest_namespace": 2,
+              "health_status": 3,
+              "sync_status": 4,
+              "autosync_enabled": 5
             }
           }
         }
@@ -1441,7 +1457,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
+          "unit": "short",
           "color": {
             "mode": "palette-classic"
           },
@@ -1513,7 +1529,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
+          "unit": "short",
           "color": {
             "mode": "palette-classic"
           },
@@ -1565,24 +1581,11 @@
     },
     {
       "type": "row",
-      "title": "Controller & Server Diagnostics",
-      "collapsed": false,
-      "panels": [],
-      "gridPos": {
-        "x": 0,
-        "y": 66,
-        "w": 24,
-        "h": 1
-      },
-      "id": 27
-    },
-    {
-      "type": "row",
       "title": "Component Details",
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 67,
+        "y": 66,
         "w": 24,
         "h": 1
       },
@@ -1646,11 +1649,11 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 68,
+            "y": 67,
             "w": 12,
             "h": 8
           },
-          "id": 29
+          "id": 28
         },
         {
           "title": "Pending kubectl Processes",
@@ -1711,11 +1714,11 @@
           },
           "gridPos": {
             "x": 12,
-            "y": 68,
+            "y": 67,
             "w": 12,
             "h": 8
           },
-          "id": 30
+          "id": 29
         },
         {
           "title": "Resident Memory by Component",
@@ -1776,11 +1779,11 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 76,
+            "y": 75,
             "w": 12,
             "h": 8
           },
-          "id": 31
+          "id": 30
         },
         {
           "title": "CPU by Component",
@@ -1841,11 +1844,11 @@
           },
           "gridPos": {
             "x": 12,
-            "y": 76,
+            "y": 75,
             "w": 12,
             "h": 8
           },
-          "id": 32
+          "id": 31
         },
         {
           "title": "Goroutines by Component",
@@ -1906,11 +1909,11 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 84,
+            "y": 83,
             "w": 12,
             "h": 8
           },
-          "id": 33
+          "id": 32
         },
         {
           "title": "gRPC Responses by Service & Status",
@@ -1971,11 +1974,11 @@
           },
           "gridPos": {
             "x": 12,
-            "y": 84,
+            "y": 83,
             "w": 12,
             "h": 8
           },
-          "id": 34
+          "id": 33
         },
         {
           "title": "Cluster Resource Objects",
@@ -2036,11 +2039,11 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 92,
+            "y": 91,
             "w": 12,
             "h": 8
           },
-          "id": 35
+          "id": 34
         },
         {
           "title": "Cluster API Resource Types",
@@ -2101,14 +2104,14 @@
           },
           "gridPos": {
             "x": 12,
-            "y": 92,
+            "y": 91,
             "w": 12,
             "h": 8
           },
-          "id": 36
+          "id": 35
         }
       ],
-      "id": 28
+      "id": 27
     }
   ],
   "version": 1

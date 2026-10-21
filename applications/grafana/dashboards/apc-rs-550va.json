@@ -362,7 +362,7 @@
         {
           "refId": "A",
           "expr": "avg(apcupsd_battery_charge_percent{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
-          "legendFormat": "__auto",
+          "legendFormat": "charge",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -388,7 +388,9 @@
                 "value": null
               }
             ]
-          }
+          },
+          "min": 0,
+          "max": 100
         },
         "overrides": []
       },
@@ -427,7 +429,7 @@
         {
           "refId": "A",
           "expr": "avg(apcupsd_ups_load_percent{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
-          "legendFormat": "__auto",
+          "legendFormat": "load",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -453,7 +455,9 @@
                 "value": null
               }
             ]
-          }
+          },
+          "min": 0,
+          "max": 100
         },
         "overrides": []
       },
@@ -492,7 +496,7 @@
         {
           "refId": "A",
           "expr": "avg(apcupsd_line_volts{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
-          "legendFormat": "__auto",
+          "legendFormat": "line",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -500,7 +504,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
+          "unit": "volt",
           "color": {
             "mode": "palette-classic"
           },
@@ -518,7 +522,8 @@
                 "value": null
               }
             ]
-          }
+          },
+          "decimals": 1
         },
         "overrides": []
       },
@@ -557,7 +562,7 @@
         {
           "refId": "A",
           "expr": "avg(apcupsd_battery_volts{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
-          "legendFormat": "__auto",
+          "legendFormat": "battery",
           "range": true,
           "instant": false,
           "interval": "1m"
@@ -565,7 +570,7 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
+          "unit": "volt",
           "color": {
             "mode": "palette-classic"
           },
@@ -583,7 +588,8 @@
                 "value": null
               }
             ]
-          }
+          },
+          "decimals": 1
         },
         "overrides": []
       },
@@ -622,7 +628,7 @@
         {
           "refId": "A",
           "expr": "apcupsd_battery_time_left_seconds",
-          "legendFormat": "__auto",
+          "legendFormat": "runtime",
           "range": true,
           "instant": false,
           "interval": "1m"

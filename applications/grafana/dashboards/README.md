@@ -53,7 +53,7 @@ JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正として
 ## Verification (2026-10-21)
 
 サーバーのスキーマ検証・dry-run・保存を実施。237のPromQLを実行し構文エラーなし。225クエリで現在の系列を確認し、残りは未発生イベント・エラー等の系列なし。
-画像確認は`rendering plugin not available`で失敗。IABも認証先でクラッシュしたため、ブラウザーでの目視確認は未完了。
+当初の画像確認は`rendering plugin not available`で失敗。後述の画像レンダラーを導入して再確認する。
 
 ## 統合ダッシュボード
 
@@ -69,7 +69,7 @@ JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正として
 
 Node Exporter Fullはノードの詳細診断として独立させ、Materia Clusterからリンクする。KubernetesのPod選択はkube-state-metricsへ適用する。OTelのworkload集計はNamespace選択のみ、ノード・GPUはクラスタ全体を表示する。Argo CDのProject／Application選択はアプリケーション状態を対象とし、コントローラーの診断は全体を表示する。
 
-統合版の検証（2026-10-21）: PromQL 129件を実行し構文・実行エラーなし、123件に現在の系列を確認。EnvcolのFluxもライブデータを確認。本番で統合版5つのパネル・クエリ・変数を再取得して照合済み。画像確認は画像レンダラー未導入（HTTP 500）で未完了。
+統合版の検証（2026-10-21）: PromQL 129件を実行し構文・実行エラーなし、123件に現在の系列を確認。EnvcolのFluxもライブデータを確認。本番で統合版5つのパネル・クエリ・変数を再取得して照合済み。この時点では画像レンダラー未導入（HTTP 500）により画像確認を実施できていなかった。
 
 ## 画像レンダリング
 
@@ -83,6 +83,8 @@ gcx dashboards snapshot materia-apc-rs-550va materia-argo-cd materia-environment
 ```
 
 [公式セットアップ](https://grafana.com/docs/grafana/latest/setup-grafana/image-rendering/) / [レンダラーの設定](https://grafana.com/docs/grafana/latest/setup-grafana/image-rendering/flags/)
+
+画像確認で見つかった表示を補正: UPS電圧の時間単位をVへ、ヒートマップの色凡例を件数へ修正。凡例を短縮し、表の主要列を先頭に配置。クラスタ画面は概要→Namespace/Pod→ノード容量→GPUの順とし、詳細・監査ログは折りたたむ。失敗・異常件数が正数のstatは赤で表示する。
 
 ## Home network overview
 

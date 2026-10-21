@@ -149,7 +149,7 @@
         "defaults": {
           "unit": "ops",
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
           "custom": {
             "drawStyle": "line",
@@ -163,6 +163,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 1e-06
               }
             ]
           }
@@ -213,7 +217,7 @@
         "defaults": {
           "unit": "ops",
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
           "custom": {
             "drawStyle": "line",
@@ -227,6 +231,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 1e-06
               }
             ]
           }
