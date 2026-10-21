@@ -35,9 +35,6 @@ configMapGenerator:
   - name: dashboards-authentik
     files:
       - dashboards/authentik.json
-  - name: dashboards-chlorine-router
-    literals:
-      - retired.txt=Consolidated into home-network-flows
   - name: dashboards-cilium
     files:
       - dashboards/cilium.json
@@ -56,9 +53,6 @@ configMapGenerator:
   - name: dashboards-opentelemetry-collector
     files:
       - dashboards/opentelemetry-collector.json
-  - name: dashboards-ping-pong
-    literals:
-      - retired.txt=Consolidated into home-network-flows
   - name: dashboards-sophie
     files:
       - dashboards/sophie.json
