@@ -1,0 +1,831 @@
+{
+  "title": "Authentik",
+  "description": "materia-cluster の authentik を俯瞰する運用ダッシュボード。HTTP、Outpost、バックグラウンドタスク、PostgreSQL、プロセスリソースを監視。 — Mackerel dashboardをもとに、Prometheus/Lokiの実データへ適応。",
+  "uid": "materia-authentik",
+  "schemaVersion": 39,
+  "timezone": "browser",
+  "editable": false,
+  "tags": [
+    "materia",
+    "mackerel-migration",
+    "authentik"
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "templating": {
+    "list": []
+  },
+  "links": [
+    {
+      "type": "link",
+      "title": "Mackerel original",
+      "url": "https://mackerel.io/orgs/rokoucha/dashboards/authentik",
+      "targetBlank": true
+    },
+    {
+      "type": "dashboards",
+      "title": "Related dashboards",
+      "tags": [
+        "mackerel-migration"
+      ],
+      "asDropdown": true,
+      "includeVars": false,
+      "keepTime": true
+    }
+  ],
+  "panels": [
+    {
+      "title": "Connected Outposts",
+      "type": "stat",
+      "description": "Connected Outposts。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(authentik_outposts_connected{job=\"authentik/authentik\"}) or vector(0)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 1,
+      "interval": "1m"
+    },
+    {
+      "title": "Outpost Connection",
+      "type": "stat",
+      "description": "Outpost Connection。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "min(authentik_outpost_connection{job=\"authentik/authentik\"}) or vector(0)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 2,
+      "interval": "1m"
+    },
+    {
+      "title": "Task Workers",
+      "type": "stat",
+      "description": "Task Workers。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(authentik_tasks_workers{job=\"authentik/authentik\"}) or vector(0)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 3,
+      "interval": "1m"
+    },
+    {
+      "title": "Queued Tasks",
+      "type": "stat",
+      "description": "Queued Tasks。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(authentik_tasks_queued{job=\"authentik/authentik\"}) or vector(0)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 4,
+      "interval": "1m"
+    },
+    {
+      "title": "HTTP",
+      "type": "text",
+      "options": {
+        "mode": "markdown",
+        "content": "リクエスト量、レスポンスコード、アプリケーション処理時間"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 3
+      },
+      "id": 5
+    },
+    {
+      "title": "Request Rate",
+      "type": "timeseries",
+      "description": "Request Rate。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(irate(django_http_requests_before_middlewares_total{job=\"authentik/authentik\"}[$__rate_interval]))",
+          "legendFormat": "requests/s",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 7,
+        "w": 8,
+        "h": 8
+      },
+      "id": 6,
+      "interval": "1m"
+    },
+    {
+      "title": "Response Rate by Status",
+      "type": "timeseries",
+      "description": "Response Rate by Status。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(irate(django_http_responses_by_status_total{job=\"authentik/authentik\"}[$__rate_interval])) by (status)",
+          "legendFormat": "{{status}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 7,
+        "w": 8,
+        "h": 8
+      },
+      "id": 7,
+      "interval": "1m"
+    },
+    {
+      "title": "HTTP Latency",
+      "type": "timeseries",
+      "description": "HTTP Latency。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(django_http_requests_latency_including_middlewares_seconds_bucket{job=\"authentik/authentik\"}[$__rate_interval])))",
+          "legendFormat": "p95",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 7,
+        "w": 8,
+        "h": 8
+      },
+      "id": 8,
+      "interval": "1m"
+    },
+    {
+      "title": "Embedded Outpost",
+      "type": "text",
+      "options": {
+        "mode": "markdown",
+        "content": "Forward Auth / Proxy Outpost のホスト別トラフィックとレイテンシ"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 15,
+        "w": 24,
+        "h": 3
+      },
+      "id": 9
+    },
+    {
+      "title": "Tasks and Database",
+      "type": "text",
+      "options": {
+        "mode": "markdown",
+        "content": "バックグラウンドタスクのキューと PostgreSQL クエリ"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 24,
+        "h": 3
+      },
+      "id": 10
+    },
+    {
+      "title": "Queued Tasks by Actor",
+      "type": "timeseries",
+      "description": "Queued Tasks by Actor。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(authentik_tasks_queued{job=\"authentik/authentik\"}) by (actor_name)",
+          "legendFormat": "{{actor_name}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 12,
+        "h": 8
+      },
+      "id": 11,
+      "interval": "1m"
+    },
+    {
+      "title": "Database Query Latency",
+      "type": "timeseries",
+      "description": "Database Query Latency。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(django_db_query_duration_seconds_bucket{job=\"authentik/authentik\"}[$__rate_interval])))",
+          "legendFormat": "p95",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 21,
+        "w": 12,
+        "h": 8
+      },
+      "id": 12,
+      "interval": "1m"
+    },
+    {
+      "title": "Runtime",
+      "type": "text",
+      "options": {
+        "mode": "markdown",
+        "content": "server / worker Pod のプロセスリソース"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 24,
+        "h": 3
+      },
+      "id": 13
+    },
+    {
+      "title": "Container Working Set",
+      "type": "timeseries",
+      "description": "コンテナのworking set。MackerelのプロセスRSSの代替。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(container_memory_working_set_bytes{job=\"authentik/authentik\"}) / 1024 / 1024",
+          "legendFormat": "{{k8s_deployment_name}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "mbytes",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "id": 14,
+      "interval": "1m"
+    },
+    {
+      "title": "CPU Usage",
+      "type": "timeseries",
+      "description": "コンテナCPU。100%=1コア。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(container_cpu_usage{job=\"authentik/authentik\"}) * 100",
+          "legendFormat": "{{k8s_deployment_name}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "id": 15,
+      "interval": "1m"
+    },
+    {
+      "title": "Telemetry Coverage",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 24,
+        "h": 5
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Prometheusで取得できないため省略したMackerel指標: Proxy Request Rate (authentik_outpost_proxy_request_duration_seconds_count), Proxy Latency (authentik_outpost_proxy_request_duration_seconds_bucket)。\n\nイベント指標は未発生時に系列がなく、No dataとなる場合があります。"
+      },
+      "id": 16
+    }
+  ]
+}

@@ -1,0 +1,379 @@
+{
+  "title": "Environment",
+  "description": "Environment — Mackerel dashboardをもとに、Prometheus/Lokiの実データへ適応。",
+  "uid": "materia-environment",
+  "schemaVersion": 39,
+  "timezone": "browser",
+  "editable": false,
+  "tags": [
+    "materia",
+    "mackerel-migration",
+    "environment"
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "templating": {
+    "list": []
+  },
+  "links": [
+    {
+      "type": "link",
+      "title": "Mackerel original",
+      "url": "https://mackerel.io/orgs/rokoucha/dashboards/5ghSA4eVNxb",
+      "targetBlank": true
+    },
+    {
+      "type": "dashboards",
+      "title": "Related dashboards",
+      "tags": [
+        "mackerel-migration"
+      ],
+      "asDropdown": true,
+      "includeVars": false,
+      "keepTime": true
+    }
+  ],
+  "panels": [
+    {
+      "title": "SwitchBot",
+      "type": "text",
+      "options": {
+        "mode": "markdown",
+        "content": "<br>"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 3
+      },
+      "id": 1
+    },
+    {
+      "title": "Battery",
+      "type": "timeseries",
+      "description": "Battery。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "switchbot_meter_battery",
+          "legendFormat": "{{deviceName}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 3,
+        "w": 6,
+        "h": 8
+      },
+      "id": 2,
+      "interval": "1m"
+    },
+    {
+      "title": "Temperature",
+      "type": "timeseries",
+      "description": "Temperature。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "switchbot_meter_temperature",
+          "legendFormat": "{{deviceName}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 3,
+        "w": 9,
+        "h": 8
+      },
+      "id": 3,
+      "interval": "1m"
+    },
+    {
+      "title": "Humidity",
+      "type": "timeseries",
+      "description": "Humidity。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "switchbot_meter_humidity",
+          "legendFormat": "{{deviceName}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 15,
+        "y": 3,
+        "w": 9,
+        "h": 8
+      },
+      "id": 4,
+      "interval": "1m"
+    },
+    {
+      "title": "Temperature — Current",
+      "type": "stat",
+      "description": "Temperature — Current。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "switchbot_meter_temperature",
+          "legendFormat": "{{deviceName}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 11,
+        "w": 12,
+        "h": 8
+      },
+      "id": 5,
+      "interval": "1m"
+    },
+    {
+      "title": "Humidity — Current",
+      "type": "stat",
+      "description": "Humidity — Current。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "switchbot_meter_humidity",
+          "legendFormat": "{{deviceName}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 11,
+        "w": 12,
+        "h": 8
+      },
+      "id": 6,
+      "interval": "1m"
+    }
+  ]
+}

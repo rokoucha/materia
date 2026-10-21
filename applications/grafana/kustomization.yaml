@@ -18,7 +18,59 @@ resources:
   - ./resources/persistent-volume-claim.yaml
   - ./resources/tls.yaml
 
+# Imported dashboards exceed the client-side apply annotation limit.
+generatorOptions:
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
+
 configMapGenerator:
+  - name: dashboards-apc-rs-550va
+    files:
+      - dashboards/apc-rs-550va.json
+  - name: dashboards-argo-cd
+    files:
+      - dashboards/argo-cd.json
+  - name: dashboards-authentik
+    files:
+      - dashboards/authentik.json
+  - name: dashboards-chlorine-router
+    files:
+      - dashboards/chlorine-router.json
+  - name: dashboards-cilium
+    files:
+      - dashboards/cilium.json
+  - name: dashboards-environment
+    files:
+      - dashboards/environment.json
+  - name: dashboards-mahiron
+    files:
+      - dashboards/mahiron.json
+  - name: dashboards-materia-cluster
+    files:
+      - dashboards/materia-cluster.json
+  - name: dashboards-opentelemetry-collector
+    files:
+      - dashboards/opentelemetry-collector.json
+  - name: dashboards-ping-pong
+    files:
+      - dashboards/ping-pong.json
+  - name: dashboards-sophie
+    files:
+      - dashboards/sophie.json
+  - name: dashboards-existing
+    files:
+      - dashboards/existing/apc-rs-550va.json
+      - dashboards/existing/argocd.json
+      - dashboards/existing/cert-manager.json
+      - dashboards/existing/coredns.json
+      - dashboards/existing/environment.json
+      - dashboards/existing/k8s-dashboard.json
+      - dashboards/existing/opentelemetry-collector.json
+      - dashboards/existing/redis-argo-cd.json
+      - dashboards/existing/redis-mastodon.json
+  - name: dashboards-existing-node
+    files:
+      - dashboards/existing/node-exporter-full.json
   - name: network-flows-dashboard
     files:
       - dashboards/network-flows.json
