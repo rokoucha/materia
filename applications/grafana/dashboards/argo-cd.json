@@ -1,6 +1,6 @@
 {
   "title": "Argo CD",
-  "description": "materia-cluster の Argo CD を俯瞰する運用ダッシュボード。同期・ヘルス状態、reconcile、sync、Kubernetes API、Git、Redis、通知、クラスタ接続を監視。 — Mackerel dashboardをもとに、Prometheus/Lokiの実データへ適応。",
+  "description": "アプリケーションの健全性・同期、コントローラーと依存先の指標、ヒートマップとコンポーネント診断を統合。",
   "uid": "materia-argo-cd",
   "schemaVersion": 39,
   "timezone": "browser",
@@ -16,7 +16,56 @@
   },
   "refresh": "1m",
   "templating": {
-    "list": []
+    "list": [
+      {
+        "name": "project",
+        "label": "Project",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "bdy6m43uy9ybkd"
+        },
+        "query": {
+          "query": "label_values(argocd_app_info, project)",
+          "refId": "VariableQuery"
+        },
+        "definition": "label_values(argocd_app_info, project)",
+        "refresh": 1,
+        "sort": 1,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": []
+      },
+      {
+        "name": "application",
+        "label": "Application",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "bdy6m43uy9ybkd"
+        },
+        "query": {
+          "query": "label_values(argocd_app_info{project=~\"${project:regex}\"}, name)",
+          "refId": "VariableQuery"
+        },
+        "definition": "label_values(argocd_app_info{project=~\"${project:regex}\"}, name)",
+        "refresh": 1,
+        "sort": 1,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "options": []
+      }
+    ]
   },
   "links": [
     {
@@ -40,7 +89,7 @@
     {
       "title": "Applications",
       "type": "stat",
-      "description": "Applications。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "選択したProject / Applicationの状態。コントローラー・依存サービスの診断は全体を表示。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -48,7 +97,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(argocd_app_info)",
+          "expr": "sum(argocd_app_info{project=~\"${project:regex}\",name=~\"${application:regex}\"})",
           "legendFormat": "__auto",
           "range": true,
           "instant": false,
@@ -105,7 +154,7 @@
     {
       "title": "Out of Sync",
       "type": "stat",
-      "description": "Out of Sync。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "選択したProject / Applicationの状態。コントローラー・依存サービスの診断は全体を表示。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -113,7 +162,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(argocd_app_info{sync_status!=\"Synced\"}) or vector(0)",
+          "expr": "sum(argocd_app_info{sync_status!=\"Synced\",project=~\"${project:regex}\",name=~\"${application:regex}\"}) or vector(0)",
           "legendFormat": "__auto",
           "range": true,
           "instant": false,
@@ -170,7 +219,7 @@
     {
       "title": "Unhealthy",
       "type": "stat",
-      "description": "Unhealthy。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "選択したProject / Applicationの状態。コントローラー・依存サービスの診断は全体を表示。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -178,7 +227,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(argocd_app_info{health_status!=\"Healthy\"}) or vector(0)",
+          "expr": "sum(argocd_app_info{health_status!=\"Healthy\",project=~\"${project:regex}\",name=~\"${application:regex}\"}) or vector(0)",
           "legendFormat": "__auto",
           "range": true,
           "instant": false,
@@ -235,7 +284,7 @@
     {
       "title": "Auto Sync Enabled",
       "type": "stat",
-      "description": "Auto Sync Enabled。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "description": "選択したProject / Applicationの状態。コントローラー・依存サービスの診断は全体を表示。",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
@@ -243,7 +292,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(argocd_app_info{autosync_enabled=\"true\"})",
+          "expr": "sum(argocd_app_info{autosync_enabled=\"true\",project=~\"${project:regex}\",name=~\"${application:regex}\"})",
           "legendFormat": "__auto",
           "range": true,
           "instant": false,
@@ -298,17 +347,15 @@
       "interval": "1m"
     },
     {
+      "type": "row",
       "title": "Application Health",
-      "type": "text",
-      "options": {
-        "mode": "markdown",
-        "content": "Application の同期状態、ヘルス状態、孤立リソース"
-      },
+      "collapsed": false,
+      "panels": [],
       "gridPos": {
         "x": 0,
         "y": 4,
         "w": 24,
-        "h": 3
+        "h": 1
       },
       "id": 5
     },
@@ -323,7 +370,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(argocd_app_info) by (sync_status)",
+          "expr": "sum(argocd_app_info{project=~\"${project:regex}\",name=~\"${application:regex}\"}) by (sync_status)",
           "legendFormat": "{{sync_status}}",
           "range": true,
           "instant": false,
@@ -370,7 +417,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 7,
+        "y": 5,
         "w": 8,
         "h": 8
       },
@@ -388,7 +435,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum(argocd_app_info) by (health_status)",
+          "expr": "sum(argocd_app_info{project=~\"${project:regex}\",name=~\"${application:regex}\"}) by (health_status)",
           "legendFormat": "{{health_status}}",
           "range": true,
           "instant": false,
@@ -435,7 +482,7 @@
       },
       "gridPos": {
         "x": 8,
-        "y": 7,
+        "y": 5,
         "w": 8,
         "h": 8
       },
@@ -500,7 +547,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 7,
+        "y": 5,
         "w": 8,
         "h": 8
       },
@@ -508,17 +555,15 @@
       "interval": "1m"
     },
     {
+      "type": "row",
       "title": "Controller Operations",
-      "type": "text",
-      "options": {
-        "mode": "markdown",
-        "content": "Application Controller の reconcile、sync、Kubernetes API"
-      },
+      "collapsed": false,
+      "panels": [],
       "gridPos": {
         "x": 0,
-        "y": 15,
+        "y": 13,
         "w": 24,
-        "h": 3
+        "h": 1
       },
       "id": 9
     },
@@ -580,7 +625,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 18,
+        "y": 14,
         "w": 8,
         "h": 8
       },
@@ -645,7 +690,7 @@
       },
       "gridPos": {
         "x": 8,
-        "y": 18,
+        "y": 14,
         "w": 8,
         "h": 8
       },
@@ -710,7 +755,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 18,
+        "y": 14,
         "w": 8,
         "h": 8
       },
@@ -775,7 +820,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 26,
+        "y": 22,
         "w": 8,
         "h": 8
       },
@@ -853,7 +898,7 @@
       },
       "gridPos": {
         "x": 8,
-        "y": 26,
+        "y": 22,
         "w": 8,
         "h": 8
       },
@@ -918,7 +963,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 26,
+        "y": 22,
         "w": 8,
         "h": 8
       },
@@ -926,17 +971,15 @@
       "interval": "1m"
     },
     {
+      "type": "row",
       "title": "Dependencies & Delivery",
-      "type": "text",
-      "options": {
-        "mode": "markdown",
-        "content": "Repo Server、Redis、Notifications Controller"
-      },
+      "collapsed": false,
+      "panels": [],
       "gridPos": {
         "x": 0,
-        "y": 34,
+        "y": 30,
         "w": 24,
-        "h": 3
+        "h": 1
       },
       "id": 16
     },
@@ -998,7 +1041,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 37,
+        "y": 31,
         "w": 8,
         "h": 8
       },
@@ -1063,7 +1106,7 @@
       },
       "gridPos": {
         "x": 8,
-        "y": 37,
+        "y": 31,
         "w": 8,
         "h": 8
       },
@@ -1128,7 +1171,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 37,
+        "y": 31,
         "w": 8,
         "h": 8
       },
@@ -1193,7 +1236,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 45,
+        "y": 39,
         "w": 12,
         "h": 8
       },
@@ -1258,7 +1301,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 45,
+        "y": 39,
         "w": 12,
         "h": 8
       },
@@ -1266,21 +1309,134 @@
       "interval": "1m"
     },
     {
-      "title": "Slowest Reconciliations p95",
-      "type": "timeseries",
-      "description": "Slowest Reconciliations p95。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "type": "row",
+      "title": "Application Inventory",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 47,
+        "w": 24,
+        "h": 1
+      },
+      "id": 22
+    },
+    {
+      "title": "Applications — Current Status",
+      "type": "table",
       "datasource": {
         "type": "prometheus",
         "uid": "bdy6m43uy9ybkd"
       },
+      "description": "Applications — Current Status。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
       "targets": [
         {
           "refId": "A",
-          "expr": "topk(10, histogram_quantile(0.95, sum by (le, name) (rate(argocd_app_reconcile_bucket[$__rate_interval]))))",
+          "expr": "argocd_app_info{project=~\"${project:regex}\",name=~\"${application:regex}\"}",
           "legendFormat": "__auto",
+          "range": false,
+          "instant": true,
+          "interval": "1m",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "sortBy": [
+          {
+            "displayName": "Application",
+            "desc": false
+          }
+        ]
+      },
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "includeByName": {
+              "name": true,
+              "project": true,
+              "dest_namespace": true,
+              "health_status": true,
+              "sync_status": true,
+              "autosync_enabled": true
+            },
+            "renameByName": {
+              "name": "Application",
+              "project": "Project",
+              "dest_namespace": "Destination",
+              "health_status": "Health",
+              "sync_status": "Sync",
+              "autosync_enabled": "Auto sync"
+            }
+          }
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 24,
+        "h": 9
+      },
+      "id": 23
+    },
+    {
+      "type": "row",
+      "title": "Reconciliation & Git Distributions",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 57,
+        "w": 24,
+        "h": 1
+      },
+      "id": 24
+    },
+    {
+      "title": "Reconcile Duration Distribution",
+      "type": "heatmap",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Reconcile Duration Distribution。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (le) (increase(argocd_app_reconcile_bucket[$__rate_interval]))",
+          "legendFormat": "{{le}}",
           "range": true,
           "instant": false,
-          "interval": "1m"
+          "interval": "1m",
+          "format": "heatmap"
         }
       ],
       "fieldConfig": {
@@ -1308,27 +1464,652 @@
         "overrides": []
       },
       "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
+        "calculate": false,
+        "cellGap": 1,
+        "color": {
+          "mode": "scheme",
+          "scheme": "Spectral",
+          "steps": 64,
+          "reverse": false
+        },
+        "yAxis": {
+          "unit": "s"
         },
         "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ]
+          "show": true
+        },
+        "tooltip": {
+          "show": true,
+          "mode": "single"
         }
       },
       "gridPos": {
         "x": 0,
-        "y": 53,
+        "y": 58,
         "w": 12,
         "h": 8
       },
-      "id": 22,
-      "interval": "1m"
+      "id": 25
+    },
+    {
+      "title": "Git Fetch Duration Distribution",
+      "type": "heatmap",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "description": "Git Fetch Duration Distribution。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+      "interval": "1m",
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (le) (increase(argocd_git_request_duration_seconds_bucket{request_type=\"fetch\"}[$__rate_interval]))",
+          "legendFormat": "{{le}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m",
+          "format": "heatmap"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "color": {
+          "mode": "scheme",
+          "scheme": "Spectral",
+          "steps": 64,
+          "reverse": false
+        },
+        "yAxis": {
+          "unit": "s"
+        },
+        "legend": {
+          "show": true
+        },
+        "tooltip": {
+          "show": true,
+          "mode": "single"
+        }
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 58,
+        "w": 12,
+        "h": 8
+      },
+      "id": 26
+    },
+    {
+      "type": "row",
+      "title": "Controller & Server Diagnostics",
+      "collapsed": false,
+      "panels": [],
+      "gridPos": {
+        "x": 0,
+        "y": 66,
+        "w": 24,
+        "h": 1
+      },
+      "id": 27
+    },
+    {
+      "type": "row",
+      "title": "Component Details",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 67,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [
+        {
+          "title": "Controller Workqueue Depth",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "description": "Controller Workqueue Depth。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+          "interval": "1m",
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (name) (workqueue_depth{namespace=\"argocd\",name=~\"app_.*\"})",
+              "legendFormat": "{{name}}",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 68,
+            "w": 12,
+            "h": 8
+          },
+          "id": 29
+        },
+        {
+          "title": "Pending kubectl Processes",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "description": "Pending kubectl Processes。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+          "interval": "1m",
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (command) (argocd_kubectl_exec_pending)",
+              "legendFormat": "{{command}}",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 68,
+            "w": 12,
+            "h": 8
+          },
+          "id": 30
+        },
+        {
+          "title": "Resident Memory by Component",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "description": "Resident Memory by Component。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+          "interval": "1m",
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (job) (process_resident_memory_bytes{job=~\"argocd/argocd-(metrics|server-metrics|repo-server)\"})",
+              "legendFormat": "{{job}}",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "bytes",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 76,
+            "w": 12,
+            "h": 8
+          },
+          "id": 31
+        },
+        {
+          "title": "CPU by Component",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "description": "CPU by Component。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+          "interval": "1m",
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (job) (rate(process_cpu_seconds_total{job=~\"argocd/argocd-(metrics|server-metrics|repo-server)\"}[$__rate_interval]))",
+              "legendFormat": "{{job}}",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "cores",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 76,
+            "w": 12,
+            "h": 8
+          },
+          "id": 32
+        },
+        {
+          "title": "Goroutines by Component",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "description": "Goroutines by Component。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+          "interval": "1m",
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (job) (go_goroutines{job=~\"argocd/argocd-(metrics|server-metrics|repo-server)\"})",
+              "legendFormat": "{{job}}",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 84,
+            "w": 12,
+            "h": 8
+          },
+          "id": 33
+        },
+        {
+          "title": "gRPC Responses by Service & Status",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "description": "gRPC Responses by Service & Status。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+          "interval": "1m",
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (grpc_service, grpc_code) (rate(grpc_server_handled_total{job=\"argocd/argocd-server-metrics\"}[$__rate_interval]))",
+              "legendFormat": "{{grpc_service}} / {{grpc_code}}",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "reqps",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 84,
+            "w": 12,
+            "h": 8
+          },
+          "id": 34
+        },
+        {
+          "title": "Cluster Resource Objects",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "description": "Cluster Resource Objects。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+          "interval": "1m",
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (server) (argocd_cluster_api_resource_objects)",
+              "legendFormat": "{{server}}",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 92,
+            "w": 12,
+            "h": 8
+          },
+          "id": 35
+        },
+        {
+          "title": "Cluster API Resource Types",
+          "type": "timeseries",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "description": "Cluster API Resource Types。選択した範囲の実測値。未発生イベントの系列は存在しない場合があります。",
+          "interval": "1m",
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (server) (argocd_cluster_api_resources)",
+              "legendFormat": "{{server}}",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 12,
+            "y": 92,
+            "w": 12,
+            "h": 8
+          },
+          "id": 36
+        }
+      ],
+      "id": 28
     }
-  ]
+  ],
+  "version": 1
 }
