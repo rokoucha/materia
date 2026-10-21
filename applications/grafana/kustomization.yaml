@@ -13,6 +13,7 @@ helmCharts:
 
 resources:
   - ./resources/grafana-secrets.yaml
+  - ./resources/renderer-token.yaml
   - ./resources/flow-reader.yaml
   - ./resources/network-policy.yaml
   - ./resources/persistent-volume-claim.yaml
