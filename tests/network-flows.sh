@@ -68,4 +68,16 @@ if docker exec -e PGPASSWORD=disposable-reader "$name-db" \
   echo 'Reader unexpectedly has write access' >&2
   exit 1
 fi
-echo 'IPv4/IPv6, directions, PD changes, internal/unrouted exclusion, sampling and reader permissions passed'
+printf '64512,1.1.1.0/24\n64512,2606:4700::/32\n' > "$config/maps/networks.lst"
+docker kill --signal USR2 "$name-collector" >/dev/null
+sleep 1
+docker run --rm --network "$name" -v "$root/tests/network_flows_packets.py:/packets.py:ro" \
+  python:3.14.0-slim-bookworm python /packets.py collector
+for _ in {1..30}; do
+  updated="$(docker exec "$name-db" psql -U flows -d flows -Atc \
+    'SELECT sum(bytes) FROM traffic WHERE remote_as=64512')"
+  if [[ "$updated" == '500000' ]]; then break; fi
+  sleep 1
+done
+[[ "$updated" == '500000' ]]
+echo 'IPv4/IPv6, directions, PD changes, exclusions, normalization, reader permissions and ASN hot reload passed'
