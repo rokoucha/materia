@@ -44,7 +44,7 @@ spec:
             - name: maps
               mountPath: /maps
         - name: schema
-          image: ghcr.io/cloudnative-pg/postgresql:18.1-minimal-trixie
+          image: ghcr.io/cloudnative-pg/postgresql:18.6-minimal-trixie
           command: [/bin/sh, -ec]
           args:
             - |
