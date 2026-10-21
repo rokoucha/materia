@@ -282,7 +282,9 @@
           "expr": "sum(rate(coredns_forward_healthcheck_broken_total{job=\"kube-system/coredns\",instance=~\"$instance\"}[5m]))",
           "interval": "",
           "legendFormat": "{{instance}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": true,
+          "range": false
         }
       ],
       "title": "Upstream Health Check Fails",
@@ -347,7 +349,9 @@
           "expr": "sum(rate(coredns_forward_max_concurrent_rejects_total{job=\"kube-system/coredns\",instance=~\"$instance\"}[5m]))",
           "interval": "",
           "legendFormat": "{{instance}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": true,
+          "range": false
         }
       ],
       "title": "Upstream Rejected Queries",
@@ -412,7 +416,9 @@
           "expr": "sum(rate(coredns_panics_total{job=\"kube-system/coredns\",instance=~\"$instance\"}[5m]))",
           "interval": "",
           "legendFormat": "{{instance}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": true,
+          "range": false
         }
       ],
       "title": "Panics",
@@ -477,7 +483,9 @@
           "expr": "sum(rate(coredns_reload_failed_total{job=\"kube-system/coredns\",instance=~\"$instance\"}[5m]))",
           "interval": "",
           "legendFormat": "{{instance}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": true,
+          "range": false
         }
       ],
       "title": "Failed Reloads",
@@ -512,7 +520,7 @@
               }
             ]
           },
-          "unit": "s"
+          "unit": "cores"
         },
         "overrides": []
       },
@@ -546,10 +554,12 @@
           "expr": "sum(rate(process_cpu_seconds_total{job=\"kube-system/coredns\",instance=~\"$instance\"}[5m]))",
           "interval": "",
           "legendFormat": "{{instance}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": true,
+          "range": false
         }
       ],
-      "title": "CPU Time",
+      "title": "CPU Usage",
       "type": "gauge"
     },
     {
@@ -609,7 +619,9 @@
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{instance}}",
-          "refId": "A"
+          "refId": "A",
+          "instant": true,
+          "range": false
         }
       ],
       "title": "Memory Usage",
@@ -2004,22 +2016,6 @@
         }
       ],
       "title": "Requests (by upstream)",
-      "transformations": [
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "include": {
-              "names": [
-                "Time",
-                "1.0.0.1:853",
-                "1.1.1.1:853",
-                "8.8.4.4:853",
-                "8.8.8.8:853"
-              ]
-            }
-          }
-        }
-      ],
       "type": "piechart"
     },
     {
