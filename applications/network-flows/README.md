@@ -21,7 +21,7 @@ maps are downloaded at startup and atomically refreshed daily (the previous map
 survives a failed refresh). ASN values are resolved at ingestion; a separate small enrichment worker refreshes
 IPtoASN organization names daily. Restarting a Pod requires a successful initial ASN download.
 
-Grafana's `Traffic / Home network flows` dashboard groups devices by MAC, so IPv6
+Grafana's `Traffic / Home network` dashboard groups devices by MAC, so IPv6
 privacy addresses do not create separate device nodes. The address table retains
 IP detail. Device labels use chlorine's active DHCP hostname via MAC-specific
 `home.arpa` DNS aliases, refreshed every minute. This also names IPv6 privacy
@@ -79,3 +79,9 @@ The layout takes inspiration from [Akvorado's flow distributions and stacked
 AS time series](https://github.com/akvorado/akvorado/blob/main/console/data/docs/52-console.md)
 and [ntopng's top talkers and host drilldown](https://www.ntop.org/guides/ntopng/user_interface/network_interface/dashboard/dashboard.html).
 It uses Grafana's built-in panels plus the existing NetSage Sankey plugin.
+
+The same dashboard includes Chlorine Router health and measured VLAN-10 bandwidth,
+plus Ping Pong latency and expandable diagnostics. Device and Direction apply to
+flow panels only; router/probe panels always cover the whole network. Shared time
+range and crosshair support comparison without equating interface totals with
+sampled external-flow counters.
