@@ -73,7 +73,8 @@ spec:
               readOnly: true
       containers:
         - name: sfacctd
-          image: pmacct/sfacctd:v1.8.0@sha256:f70f3fe9fa2443c45b52ce4b5b6eff355ca62d360be3ba737a15f48cffae873a
+          # Includes upstream 5ecb141: avoid quadratic IPv6 ASN map loading.
+          image: pmacct/sfacctd:bleeding-edge@sha256:7c666c5fdf04a094f8953e1aebd3d6ebd57c006b360cd8314009990c3a7d2680
           command: [/bin/sh, -ec]
           args:
             - |
@@ -105,7 +106,7 @@ spec:
               memory: 768Mi
           readinessProbe:
             exec:
-              command: [/bin/sh, -ec, 'test -s /maps/sfacctd.pid && kill -0 "$(cat /maps/sfacctd.pid)"']
+              command: [/bin/sh, -ec, "grep -q '00000000:18C7 ' /proc/net/udp"]
           volumeMounts:
             - name: config
               mountPath: /etc/pmacct
