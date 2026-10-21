@@ -51,7 +51,7 @@ JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正として
 ## Verification (2026-10-21)
 
 サーバーのスキーマ検証・dry-run・保存を実施。237のPromQLを実行し構文エラーなし。225クエリで現在の系列を確認し、残りは未発生イベント・エラー等の系列なし。
-当初の画像確認は`rendering plugin not available`で失敗。後述の画像レンダラーを導入して再確認する。
+当初の画像確認は`rendering plugin not available`で失敗。後述の画像レンダラー導入後、5画面のPNG生成・目視確認を完了。
 
 ## 統合ダッシュボード
 
@@ -95,3 +95,5 @@ measured totals, while flow panels estimate external traffic from samples.
 Ping Pong target-by-target checks and router WAN/VLAN/NAT/hardware/log diagnostics
 are available in collapsed rows. The standalone Chlorine Router and Ping Pong dashboards have been retired;
 use the unified Home network dashboard for both overview and diagnostics.
+
+再撮影でクラスタのLoad Average・Image Pull件数の単位と`exported_namespace` / `exported_pod`の凡例も補正。SwitchBotとOrphaned Resourcesは凡例領域を調整する。
