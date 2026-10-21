@@ -223,24 +223,16 @@ dashboardProviders:
         updateIntervalSeconds: 30
         options:
           path: /var/lib/grafana/dashboards/sophie
-      - name: existing
+      - name: mastodon
         orgId: 1
-        folder: ""
+        folder: Mastodon
+        folderUid: svc-mastodon
         type: file
         disableDeletion: true
         allowUiUpdates: false
         updateIntervalSeconds: 30
         options:
-          path: /var/lib/grafana/dashboards/existing
-      - name: existing-node
-        orgId: 1
-        folder: ""
-        type: file
-        disableDeletion: true
-        allowUiUpdates: false
-        updateIntervalSeconds: 30
-        options:
-          path: /var/lib/grafana/dashboards/existing-node
+          path: /var/lib/grafana/dashboards/mastodon
 
 dashboardsConfigMaps:
   network-flows: network-flows-dashboard
@@ -255,5 +247,4 @@ dashboardsConfigMaps:
   opentelemetry-collector: dashboards-opentelemetry-collector
   ping-pong: dashboards-ping-pong
   sophie: dashboards-sophie
-  existing: dashboards-existing
-  existing-node: dashboards-existing-node
+  mastodon: dashboards-mastodon
