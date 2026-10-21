@@ -1,0 +1,692 @@
+{
+  "title": "APC RS 550VA",
+  "description": "APC RS 550VA — Mackerel dashboardをもとに、Prometheus/Lokiの実データへ適応。",
+  "uid": "materia-apc-rs-550va",
+  "schemaVersion": 39,
+  "timezone": "browser",
+  "editable": false,
+  "tags": [
+    "materia",
+    "mackerel-migration",
+    "apc-rs-550va"
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "templating": {
+    "list": []
+  },
+  "links": [
+    {
+      "type": "link",
+      "title": "Mackerel original",
+      "url": "https://mackerel.io/orgs/rokoucha/dashboards/5gch6baevEY",
+      "targetBlank": true
+    },
+    {
+      "type": "dashboards",
+      "title": "Related dashboards",
+      "tags": [
+        "mackerel-migration"
+      ],
+      "asDropdown": true,
+      "includeVars": false,
+      "keepTime": true
+    }
+  ],
+  "panels": [
+    {
+      "title": "Battery Time Left",
+      "type": "stat",
+      "description": "Battery Time Left。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(apcupsd_battery_time_left_seconds{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"}/60)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "m",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 1,
+      "interval": "1m"
+    },
+    {
+      "title": "Load",
+      "type": "stat",
+      "description": "Load。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(apcupsd_ups_load_percent{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0,
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 2,
+      "interval": "1m"
+    },
+    {
+      "title": "Line Voltage",
+      "type": "stat",
+      "description": "Line Voltage。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(apcupsd_line_volts{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 3,
+      "interval": "1m"
+    },
+    {
+      "title": "Battery Voltage",
+      "type": "stat",
+      "description": "Battery Voltage。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(apcupsd_battery_volts{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 4,
+      "interval": "1m"
+    },
+    {
+      "title": "Battery Charge",
+      "type": "timeseries",
+      "description": "Battery Charge。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(apcupsd_battery_charge_percent{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 12,
+        "h": 8
+      },
+      "id": 5,
+      "interval": "1m"
+    },
+    {
+      "title": "Load",
+      "type": "timeseries",
+      "description": "Load。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(apcupsd_ups_load_percent{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 4,
+        "w": 12,
+        "h": 8
+      },
+      "id": 6,
+      "interval": "1m"
+    },
+    {
+      "title": "Line Voltage",
+      "type": "timeseries",
+      "description": "Line Voltage。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(apcupsd_line_volts{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 12,
+        "w": 12,
+        "h": 8
+      },
+      "id": 7,
+      "interval": "1m"
+    },
+    {
+      "title": "Battery Voltage",
+      "type": "timeseries",
+      "description": "Battery Voltage。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(apcupsd_battery_volts{job=\"apcupsd/apcupsd-exporter\",ups=\"BR550S\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 12,
+        "w": 12,
+        "h": 8
+      },
+      "id": 8,
+      "interval": "1m"
+    },
+    {
+      "title": "UPS Status",
+      "type": "stat",
+      "description": "UPS Status。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcupsd_info",
+          "legendFormat": "{{status}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 20,
+        "w": 12,
+        "h": 8
+      },
+      "id": 9,
+      "interval": "1m"
+    },
+    {
+      "title": "Battery Runtime Trend",
+      "type": "timeseries",
+      "description": "Battery Runtime Trend。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "apcupsd_battery_time_left_seconds",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 20,
+        "w": 12,
+        "h": 8
+      },
+      "id": 10,
+      "interval": "1m"
+    }
+  ]
+}

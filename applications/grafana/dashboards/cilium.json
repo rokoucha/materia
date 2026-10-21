@@ -1,0 +1,1531 @@
+{
+  "title": "Cilium",
+  "description": "materia-cluster の Cilium を俯瞰する運用ダッシュボード。エンドポイント、到達性、パケット処理、ドロップ、BPF map、ポリシー、コントローラ、リソース使用量を監視。 — Mackerel dashboardをもとに、Prometheus/Lokiの実データへ適応。",
+  "uid": "materia-cilium",
+  "schemaVersion": 39,
+  "timezone": "browser",
+  "editable": false,
+  "tags": [
+    "materia",
+    "mackerel-migration",
+    "cilium"
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "templating": {
+    "list": []
+  },
+  "links": [
+    {
+      "type": "link",
+      "title": "Mackerel original",
+      "url": "https://mackerel.io/orgs/rokoucha/dashboards/cilium",
+      "targetBlank": true
+    },
+    {
+      "type": "dashboards",
+      "title": "Related dashboards",
+      "tags": [
+        "mackerel-migration"
+      ],
+      "asDropdown": true,
+      "includeVars": false,
+      "keepTime": true
+    }
+  ],
+  "panels": [
+    {
+      "title": "Ready Endpoints",
+      "type": "stat",
+      "description": "Ready Endpoints。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(cilium_endpoint_state{endpoint_state=\"ready\"}) or vector(0)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 1,
+      "interval": "1m"
+    },
+    {
+      "title": "Non-ready Endpoints",
+      "type": "stat",
+      "description": "Non-ready Endpoints。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(cilium_endpoint_state{endpoint_state!=\"ready\"}) or vector(0)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 2,
+      "interval": "1m"
+    },
+    {
+      "title": "Unreachable Nodes",
+      "type": "stat",
+      "description": "Unreachable Nodes。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(cilium_unreachable_nodes) or vector(0)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 3,
+      "interval": "1m"
+    },
+    {
+      "title": "Failing Controllers",
+      "type": "stat",
+      "description": "Failing Controllers。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(cilium_controllers_failing) or vector(0)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "id": 4,
+      "interval": "1m"
+    },
+    {
+      "title": "Endpoints & Connectivity",
+      "type": "text",
+      "options": {
+        "mode": "markdown",
+        "content": "エンドポイント状態、IPアドレス、ノード間ヘルスチェック"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 3
+      },
+      "id": 5
+    },
+    {
+      "title": "Endpoint State",
+      "type": "timeseries",
+      "description": "Endpoint State。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(cilium_endpoint_state) by (endpoint_state)",
+          "legendFormat": "{{endpoint_state}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 7,
+        "w": 8,
+        "h": 8
+      },
+      "id": 6,
+      "interval": "1m"
+    },
+    {
+      "title": "Allocated IP Addresses",
+      "type": "timeseries",
+      "description": "Allocated IP Addresses。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(cilium_ip_addresses) by (family)",
+          "legendFormat": "{{family}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 7,
+        "w": 8,
+        "h": 8
+      },
+      "id": 7,
+      "interval": "1m"
+    },
+    {
+      "title": "Node Health Connectivity",
+      "type": "timeseries",
+      "description": "Node Health Connectivity。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(cilium_node_health_connectivity_status) by (status, type)",
+          "legendFormat": "{{type}} / {{status}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 7,
+        "w": 8,
+        "h": 8
+      },
+      "id": 8,
+      "interval": "1m"
+    },
+    {
+      "title": "Datapath Traffic",
+      "type": "text",
+      "options": {
+        "mode": "markdown",
+        "content": "転送・ドロップのパケットレートとバイトレート"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 15,
+        "w": 24,
+        "h": 3
+      },
+      "id": 9
+    },
+    {
+      "title": "Forwarded Packets",
+      "type": "timeseries",
+      "description": "Forwarded Packets。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(irate(cilium_forward_count_total[$__rate_interval])) by (direction)",
+          "legendFormat": "{{direction}} packets/s",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 8,
+        "h": 8
+      },
+      "id": 10,
+      "interval": "1m"
+    },
+    {
+      "title": "Dropped Packets",
+      "type": "timeseries",
+      "description": "Dropped Packets。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(irate(cilium_drop_count_total[$__rate_interval])) by (reason, direction)",
+          "legendFormat": "{{direction}} / {{reason}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 18,
+        "w": 8,
+        "h": 8
+      },
+      "id": 11,
+      "interval": "1m"
+    },
+    {
+      "title": "Dropped Bytes",
+      "type": "timeseries",
+      "description": "Dropped Bytes。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(irate(cilium_drop_bytes_total[$__rate_interval])) by (reason, direction)",
+          "legendFormat": "{{direction}} / {{reason}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 18,
+        "w": 8,
+        "h": 8
+      },
+      "id": 12,
+      "interval": "1m"
+    },
+    {
+      "title": "BPF & Policy",
+      "type": "text",
+      "options": {
+        "mode": "markdown",
+        "content": "BPF map 使用率、操作、ポリシー適用状態"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 24,
+        "h": 3
+      },
+      "id": 13
+    },
+    {
+      "title": "BPF Map Pressure",
+      "type": "timeseries",
+      "description": "BPF Map Pressure。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(cilium_bpf_map_pressure) by (map_name) * 100",
+          "legendFormat": "{{map_name}} %",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 8,
+        "h": 8
+      },
+      "id": 14,
+      "interval": "1m"
+    },
+    {
+      "title": "BPF Map Operations",
+      "type": "timeseries",
+      "description": "BPF Map Operations。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(irate(cilium_bpf_map_ops_total[$__rate_interval])) by (map_name, operation, outcome)",
+          "legendFormat": "{{map_name}} / {{operation}} / {{outcome}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 29,
+        "w": 8,
+        "h": 8
+      },
+      "id": 15,
+      "interval": "1m"
+    },
+    {
+      "title": "Policy Enforcement",
+      "type": "timeseries",
+      "description": "Policy Enforcement。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(cilium_policy_endpoint_enforcement_status) by (enforcement)",
+          "legendFormat": "{{enforcement}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 29,
+        "w": 8,
+        "h": 8
+      },
+      "id": 16,
+      "interval": "1m"
+    },
+    {
+      "title": "Policy Changes",
+      "type": "timeseries",
+      "description": "Policy Changes。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(irate(cilium_policy_change_total[$__rate_interval])) by (outcome)",
+          "legendFormat": "{{outcome}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 37,
+        "w": 8,
+        "h": 8
+      },
+      "id": 17,
+      "interval": "1m"
+    },
+    {
+      "title": "Endpoint Regenerations",
+      "type": "timeseries",
+      "description": "Endpoint Regenerations。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(irate(cilium_endpoint_regenerations_total[$__rate_interval])) by (outcome)",
+          "legendFormat": "{{outcome}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 37,
+        "w": 8,
+        "h": 8
+      },
+      "id": 18,
+      "interval": "1m"
+    },
+    {
+      "title": "Policy Implementation Delay",
+      "type": "timeseries",
+      "description": "Policy Implementation Delay。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(cilium_policy_implementation_delay_bucket[$__rate_interval])))",
+          "legendFormat": "max seconds",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 37,
+        "w": 8,
+        "h": 8
+      },
+      "id": 19,
+      "interval": "1m"
+    },
+    {
+      "title": "Agent Health & Resources",
+      "type": "text",
+      "options": {
+        "mode": "markdown",
+        "content": "警告・エラー、Kubernetes API、CPU、メモリ"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 45,
+        "w": 24,
+        "h": 3
+      },
+      "id": 20
+    },
+    {
+      "title": "Errors & Warnings",
+      "type": "timeseries",
+      "description": "Errors & Warnings。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(irate(cilium_errors_warnings_total[$__rate_interval])) by (level, subsystem)",
+          "legendFormat": "{{level}} / {{subsystem}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 8,
+        "h": 8
+      },
+      "id": 21,
+      "interval": "1m"
+    },
+    {
+      "title": "Kubernetes API Calls",
+      "type": "timeseries",
+      "description": "Kubernetes API Calls。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(irate(cilium_k8s_client_api_calls_total[$__rate_interval])) by (method, return_code)",
+          "legendFormat": "{{method}} / {{return_code}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 48,
+        "w": 8,
+        "h": 8
+      },
+      "id": 22,
+      "interval": "1m"
+    },
+    {
+      "title": "Resident Memory",
+      "type": "timeseries",
+      "description": "Resident Memory。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "cilium_process_resident_memory_bytes / 1024 / 1024",
+          "legendFormat": "{{k8s_node_name}} MiB",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "mbytes",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 48,
+        "w": 8,
+        "h": 8
+      },
+      "id": 23,
+      "interval": "1m"
+    },
+    {
+      "title": "CPU Usage",
+      "type": "timeseries",
+      "description": "CPU Usage。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "irate(cilium_process_cpu_seconds_total[$__rate_interval])",
+          "legendFormat": "{{k8s_node_name}} cores",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 56,
+        "w": 8,
+        "h": 8
+      },
+      "id": 24,
+      "interval": "1m"
+    },
+    {
+      "title": "Kubernetes Workqueue Depth",
+      "type": "timeseries",
+      "description": "Kubernetes Workqueue Depth。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(cilium_k8s_workqueue_depth) by (name)",
+          "legendFormat": "{{name}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 56,
+        "w": 8,
+        "h": 8
+      },
+      "id": 25,
+      "interval": "1m"
+    },
+    {
+      "title": "Controller Failures",
+      "type": "timeseries",
+      "description": "Controller Failures。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bdy6m43uy9ybkd"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "cilium_controllers_failing",
+          "legendFormat": "{{k8s_node_name}}",
+          "range": true,
+          "instant": false,
+          "interval": "1m"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 1,
+            "fillOpacity": 10,
+            "spanNulls": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        }
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 56,
+        "w": 8,
+        "h": 8
+      },
+      "id": 26,
+      "interval": "1m"
+    }
+  ]
+}

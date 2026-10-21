@@ -107,10 +107,153 @@ dashboardProviders:
       - name: network-flows
         orgId: 1
         folder: Traffic
+        folderUid: bg1w8f1ehfbb4b
         type: file
         disableDeletion: true
         options:
           path: /var/lib/grafana/dashboards/network-flows
 
+      - name: apc-rs-550va
+        orgId: 1
+        folder: APC RS 550VA
+        folderUid: svc-apc-rs-550va
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/apc-rs-550va
+      - name: argo-cd
+        orgId: 1
+        folder: Argo CD
+        folderUid: svc-argo-cd
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/argo-cd
+      - name: authentik
+        orgId: 1
+        folder: Authentik
+        folderUid: svc-authentik
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/authentik
+      - name: chlorine-router
+        orgId: 1
+        folder: Chlorine Router
+        folderUid: svc-chlorine-router
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/chlorine-router
+      - name: cilium
+        orgId: 1
+        folder: Cilium
+        folderUid: svc-cilium
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/cilium
+      - name: environment
+        orgId: 1
+        folder: Environment
+        folderUid: svc-environment
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/environment
+      - name: mahiron
+        orgId: 1
+        folder: Mahiron
+        folderUid: svc-mahiron
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/mahiron
+      - name: materia-cluster
+        orgId: 1
+        folder: Materia Cluster
+        folderUid: svc-materia-cluster
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/materia-cluster
+      - name: opentelemetry-collector
+        orgId: 1
+        folder: OpenTelemetry Collector
+        folderUid: svc-opentelemetry-collector
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/opentelemetry-collector
+      - name: ping-pong
+        orgId: 1
+        folder: Ping Pong
+        folderUid: svc-ping-pong
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/ping-pong
+      - name: sophie
+        orgId: 1
+        folder: Sophie
+        folderUid: svc-sophie
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/sophie
+      - name: existing
+        orgId: 1
+        folder: ""
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/existing
+      - name: existing-node
+        orgId: 1
+        folder: ""
+        type: file
+        disableDeletion: true
+        allowUiUpdates: false
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards/existing-node
+
 dashboardsConfigMaps:
   network-flows: network-flows-dashboard
+  apc-rs-550va: dashboards-apc-rs-550va
+  argo-cd: dashboards-argo-cd
+  authentik: dashboards-authentik
+  chlorine-router: dashboards-chlorine-router
+  cilium: dashboards-cilium
+  environment: dashboards-environment
+  mahiron: dashboards-mahiron
+  materia-cluster: dashboards-materia-cluster
+  opentelemetry-collector: dashboards-opentelemetry-collector
+  ping-pong: dashboards-ping-pong
+  sophie: dashboards-sophie
+  existing: dashboards-existing
+  existing-node: dashboards-existing-node
