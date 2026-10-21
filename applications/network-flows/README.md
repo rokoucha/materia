@@ -68,12 +68,16 @@ IPv6 PD changes, internal traffic exclusion and read-only access.
 
 ## Dashboard layout
 
-The overview uses mirrored download/upload bandwidth, IPv4/IPv6 share, the
-Sankey, top device/AS bars and AS traffic stacked over time. Service-port names
-are conventional port hints, not application detection. Select a Device or click
-its name in Device activity to focus all traffic panels; All devices resets it.
-Bandwidth and Device activity deliberately show both directions. Address details
-are collapsed by default; all counters are sampling-based estimates.
+The overview shows router health histories and measured home-LAN bandwidth once.
+Traffic analysis uses the Sankey, AS traffic over time, IPv4/IPv6 and service-port
+mix, and one device table for volume ranking and drilldown. Select Device or click
+its table name to focus traffic panels; All devices resets it. Direction filters
+traffic analysis; the device table shows both directions for comparison.
+
+Availability/TCP-connect checks, address names, other interfaces, packet/session
+errors, hardware/storage and logs are in separate collapsed sections. Per-target
+ICMP graphs are replaced by the overview's shared latency chart. Conventional
+port names are hints, not application detection; flow counters remain estimates.
 
 The layout takes inspiration from [Akvorado's flow distributions and stacked
 AS time series](https://github.com/akvorado/akvorado/blob/main/console/data/docs/52-console.md)
