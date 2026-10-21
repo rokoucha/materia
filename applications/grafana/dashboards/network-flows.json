@@ -1,0 +1,291 @@
+{
+  "uid": "home-network-flows",
+  "title": "Home network flows",
+  "schemaVersion": 41,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "1m",
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "tags": [
+    "network",
+    "sflow",
+    "chlorine"
+  ],
+  "panels": [
+    {
+      "id": 1,
+      "title": "Selected traffic (estimated)",
+      "type": "stat",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT sum(bytes)::double precision AS \"Bytes\" FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring}",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 2,
+      "title": "Average over latest 5 minutes (estimated)",
+      "type": "stat",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT sum(bytes)::double precision * 8 / 300 AS \"Bit/s\" FROM traffic WHERE time >= now() - interval '5 minutes' AND direction = ${direction:sqlstring}",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 6,
+      "title": "Latest sample age",
+      "type": "stat",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 8,
+        "h": 5
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT extract(epoch FROM now()-max(time))::double precision AS \"Age\" FROM traffic",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 3,
+      "title": "Device \u2192 external AS \u2192 service (estimated traffic)",
+      "type": "netsage-sankey-panel",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 15
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "WITH selected AS (\n  SELECT device_mac::text AS device, remote_as,\n         CASE WHEN ip_proto IN (6,17) THEN\n           CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n         ELSE 'IP/' || ip_proto::text END AS service, bytes\n  FROM traffic\n  WHERE $__timeFilter(time) AND direction = ${direction:sqlstring}\n), devices AS (\n  SELECT device FROM selected GROUP BY device ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), ases AS (\n  SELECT remote_as FROM selected GROUP BY remote_as ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), services AS (\n  SELECT service FROM selected GROUP BY service ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n)\nSELECT CASE WHEN device IN (SELECT device FROM devices) THEN device ELSE 'Other devices' END AS \"Device\",\n       CASE WHEN remote_as IN (SELECT remote_as FROM ases) THEN 'AS' || remote_as::text ELSE 'Other ASes' END AS \"AS\",\n       CASE WHEN service IN (SELECT service FROM services) THEN service ELSE 'Other services' END AS \"Service\",\n       sum(bytes)::double precision AS \"Bytes\"\nFROM selected GROUP BY 1,2,3 ORDER BY 4 DESC\n",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {
+        "monochrome": false,
+        "nodeWidth": 15,
+        "nodePadding": 10,
+        "iteration": 32,
+        "valueField": "Bytes",
+        "labelSize": 12,
+        "textColor": "#cccccc",
+        "nodeColor": "#5794F2"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Traffic by direction (estimated)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 20,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT $__timeGroupAlias(time,'5m'), direction AS metric, sum(bytes)::double precision * 8 / 300 AS value FROM traffic WHERE $__timeFilter(time) GROUP BY 1,2 ORDER BY 1",
+          "format": "time_series",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bps"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 5,
+      "title": "Device addresses",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 20,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "SELECT device_mac::text AS \"Device\", host(device_ip) AS \"Address\", sum(bytes)::double precision AS \"Bytes\" FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} GROUP BY 1,2 ORDER BY 3 DESC LIMIT 100",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {}
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "direction",
+        "label": "Direction",
+        "type": "custom",
+        "query": "download,upload",
+        "current": {
+          "text": "download",
+          "value": "download"
+        },
+        "options": [
+          {
+            "text": "download",
+            "value": "download",
+            "selected": true
+          },
+          {
+            "text": "upload",
+            "value": "upload",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "name": "top",
+        "label": "Top nodes per column",
+        "type": "custom",
+        "query": "10,20,30",
+        "current": {
+          "text": "20",
+          "value": "20"
+        },
+        "options": [
+          {
+            "text": "10",
+            "value": "10",
+            "selected": false
+          },
+          {
+            "text": "20",
+            "value": "20",
+            "selected": true
+          },
+          {
+            "text": "30",
+            "value": "30",
+            "selected": false
+          }
+        ]
+      }
+    ]
+  }
+}

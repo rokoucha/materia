@@ -11,6 +11,7 @@ resources:
 - "./mastodon"
 - "./miniflux"
 - "./mirakurun"
+- "./network-flows"
 - "./nginx"
 - "./otel-external"
 - "./prometheus"

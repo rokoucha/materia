@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collector
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: collector
+  template:
+    metadata:
+      labels:
+        app: collector
+    spec:
+      automountServiceAccountToken: false
+      shareProcessNamespace: true
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: asn
+          image: python:3.14.0-slim-bookworm
+          command: [python, /etc/pmacct/update-asn.py, --once]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/pmacct
+              readOnly: true
+            - name: maps
+              mountPath: /maps
+        - name: schema
+          image: ghcr.io/cloudnative-pg/postgresql:18.1-minimal-trixie
+          command: [/bin/sh, -ec]
+          args:
+            - |
+              until pg_isready; do sleep 2; done
+              until psql -tAc "SELECT 1 FROM pg_roles WHERE rolname = 'flow_reader'" | grep -q 1; do sleep 2; done
+              psql -v ON_ERROR_STOP=1 -f /schema/schema.sql
+          env:
+            - name: PGHOST
+              value: postgresql-rw
+            - name: PGDATABASE
+              value: flows
+            - name: PGUSER
+              value: flows
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-app
+                  key: password
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: schema
+              mountPath: /schema
+              readOnly: true
+      containers:
+        - name: sfacctd
+          image: pmacct/sfacctd:v1.8.0@sha256:f70f3fe9fa2443c45b52ce4b5b6eff355ca62d360be3ba737a15f48cffae873a
+          command: [/bin/sh, -ec]
+          args:
+            - |
+              cat /etc/pmacct/sfacctd.conf > /maps/sfacctd.conf
+              printf '\nsql_passwd: %s\n' "$PGPASSWORD" >> /maps/sfacctd.conf
+              chmod 600 /maps/sfacctd.conf
+              exec /usr/local/sbin/sfacctd -f /maps/sfacctd.conf
+          env:
+            - name: TZ
+              value: UTC
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-app
+                  key: password
+          ports:
+            - name: sflow
+              containerPort: 6343
+              protocol: UDP
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 768Mi
+          readinessProbe:
+            exec:
+              command: [/bin/sh, -ec, 'test -s /maps/sfacctd.pid && kill -0 "$(cat /maps/sfacctd.pid)"']
+          volumeMounts:
+            - name: config
+              mountPath: /etc/pmacct
+              readOnly: true
+            - name: maps
+              mountPath: /maps
+        - name: asn-refresh
+          image: python:3.14.0-slim-bookworm
+          command: [python, /etc/pmacct/update-asn.py]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/pmacct
+              readOnly: true
+            - name: maps
+              mountPath: /maps
+      volumes:
+        - name: config
+          configMap:
+            name: collector-config
+        - name: schema
+          configMap:
+            name: schema
+        - name: maps
+          emptyDir:
+            sizeLimit: 256Mi

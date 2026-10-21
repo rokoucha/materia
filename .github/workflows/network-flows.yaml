@@ -1,0 +1,23 @@
+name: Network flows
+on:
+  pull_request:
+    paths:
+      - applications/network-flows/**
+      - tests/network-flows.sh
+      - tests/network_flows_packets.py
+      - .github/workflows/network-flows.yaml
+  push:
+    branches: [main]
+    paths:
+      - applications/network-flows/**
+      - tests/network-flows.sh
+      - tests/network_flows_packets.py
+      - .github/workflows/network-flows.yaml
+permissions:
+  contents: read
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: bash tests/network-flows.sh

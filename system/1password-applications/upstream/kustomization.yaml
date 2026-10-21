@@ -22,6 +22,7 @@ helmCharts:
       - mastodon
       - miniflux
       - mirakurun
+      - network-flows
       - otel-external
       - sophie
       - switchbot-meter-exporter

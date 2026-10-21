@@ -13,11 +13,15 @@ helmCharts:
 
 resources:
   - ./resources/grafana-secrets.yaml
+  - ./resources/flow-reader.yaml
   - ./resources/network-policy.yaml
   - ./resources/persistent-volume-claim.yaml
   - ./resources/tls.yaml
 
 configMapGenerator:
+  - name: network-flows-dashboard
+    files:
+      - dashboards/network-flows.json
   - name: config
     envs:
       - ./config/config.env

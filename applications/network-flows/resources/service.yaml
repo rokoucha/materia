@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sflow
+  labels:
+    chlorinate.rokoucha.com/lb: public
+  annotations:
+    lbipam.cilium.io/ips: 172.16.3.12
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Cluster
+  allocateLoadBalancerNodePorts: false
+  ipFamilyPolicy: SingleStack
+  ipFamilies: [IPv4]
+  loadBalancerSourceRanges:
+    - 172.16.3.1/32
+  selector:
+    app: collector
+  ports:
+    - name: sflow
+      port: 6343
+      targetPort: sflow
+      protocol: UDP
