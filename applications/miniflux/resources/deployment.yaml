@@ -21,7 +21,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - image: docker.io/miniflux/miniflux:2.3.3
+        - image: docker.io/miniflux/miniflux:2.3.4
           name: miniflux
           securityContext:
             allowPrivilegeEscalation: false
