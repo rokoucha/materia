@@ -35,7 +35,7 @@ JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正として
 | [Argo CD](https://monitor.ggrel.net/d/materia-argo-cd) | [Redis Argo CD](https://monitor.ggrel.net/d/RpSjVqWMz2) |
 | [Materia Cluster](https://monitor.ggrel.net/d/materia-materia-cluster) | [Node Exporter Full](https://monitor.ggrel.net/d/rYdddlPWk)、[cert-manager](https://monitor.ggrel.net/d/u6M5igpWk)、[CoreDNS](https://monitor.ggrel.net/d/wY4blRMGz) |
 | Mastodon | [Redis Mastodon](https://monitor.ggrel.net/d/RpSjVqWMz) |
-| Traffic | [Home network](https://monitor.ggrel.net/d/home-network-flows) |
+| Traffic | [Network](https://monitor.ggrel.net/d/home-network-flows) |
 
 `Home network`は既存の`network-flows.json`を単一のソースとし、`network-flows` providerと`Traffic`フォルダーのUIDを維持する。重複するAPIエクスポートは置かない。
 
@@ -84,17 +84,17 @@ gcx dashboards snapshot materia-apc-rs-550va materia-argo-cd materia-environment
 
 画像確認で見つかった表示を補正: UPS電圧の時間単位をVへ、ヒートマップの色凡例を件数へ修正。凡例を短縮し、表の主要列を先頭に配置。クラスタ画面は概要→Namespace/Pod→ノード容量→GPUの順とし、詳細・監査ログは折りたたむ。失敗・異常件数が正数のstatは赤で表示する。
 
-## Home network overview
+## Network overview
 
-[Home network](https://monitor.ggrel.net/d/home-network-flows) integrates Chlorine
-Router health, measured home-VLAN bandwidth, Ping Pong latency and flow analysis.
+[Network](https://monitor.ggrel.net/d/home-network-flows) integrates Chlorine
+Router health, measured LAN-VLAN bandwidth, Ping Pong latency and flow analysis.
 Its UID remains `home-network-flows`. One time range and shared crosshair apply
-throughout; Device/Direction filter only the flow panels. Interface counters are
+throughout; Network/Device/Direction filter only the flow panels. Interface counters are
 measured totals, while flow panels estimate external traffic from samples.
 
 Ping Pong target-by-target checks and router WAN/VLAN/NAT/hardware/log diagnostics
 are available in collapsed rows. The standalone Chlorine Router and Ping Pong dashboards have been retired;
-use the unified Home network dashboard for both overview and diagnostics.
+use the unified Network dashboard for both overview and diagnostics.
 
 再撮影でクラスタのLoad Average・Image Pull件数の単位と`exported_namespace` / `exported_pod`の凡例も補正。SwitchBotとOrphaned Resourcesは凡例領域を調整する。
 

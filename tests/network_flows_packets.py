@@ -9,7 +9,7 @@ def words(*values):
     return struct.pack("!" + "I" * len(values), *values)
 
 
-def sample(sequence, source, destination, upload=True, routed=True):
+def sample(sequence, source, destination, upload=True, routed=True, vlan=10):
     router = bytes.fromhex("00e0b46c8087")
     device = bytes.fromhex("020000000001")
     src = router if not upload else device
@@ -25,7 +25,8 @@ def sample(sequence, source, destination, upload=True, routed=True):
     else:
         ip = struct.pack("!IHBB16s16s", 6 << 28, 8, 17, 64, source.packed, destination.packed)
         protocol = b"\x86\xdd"
-    header = dst + src + protocol + ip + udp
+    tag = struct.pack("!HH", 0x8100, vlan) if vlan else b""
+    header = dst + src + tag + protocol + ip + udp
     raw = words(1, 1000, 4, len(header)) + header
     raw += b"\0" * (-len(raw) % 4)
     record = words(1, len(raw)) + raw
@@ -45,6 +46,14 @@ def main():
         ("172.16.1.100", "1.1.1.1", True, False),
         ("240b:10:abcd:1201::100", "2606:4700:4700::1111", True, True),
     ]
+    if "--networks" in sys.argv:
+        cases = []
+        for vlan, subnet in [(0, 0), (10, 1), (20, 2), (30, 3), (200, 254), (99, 99)]:
+            local = f"172.16.{subnet}.100"
+            cases.extend([(local, "1.1.1.1", True, True, vlan),
+                          ("1.1.1.1", local, False, True, vlan),
+                          (f"240b:10:1234:56{subnet:02x}::100", "2606:4700:4700::1111", True, True, vlan),
+                          ("2606:4700:4700::1111", f"240b:10:1234:56{subnet:02x}::100", False, True, vlan)])
     if "--wake" in sys.argv:
         cases = [("172.16.1.200", "8.8.8.8", True, True), ("8.8.8.8", "172.16.1.200", False, True)]
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:

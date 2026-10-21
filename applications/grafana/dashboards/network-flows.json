@@ -1,6 +1,6 @@
 {
   "uid": "home-network-flows",
-  "title": "Home network",
+  "title": "Network",
   "schemaVersion": 41,
   "version": 1,
   "timezone": "browser",
@@ -15,7 +15,7 @@
     "chlorine",
     "router",
     "ping-pong",
-    "home-network"
+    "network"
   ],
   "panels": [
     {
@@ -31,7 +31,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "## Home network · Health & traffic\n回線品質とルーターの状態、端末ごとの通信を確認できます。**Device / Directionは通信分析にのみ適用**します。"
+        "content": "## Network · Health & traffic\n回線品質とルーターの状態、端末ごとの通信を確認できます。**Network / Device / Directionは通信分析にのみ適用**します。"
       }
     },
     {
@@ -356,7 +356,7 @@
     },
     {
       "id": 1007,
-      "title": "HOME LAN · Measured bandwidth",
+      "title": "LAN VLANs · Measured bandwidth",
       "type": "timeseries",
       "gridPos": {
         "x": 0,
@@ -364,7 +364,7 @@
         "w": 12,
         "h": 9
       },
-      "description": "VLAN 10のインターフェース実測値。TX=download、RX=upload。端末フィルターは適用しません。内部通信・ヘッダーなども含むため、下段の外部通信フロー推定値とは完全には一致しません。",
+      "description": "家庭用・サーバー用・materia用VLANの合計のインターフェース実測値。TX=download、RX=upload。Network / Deviceフィルターは適用しません。内部通信・ヘッダーなども含むため、下段の外部通信フロー推定値とは完全には一致しません。",
       "fieldConfig": {
         "defaults": {
           "unit": "bps",
@@ -457,14 +457,14 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "rate(node_network_transmit_bytes_total{job=\"chlorinate\",device=\"enp5s0f1.10\"}[$__rate_interval]) * 8",
+          "expr": "sum(rate(node_network_transmit_bytes_total{job=\"chlorinate\",device=~\"enp5s0f1\\\\.(10|20|30)\"}[$__rate_interval])) * 8",
           "legendFormat": "download",
           "range": true,
           "instant": false
         },
         {
           "refId": "B",
-          "expr": "rate(node_network_receive_bytes_total{job=\"chlorinate\",device=\"enp5s0f1.10\"}[$__rate_interval]) * 8",
+          "expr": "sum(rate(node_network_receive_bytes_total{job=\"chlorinate\",device=~\"enp5s0f1\\\\.(10|20|30)\"}[$__rate_interval])) * 8",
           "legendFormat": "upload",
           "range": true,
           "instant": false
@@ -619,7 +619,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "## Traffic explorer · Devices & destinations\n選択端末・方向の外部通信を表示します。フローはサンプリングによる推定値で、上段のインターフェース実測値とは対象が異なります。"
+        "content": "## Traffic explorer · Devices & destinations\n選択ネットワーク・端末・方向の外部通信を表示します。フローはサンプリングによる推定値で、上段のインターフェース実測値とは対象が異なります。"
       },
       "transparent": true
     },
@@ -672,7 +672,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT $__timeGroupAlias(time,'5m',0), sum(bytes)::double precision AS value FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY 1 ORDER BY 1",
+          "rawSql": "SELECT $__timeGroupAlias(time,'5m',0), sum(bytes)::double precision AS value FROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS network_traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY 1 ORDER BY 1",
           "format": "time_series",
           "editorMode": "code",
           "rawQuery": true
@@ -728,7 +728,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT sum(bytes)::double precision * 8 / 300 AS value FROM traffic WHERE time >= now() - interval '5 minutes' AND time < now() AND direction='download' AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
+          "rawSql": "SELECT sum(bytes)::double precision * 8 / 300 AS value FROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS network_traffic WHERE time >= now() - interval '5 minutes' AND time < now() AND direction='download' AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
@@ -784,7 +784,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT sum(bytes)::double precision * 8 / 300 AS value FROM traffic WHERE time >= now() - interval '5 minutes' AND time < now() AND direction='upload' AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
+          "rawSql": "SELECT sum(bytes)::double precision * 8 / 300 AS value FROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS network_traffic WHERE time >= now() - interval '5 minutes' AND time < now() AND direction='upload' AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
@@ -840,7 +840,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT count(DISTINCT device_mac)::double precision AS value FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
+          "rawSql": "SELECT count(DISTINCT device_mac)::double precision AS value FROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS network_traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
@@ -912,7 +912,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT extract(epoch FROM now()-max(time))::double precision AS value FROM traffic",
+          "rawSql": "SELECT extract(epoch FROM now()-max(time))::double precision AS value FROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS network_traffic",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
@@ -958,7 +958,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "WITH selected AS (\n  SELECT device_mac AS device, remote_as,\n         CASE\n  WHEN ip_proto=6 AND service_port=443 THEN 'HTTPS · TCP/443'\n  WHEN ip_proto=17 AND service_port=443 THEN 'QUIC · UDP/443'\n  WHEN ip_proto IN (6,17) AND service_port=53 THEN CASE WHEN ip_proto=6 THEN 'DNS · TCP/53' ELSE 'DNS · UDP/53' END\n  WHEN ip_proto=6 AND service_port=853 THEN 'DoT · TCP/853'\n  WHEN ip_proto=17 AND service_port=853 THEN 'DoQ · UDP/853'\n  WHEN ip_proto=6 AND service_port=80 THEN 'HTTP · TCP/80'\n  WHEN ip_proto=6 AND service_port=22 THEN 'SSH · TCP/22'\n  WHEN ip_proto=1 THEN 'ICMP'\n  WHEN ip_proto=58 THEN 'ICMPv6'\n  WHEN ip_proto IN (6,17) THEN CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n  ELSE 'IP/' || ip_proto::text END AS service, bytes\n  FROM traffic\n  WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), devices AS (\n  SELECT device FROM selected GROUP BY device ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), ases AS (\n  SELECT remote_as FROM selected GROUP BY remote_as ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), services AS (\n  SELECT service FROM selected GROUP BY service ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n)\nSELECT CASE WHEN device IN (SELECT device FROM devices) THEN COALESCE(d.label, device::text) ELSE 'Other devices' END AS \"Device\",\n       CASE WHEN remote_as IN (SELECT remote_as FROM ases) THEN COALESCE(a.name, 'AS' || remote_as::text) ELSE 'Other ASes' END AS \"AS\",\n       CASE WHEN service IN (SELECT service FROM services) THEN service ELSE 'Other services' END AS \"Service\",\n       sum(bytes)::double precision AS \"Bytes\"\nFROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY 1,2,3 ORDER BY 4 DESC",
+          "rawSql": "WITH selected AS (\n  SELECT device_mac AS device, remote_as,\n         CASE\n  WHEN ip_proto=6 AND service_port=443 THEN 'HTTPS · TCP/443'\n  WHEN ip_proto=17 AND service_port=443 THEN 'QUIC · UDP/443'\n  WHEN ip_proto IN (6,17) AND service_port=53 THEN CASE WHEN ip_proto=6 THEN 'DNS · TCP/53' ELSE 'DNS · UDP/53' END\n  WHEN ip_proto=6 AND service_port=853 THEN 'DoT · TCP/853'\n  WHEN ip_proto=17 AND service_port=853 THEN 'DoQ · UDP/853'\n  WHEN ip_proto=6 AND service_port=80 THEN 'HTTP · TCP/80'\n  WHEN ip_proto=6 AND service_port=22 THEN 'SSH · TCP/22'\n  WHEN ip_proto=1 THEN 'ICMP'\n  WHEN ip_proto=58 THEN 'ICMPv6'\n  WHEN ip_proto IN (6,17) THEN CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n  ELSE 'IP/' || ip_proto::text END AS service, bytes\n  FROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS network_traffic\n  WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), devices AS (\n  SELECT device FROM selected GROUP BY device ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), ases AS (\n  SELECT remote_as FROM selected GROUP BY remote_as ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), services AS (\n  SELECT service FROM selected GROUP BY service ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n)\nSELECT CASE WHEN device IN (SELECT device FROM devices) THEN COALESCE(d.label, device::text) ELSE 'Other devices' END AS \"Device\",\n       CASE WHEN remote_as IN (SELECT remote_as FROM ases) THEN COALESCE(a.name, 'AS' || remote_as::text) ELSE 'Other ASes' END AS \"AS\",\n       CASE WHEN service IN (SELECT service FROM services) THEN service ELSE 'Other services' END AS \"Service\",\n       sum(bytes)::double precision AS \"Bytes\"\nFROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY 1,2,3 ORDER BY 4 DESC",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
@@ -1038,7 +1038,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "WITH selected AS (\n SELECT time, COALESCE(a.name,'AS'||remote_as::text) AS name,bytes\n FROM traffic LEFT JOIN as_names a ON a.asn=remote_as WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), top_ases AS (\n SELECT name FROM selected GROUP BY name ORDER BY sum(bytes) DESC LIMIT 8\n)\nSELECT $__timeGroupAlias(time,'5m',0), CASE WHEN name IN (SELECT name FROM top_ases) THEN name ELSE 'Other ASes' END AS metric,\n       sum(bytes)::double precision * 8 / 300 AS value\nFROM selected GROUP BY 1,2 ORDER BY 1\n",
+          "rawSql": "WITH selected AS (\n SELECT time, COALESCE(a.name,'AS'||remote_as::text) AS name,bytes\n FROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS network_traffic LEFT JOIN as_names a ON a.asn=remote_as WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), top_ases AS (\n SELECT name FROM selected GROUP BY name ORDER BY sum(bytes) DESC LIMIT 8\n)\nSELECT $__timeGroupAlias(time,'5m',0), CASE WHEN name IN (SELECT name FROM top_ases) THEN name ELSE 'Other ASes' END AS metric,\n       sum(bytes)::double precision * 8 / 300 AS value\nFROM selected GROUP BY 1,2 ORDER BY 1\n",
           "format": "time_series",
           "editorMode": "code",
           "rawQuery": true
@@ -1136,7 +1136,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT CASE family(device_ip) WHEN 6 THEN 'IPv6' ELSE 'IPv4' END AS \"Family\", sum(bytes)::double precision AS \"Bytes\" FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY 1",
+          "rawSql": "SELECT CASE family(device_ip) WHEN 6 THEN 'IPv6' ELSE 'IPv4' END AS \"Family\", sum(bytes)::double precision AS \"Bytes\" FROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS network_traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY 1",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
@@ -1193,7 +1193,7 @@
                 "value": [
                   {
                     "title": "Focus on this device",
-                    "url": "/d/home-network-flows?${__url_time_range}&var-direction=${direction:percentencode}&var-top=${top:percentencode}&var-device=${__data.fields.MAC}",
+                    "url": "/d/home-network-flows?${__url_time_range}&var-direction=${direction:percentencode}&var-top=${top:percentencode}&var-device=${__data.fields.MAC}&var-network=${network:percentencode}",
                     "targetBlank": false
                   }
                 ]
@@ -1342,7 +1342,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT COALESCE(d.label,t.device_mac::text) AS \"Device\", t.device_mac::text AS \"MAC\",\n sum(bytes) FILTER (WHERE direction='download')::double precision AS \"Download\",\n sum(bytes) FILTER (WHERE direction='upload')::double precision AS \"Upload\",\n sum(bytes)::double precision AS \"Bytes\", count(DISTINCT remote_as)::int AS \"AS count\", max(time) AS \"Last seen\"\nFROM traffic t LEFT JOIN device_labels d ON d.mac=t.device_mac\nWHERE $__timeFilter(time) AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\nGROUP BY t.device_mac,d.label ORDER BY \"Bytes\" DESC LIMIT 100\n",
+          "rawSql": "SELECT COALESCE(d.label,t.device_mac::text) AS \"Device\", t.device_mac::text AS \"MAC\",\n sum(bytes) FILTER (WHERE direction='download')::double precision AS \"Download\",\n sum(bytes) FILTER (WHERE direction='upload')::double precision AS \"Upload\",\n sum(bytes)::double precision AS \"Bytes\", count(DISTINCT remote_as)::int AS \"AS count\", max(time) AS \"Last seen\"\nFROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS t LEFT JOIN device_labels d ON d.mac=t.device_mac\nWHERE $__timeFilter(time) AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\nGROUP BY t.device_mac,d.label ORDER BY \"Bytes\" DESC LIMIT 100\n",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
@@ -1409,7 +1409,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "WITH selected AS (\n SELECT CASE\n  WHEN ip_proto=6 AND service_port=443 THEN 'HTTPS · TCP/443'\n  WHEN ip_proto=17 AND service_port=443 THEN 'QUIC · UDP/443'\n  WHEN ip_proto IN (6,17) AND service_port=53 THEN CASE WHEN ip_proto=6 THEN 'DNS · TCP/53' ELSE 'DNS · UDP/53' END\n  WHEN ip_proto=6 AND service_port=853 THEN 'DoT · TCP/853'\n  WHEN ip_proto=17 AND service_port=853 THEN 'DoQ · UDP/853'\n  WHEN ip_proto=6 AND service_port=80 THEN 'HTTP · TCP/80'\n  WHEN ip_proto=6 AND service_port=22 THEN 'SSH · TCP/22'\n  WHEN ip_proto=1 THEN 'ICMP'\n  WHEN ip_proto=58 THEN 'ICMPv6'\n  WHEN ip_proto IN (6,17) THEN CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n  ELSE 'IP/' || ip_proto::text END AS service, bytes FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), ranked AS (\n SELECT service,sum(bytes)::double precision AS bytes,row_number() OVER (ORDER BY sum(bytes) DESC) AS rank\n FROM selected GROUP BY service\n)\nSELECT CASE WHEN rank<=6 THEN service ELSE 'Other ports' END AS \"Port\", sum(bytes)::double precision AS \"Bytes\"\nFROM ranked GROUP BY 1 ORDER BY 2 DESC\n",
+          "rawSql": "WITH selected AS (\n SELECT CASE\n  WHEN ip_proto=6 AND service_port=443 THEN 'HTTPS · TCP/443'\n  WHEN ip_proto=17 AND service_port=443 THEN 'QUIC · UDP/443'\n  WHEN ip_proto IN (6,17) AND service_port=53 THEN CASE WHEN ip_proto=6 THEN 'DNS · TCP/53' ELSE 'DNS · UDP/53' END\n  WHEN ip_proto=6 AND service_port=853 THEN 'DoT · TCP/853'\n  WHEN ip_proto=17 AND service_port=853 THEN 'DoQ · UDP/853'\n  WHEN ip_proto=6 AND service_port=80 THEN 'HTTP · TCP/80'\n  WHEN ip_proto=6 AND service_port=22 THEN 'SSH · TCP/22'\n  WHEN ip_proto=1 THEN 'ICMP'\n  WHEN ip_proto=58 THEN 'ICMPv6'\n  WHEN ip_proto IN (6,17) THEN CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n  ELSE 'IP/' || ip_proto::text END AS service, bytes FROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS network_traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), ranked AS (\n SELECT service,sum(bytes)::double precision AS bytes,row_number() OVER (ORDER BY sum(bytes) DESC) AS rank\n FROM selected GROUP BY service\n)\nSELECT CASE WHEN rank<=6 THEN service ELSE 'Other ports' END AS \"Port\", sum(bytes)::double precision AS \"Bytes\"\nFROM ranked GROUP BY 1 ORDER BY 2 DESC\n",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
@@ -1509,7 +1509,7 @@
                 "type": "grafana-postgresql-datasource",
                 "uid": "network-flows"
               },
-              "rawSql": "SELECT COALESCE(d.label, t.device_mac::text) AS \"Device\", host(t.device_ip) AS \"Address\",\n       n.name AS \"Reverse DNS\", sum(t.bytes)::double precision AS \"Bytes\"\nFROM traffic t LEFT JOIN device_labels d ON d.mac=t.device_mac\nLEFT JOIN address_names n ON n.ip=t.device_ip AND n.expires_at > now()\nWHERE $__timeFilter(t.time) AND t.direction = ${direction:sqlstring}\nAND (${device:sqlstring} = 'all' OR t.device_mac::text = ${device:sqlstring})\nGROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 100",
+              "rawSql": "SELECT COALESCE(d.label, t.device_mac::text) AS \"Device\", host(t.device_ip) AS \"Address\",\n       n.name AS \"Reverse DNS\", sum(t.bytes)::double precision AS \"Bytes\"\nFROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS t LEFT JOIN device_labels d ON d.mac=t.device_mac\nLEFT JOIN address_names n ON n.ip=t.device_ip AND n.expires_at > now()\nWHERE $__timeFilter(t.time) AND t.direction = ${direction:sqlstring}\nAND (${device:sqlstring} = 'all' OR t.device_mac::text = ${device:sqlstring})\nGROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 100",
               "format": "table",
               "editorMode": "code",
               "rawQuery": true
@@ -1597,7 +1597,7 @@
                 "type": "grafana-postgresql-datasource",
                 "uid": "network-flows"
               },
-              "rawSql": "SELECT host(t.remote_ip) AS \"Address\", n.name AS \"Reverse DNS\",\n       COALESCE(a.name, 'AS' || t.remote_as::text) AS \"AS\", sum(t.bytes)::double precision AS \"Bytes\"\nFROM traffic t LEFT JOIN address_names n ON n.ip=t.remote_ip AND n.expires_at > now()\nLEFT JOIN as_names a ON a.asn=t.remote_as\nWHERE $__timeFilter(t.time) AND t.direction = ${direction:sqlstring}\nAND (${device:sqlstring} = 'all' OR t.device_mac::text = ${device:sqlstring})\nGROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 100",
+              "rawSql": "SELECT host(t.remote_ip) AS \"Address\", n.name AS \"Reverse DNS\",\n       COALESCE(a.name, 'AS' || t.remote_as::text) AS \"AS\", sum(t.bytes)::double precision AS \"Bytes\"\nFROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS t LEFT JOIN address_names n ON n.ip=t.remote_ip AND n.expires_at > now()\nLEFT JOIN as_names a ON a.asn=t.remote_as\nWHERE $__timeFilter(t.time) AND t.direction = ${direction:sqlstring}\nAND (${device:sqlstring} = 'all' OR t.device_mac::text = ${device:sqlstring})\nGROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 100",
               "format": "table",
               "editorMode": "code",
               "rawQuery": true
@@ -3004,6 +3004,19 @@
   "templating": {
     "list": [
       {
+        "name": "network",
+        "label": "Network",
+        "type": "custom",
+        "query": "All networks : all,Management : management,Home : home,Server : server,Materia : materia",
+        "current": {
+          "text": "All networks",
+          "value": "all"
+        },
+        "options": [],
+        "multi": false,
+        "includeAll": false
+      },
+      {
         "name": "direction",
         "label": "Direction",
         "type": "custom",
@@ -3033,7 +3046,7 @@
           "type": "grafana-postgresql-datasource",
           "uid": "network-flows"
         },
-        "query": "SELECT 'All devices' AS __text,'all' AS __value UNION ALL SELECT COALESCE(d.label,t.device_mac::text) AS __text,t.device_mac::text AS __value FROM traffic t LEFT JOIN device_labels d ON d.mac=t.device_mac WHERE $__timeFilter(time) GROUP BY t.device_mac,d.label ORDER BY 1",
+        "query": "SELECT 'All devices' AS __text,'all' AS __value UNION ALL SELECT COALESCE(d.label,t.device_mac::text) AS __text,t.device_mac::text AS __value FROM (SELECT * FROM traffic WHERE (${network:sqlstring} = 'all' OR network = ${network:sqlstring})) AS t LEFT JOIN device_labels d ON d.mac=t.device_mac WHERE $__timeFilter(time) GROUP BY t.device_mac,d.label ORDER BY 1",
         "refresh": 2,
         "includeAll": false,
         "multi": false,
@@ -3073,12 +3086,12 @@
       }
     ]
   },
-  "description": "Unified Chlorine Router, Ping Pong and home flow dashboard. Shared time range/crosshair; device and direction filters apply only to flow panels. Interface counters are measured, flow counters are sampled estimates.",
+  "description": "Unified Chlorine Router, Ping Pong and all-LAN flow dashboard. Shared time range/crosshair; network, device and direction filters apply only to flow panels. Interface counters are measured, flow counters are sampled estimates.",
   "links": [
     {
       "title": "All devices",
       "type": "link",
-      "url": "/d/home-network-flows?${__url_time_range}&var-direction=${direction:percentencode}&var-top=${top:percentencode}&var-device=all",
+      "url": "/d/home-network-flows?${__url_time_range}&var-direction=${direction:percentencode}&var-top=${top:percentencode}&var-device=all&var-network=${network:percentencode}",
       "targetBlank": false
     }
   ],

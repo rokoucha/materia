@@ -40,8 +40,25 @@ for _ in {1..60}; do
 done
 docker exec "$name-db" psql -U flows -d flows -v ON_ERROR_STOP=1 \
   -c "CREATE ROLE flow_reader LOGIN PASSWORD 'disposable-reader';" >/dev/null
+# Seed the pre-VLAN schema to check migration of existing home history.
+python3 - "$root" > "$config/legacy-schema.sql" <<'PYSQL'
+from pathlib import Path
+import sys
+s = (Path(sys.argv[1]) / 'applications/network-flows/config/schema.sql').read_text()
+print(s[s.index('CREATE TABLE IF NOT EXISTS upload'):s.index('-- Existing rows')])
+PYSQL
+docker exec -i "$name-db" psql -U flows -d flows -v ON_ERROR_STOP=1 < "$config/legacy-schema.sql" >/dev/null
+docker exec "$name-db" psql -U flows -d flows -v ON_ERROR_STOP=1 -c "
+INSERT INTO upload VALUES ('02:00:00:00:00:01','172.16.1.100','1.1.1.1',13335,443,17,1,1000,now(),now());" >/dev/null
 docker exec -i "$name-db" psql -U flows -d flows -v ON_ERROR_STOP=1 \
   < "$root/applications/network-flows/config/schema.sql" >/dev/null
+docker exec "$name-db" psql -U flows -d flows -v ON_ERROR_STOP=1 -c "
+DO \$\$ BEGIN
+  ASSERT (SELECT network FROM traffic) = 'home';
+  ASSERT (SELECT bytes FROM traffic) = 1000;
+END \$\$;
+TRUNCATE upload, download;" >/dev/null
+
 docker run -d --name "$name-collector" --network "$name" --network-alias collector \
   --user 10001:10001 --cap-drop ALL --security-opt=no-new-privileges \
   -v "$config:/etc/pmacct:ro" -v "$config/maps:/maps" "$collector_image" >/dev/null
@@ -99,3 +116,30 @@ for _ in {1..30}; do
 done
 [[ "$updated" == '500000' ]]
 echo 'IPv4/IPv6, directions, PD changes, exclusions, normalization, reader permissions and ASN hot reload passed'
+
+# Re-applying the schema preserves historic VLAN attribution.
+docker exec -i "$name-db" psql -U flows -d flows -v ON_ERROR_STOP=1 \
+  < "$root/applications/network-flows/config/schema.sql" >/dev/null
+docker exec "$name-db" psql -U flows -d flows -v ON_ERROR_STOP=1 -c "
+DO \$\$ BEGIN
+  ASSERT (SELECT bool_and(network='home') FROM traffic);
+END \$\$;
+TRUNCATE upload, download;" >/dev/null
+docker run --rm --network "$name" -v "$root/tests/network_flows_packets.py:/packets.py:ro" \
+  python:3.14.0-slim-bookworm python /packets.py collector --networks
+for _ in {1..30}; do
+  actual="$(docker exec "$name-db" psql -U flows -d flows -Atc 'SELECT count(*),sum(bytes) FROM traffic')"
+  if [[ "$actual" == '16|1600000' ]]; then break; fi
+  sleep 1
+done
+[[ "$actual" == '16|1600000' ]]
+docker exec "$name-db" psql -U flows -d flows -v ON_ERROR_STOP=1 -c "
+DO \$\$ BEGIN
+  ASSERT (SELECT count(DISTINCT network) FROM traffic) = 4;
+  ASSERT (SELECT bool_and(total=400000) FROM (SELECT sum(bytes) AS total FROM traffic GROUP BY network) n);
+  ASSERT (SELECT sum(bytes) FROM traffic WHERE direction='upload') = 800000;
+  ASSERT (SELECT sum(bytes) FROM traffic WHERE direction='download') = 800000;
+  ASSERT (SELECT sum(bytes) FROM upload WHERE vlan=200) = 200000;
+  ASSERT NOT EXISTS (SELECT 1 FROM traffic WHERE device_ip <<= '172.16.254.0/24');
+END \$\$;" >/dev/null
+echo 'All LAN VLANs, IPv4/IPv6, network filtering, legacy migration and ISP exclusion passed'
