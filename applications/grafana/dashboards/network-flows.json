@@ -31,7 +31,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "## Home network · Health & traffic\n回線品質・ルーターの状態と通信フローを同じ時間軸で確認できます。**Device / Directionはフローに適用**し、回線・ルーター指標は全体を表示します。"
+        "content": "## Home network · Health & traffic\n回線品質とルーターの状態、端末ごとの通信を確認できます。**Device / Directionは通信分析にのみ適用**します。"
       }
     },
     {
@@ -103,8 +103,8 @@
         {
           "refId": "A",
           "expr": "node_hwmon_temp_celsius{job=\"chlorinate\",chip=\"platform_coretemp_0\",sensor=\"temp1\"}",
-          "instant": true,
-          "range": false,
+          "instant": false,
+          "range": true,
           "legendFormat": "CPU TEMPERATURE"
         }
       ],
@@ -128,11 +128,12 @@
           "fields": "",
           "values": false
         },
-        "graphMode": "none",
+        "graphMode": "area",
         "colorMode": "value",
         "textMode": "value",
         "justifyMode": "left"
-      }
+      },
+      "interval": "1m"
     },
     {
       "id": 1003,
@@ -153,8 +154,8 @@
         {
           "refId": "A",
           "expr": "100 * node_nf_conntrack_entries{job=\"chlorinate\"} / node_nf_conntrack_entries_limit{job=\"chlorinate\"}",
-          "instant": true,
-          "range": false,
+          "instant": false,
+          "range": true,
           "legendFormat": "CONNTRACK"
         }
       ],
@@ -178,11 +179,12 @@
           "fields": "",
           "values": false
         },
-        "graphMode": "none",
+        "graphMode": "area",
         "colorMode": "value",
         "textMode": "value",
         "justifyMode": "left"
-      }
+      },
+      "interval": "1m"
     },
     {
       "id": 1004,
@@ -203,8 +205,8 @@
         {
           "refId": "A",
           "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{job=\"chlorinate\",mode=\"idle\"}[$__rate_interval])))",
-          "instant": true,
-          "range": false,
+          "instant": false,
+          "range": true,
           "legendFormat": "CPU USAGE"
         }
       ],
@@ -228,11 +230,12 @@
           "fields": "",
           "values": false
         },
-        "graphMode": "none",
+        "graphMode": "area",
         "colorMode": "value",
         "textMode": "value",
         "justifyMode": "left"
-      }
+      },
+      "interval": "1m"
     },
     {
       "id": 1005,
@@ -253,8 +256,8 @@
         {
           "refId": "A",
           "expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"chlorinate\"} / node_memory_MemTotal_bytes{job=\"chlorinate\"})",
-          "instant": true,
-          "range": false,
+          "instant": false,
+          "range": true,
           "legendFormat": "MEMORY USAGE"
         }
       ],
@@ -278,11 +281,12 @@
           "fields": "",
           "values": false
         },
-        "graphMode": "none",
+        "graphMode": "area",
         "colorMode": "value",
         "textMode": "value",
         "justifyMode": "left"
-      }
+      },
+      "interval": "1m"
     },
     {
       "id": 1006,
@@ -469,7 +473,7 @@
       "interval": "1m"
     },
     {
-      "title": "PING PONG · Internet latency",
+      "title": "INTERNET · ICMP latency",
       "type": "timeseries",
       "description": "Chlorineから各IPv4/IPv6宛先とMAP-E BRまでのICMP RTT。プローブ失敗時は0msとして扱わず欠測にします。端末フィルターは適用しません。",
       "datasource": {
@@ -615,7 +619,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "## Traffic explorer · Devices & destinations\n以下は選択端末・方向の外部通信フローです。サンプリングによる推定値を表示します。"
+        "content": "## Traffic explorer · Devices & destinations\n選択端末・方向の外部通信を表示します。フローはサンプリングによる推定値で、上段のインターフェース実測値とは対象が異なります。"
       },
       "transparent": true
     },
@@ -626,7 +630,7 @@
       "gridPos": {
         "x": 0,
         "y": 19,
-        "w": 4,
+        "w": 6,
         "h": 4
       },
       "description": "選択した期間・方向・端末の集計です。",
@@ -680,9 +684,9 @@
       "title": "↓ DOWNLOAD · 5 min",
       "type": "stat",
       "gridPos": {
-        "x": 4,
+        "x": 6,
         "y": 19,
-        "w": 4,
+        "w": 5,
         "h": 4
       },
       "description": "選択端末の直近5分の推定速度。期間・方向フィルターに関係なく、各方向の現在値を表示します。",
@@ -736,9 +740,9 @@
       "title": "↑ UPLOAD · 5 min",
       "type": "stat",
       "gridPos": {
-        "x": 8,
+        "x": 11,
         "y": 19,
-        "w": 4,
+        "w": 5,
         "h": 4
       },
       "description": "選択端末の直近5分の推定速度。期間・方向フィルターに関係なく、各方向の現在値を表示します。",
@@ -792,7 +796,7 @@
       "title": "DEVICES",
       "type": "stat",
       "gridPos": {
-        "x": 12,
+        "x": 16,
         "y": 19,
         "w": 4,
         "h": 4
@@ -837,62 +841,6 @@
             "uid": "network-flows"
           },
           "rawSql": "SELECT count(DISTINCT device_mac)::double precision AS value FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
-          "format": "table",
-          "editorMode": "code",
-          "rawQuery": true
-        }
-      ]
-    },
-    {
-      "id": 13,
-      "title": "IPv6 SHARE",
-      "type": "stat",
-      "gridPos": {
-        "x": 16,
-        "y": 19,
-        "w": 4,
-        "h": 4
-      },
-      "description": "選択した期間・方向・端末の集計です。",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "noValue": "—",
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "#56D4C6"
-          },
-          "decimals": 1
-        },
-        "overrides": []
-      },
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "left",
-        "textMode": "value",
-        "orientation": "auto",
-        "wideLayout": true,
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        }
-      },
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "network-flows"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "network-flows"
-          },
-          "rawSql": "SELECT 100.0 * sum(bytes) FILTER (WHERE family(device_ip)=6) / NULLIF(sum(bytes),0) AS value FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})",
           "format": "table",
           "editorMode": "code",
           "rawQuery": true
@@ -972,20 +920,67 @@
       ]
     },
     {
-      "id": 4,
-      "title": "BANDWIDTH · Download ↓ / Upload ↑",
-      "type": "timeseries",
+      "id": 3,
+      "title": "TRAFFIC PATHS · Device → AS → service port",
+      "type": "netsage-sankey-panel",
       "gridPos": {
         "x": 0,
         "y": 23,
-        "w": 16,
-        "h": 9
+        "w": 24,
+        "h": 15
       },
-      "description": "選択端末の双方向通信。uploadは下側へ反転表示し、値・凡例は正の通信速度です。方向フィルターに関係なく両方向を表示します。",
+      "description": "線の太さは選択期間の推定転送量。各列の上位N件以外はOtherに集約し総量を保ちます。HTTPS等は標準ポート名の補助表示で、アプリ識別ではありません。",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "noValue": "—"
+        },
+        "overrides": []
+      },
+      "options": {
+        "monochrome": false,
+        "nodeWidth": 12,
+        "nodePadding": 16,
+        "iteration": 32,
+        "valueField": "Bytes",
+        "labelSize": 12,
+        "textColor": "#D8D9DA",
+        "nodeColor": "#5794F2"
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "WITH selected AS (\n  SELECT device_mac AS device, remote_as,\n         CASE\n  WHEN ip_proto=6 AND service_port=443 THEN 'HTTPS · TCP/443'\n  WHEN ip_proto=17 AND service_port=443 THEN 'QUIC · UDP/443'\n  WHEN ip_proto IN (6,17) AND service_port=53 THEN CASE WHEN ip_proto=6 THEN 'DNS · TCP/53' ELSE 'DNS · UDP/53' END\n  WHEN ip_proto=6 AND service_port=853 THEN 'DoT · TCP/853'\n  WHEN ip_proto=17 AND service_port=853 THEN 'DoQ · UDP/853'\n  WHEN ip_proto=6 AND service_port=80 THEN 'HTTP · TCP/80'\n  WHEN ip_proto=6 AND service_port=22 THEN 'SSH · TCP/22'\n  WHEN ip_proto=1 THEN 'ICMP'\n  WHEN ip_proto=58 THEN 'ICMPv6'\n  WHEN ip_proto IN (6,17) THEN CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n  ELSE 'IP/' || ip_proto::text END AS service, bytes\n  FROM traffic\n  WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), devices AS (\n  SELECT device FROM selected GROUP BY device ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), ases AS (\n  SELECT remote_as FROM selected GROUP BY remote_as ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), services AS (\n  SELECT service FROM selected GROUP BY service ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n)\nSELECT CASE WHEN device IN (SELECT device FROM devices) THEN COALESCE(d.label, device::text) ELSE 'Other devices' END AS \"Device\",\n       CASE WHEN remote_as IN (SELECT remote_as FROM ases) THEN COALESCE(a.name, 'AS' || remote_as::text) ELSE 'Other ASes' END AS \"AS\",\n       CASE WHEN service IN (SELECT service FROM services) THEN service ELSE 'Other services' END AS \"Service\",\n       sum(bytes)::double precision AS \"Bytes\"\nFROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY 1,2,3 ORDER BY 4 DESC",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "title": "REMOTE AS · Traffic over time",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 38,
+        "w": 16,
+        "h": 10
+      },
+      "description": "選択期間で転送量の多い上位8組織とOtherを積み上げ表示します。",
       "fieldConfig": {
         "defaults": {
           "unit": "bps",
           "noValue": "—",
+          "min": 0,
           "decimals": 1,
           "color": {
             "mode": "palette-classic"
@@ -994,7 +989,7 @@
             "drawStyle": "line",
             "lineInterpolation": "smooth",
             "lineWidth": 2,
-            "fillOpacity": 22,
+            "fillOpacity": 65,
             "gradientMode": "opacity",
             "showPoints": "never",
             "spanNulls": false,
@@ -1005,7 +1000,7 @@
               "type": "linear"
             },
             "stacking": {
-              "mode": "none",
+              "mode": "normal",
               "group": "A"
             },
             "hideFrom": {
@@ -1015,42 +1010,7 @@
             }
           }
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "download"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#5794F2"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "upload"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "fixed",
-                  "fixedColor": "#B877D9"
-                }
-              },
-              {
-                "id": "custom.transform",
-                "value": "negative-Y"
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "options": {
         "tooltip": {
@@ -1078,7 +1038,7 @@
             "type": "grafana-postgresql-datasource",
             "uid": "network-flows"
           },
-          "rawSql": "SELECT $__timeGroupAlias(time,'5m',0), direction AS metric, sum(bytes)::double precision * 8 / 300 AS value FROM traffic WHERE $__timeFilter(time) AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY 1,2 ORDER BY 1",
+          "rawSql": "WITH selected AS (\n SELECT time, COALESCE(a.name,'AS'||remote_as::text) AS name,bytes\n FROM traffic LEFT JOIN as_names a ON a.asn=remote_as WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), top_ases AS (\n SELECT name FROM selected GROUP BY name ORDER BY sum(bytes) DESC LIMIT 8\n)\nSELECT $__timeGroupAlias(time,'5m',0), CASE WHEN name IN (SELECT name FROM top_ases) THEN name ELSE 'Other ASes' END AS metric,\n       sum(bytes)::double precision * 8 / 300 AS value\nFROM selected GROUP BY 1,2 ORDER BY 1\n",
           "format": "time_series",
           "editorMode": "code",
           "rawQuery": true
@@ -1091,9 +1051,9 @@
       "type": "piechart",
       "gridPos": {
         "x": 16,
-        "y": 23,
+        "y": 38,
         "w": 8,
-        "h": 9
+        "h": 10
       },
       "description": "",
       "fieldConfig": {
@@ -1184,366 +1144,13 @@
       ]
     },
     {
-      "id": 3,
-      "title": "TRAFFIC PATHS · Device → AS → service port",
-      "type": "netsage-sankey-panel",
-      "gridPos": {
-        "x": 0,
-        "y": 32,
-        "w": 24,
-        "h": 15
-      },
-      "description": "線の太さは選択期間の推定転送量。各列の上位N件以外はOtherに集約し総量を保ちます。HTTPS等は標準ポート名の補助表示で、アプリ識別ではありません。",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "noValue": "—"
-        },
-        "overrides": []
-      },
-      "options": {
-        "monochrome": false,
-        "nodeWidth": 12,
-        "nodePadding": 16,
-        "iteration": 32,
-        "valueField": "Bytes",
-        "labelSize": 12,
-        "textColor": "#D8D9DA",
-        "nodeColor": "#5794F2"
-      },
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "network-flows"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "network-flows"
-          },
-          "rawSql": "WITH selected AS (\n  SELECT device_mac AS device, remote_as,\n         CASE\n  WHEN ip_proto=6 AND service_port=443 THEN 'HTTPS · TCP/443'\n  WHEN ip_proto=17 AND service_port=443 THEN 'QUIC · UDP/443'\n  WHEN ip_proto IN (6,17) AND service_port=53 THEN CASE WHEN ip_proto=6 THEN 'DNS · TCP/53' ELSE 'DNS · UDP/53' END\n  WHEN ip_proto=6 AND service_port=853 THEN 'DoT · TCP/853'\n  WHEN ip_proto=17 AND service_port=853 THEN 'DoQ · UDP/853'\n  WHEN ip_proto=6 AND service_port=80 THEN 'HTTP · TCP/80'\n  WHEN ip_proto=6 AND service_port=22 THEN 'SSH · TCP/22'\n  WHEN ip_proto=1 THEN 'ICMP'\n  WHEN ip_proto=58 THEN 'ICMPv6'\n  WHEN ip_proto IN (6,17) THEN CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n  ELSE 'IP/' || ip_proto::text END AS service, bytes\n  FROM traffic\n  WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), devices AS (\n  SELECT device FROM selected GROUP BY device ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), ases AS (\n  SELECT remote_as FROM selected GROUP BY remote_as ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n), services AS (\n  SELECT service FROM selected GROUP BY service ORDER BY sum(bytes) DESC LIMIT LEAST(50, GREATEST(1, ${top:sqlstring}::int))\n)\nSELECT CASE WHEN device IN (SELECT device FROM devices) THEN COALESCE(d.label, device::text) ELSE 'Other devices' END AS \"Device\",\n       CASE WHEN remote_as IN (SELECT remote_as FROM ases) THEN COALESCE(a.name, 'AS' || remote_as::text) ELSE 'Other ASes' END AS \"AS\",\n       CASE WHEN service IN (SELECT service FROM services) THEN service ELSE 'Other services' END AS \"Service\",\n       sum(bytes)::double precision AS \"Bytes\"\nFROM selected LEFT JOIN device_labels d ON d.mac=selected.device\nLEFT JOIN as_names a ON a.asn=selected.remote_as\nGROUP BY 1,2,3 ORDER BY 4 DESC",
-          "format": "table",
-          "editorMode": "code",
-          "rawQuery": true
-        }
-      ]
-    },
-    {
-      "id": 15,
-      "title": "TOP DEVICES · Transfer volume",
-      "type": "bargauge",
-      "gridPos": {
-        "x": 0,
-        "y": 47,
-        "w": 12,
-        "h": 10
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "noValue": "—",
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "#56D4C6"
-          },
-          "min": 0,
-          "decimals": 1
-        },
-        "overrides": []
-      },
-      "options": {
-        "displayMode": "gradient",
-        "orientation": "horizontal",
-        "namePlacement": "left",
-        "valueMode": "color",
-        "showUnfilled": true,
-        "sizing": "auto",
-        "minVizHeight": 18,
-        "maxVizHeight": 30,
-        "minVizWidth": 8,
-        "reduceOptions": {
-          "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": ""
-        },
-        "legend": {
-          "showLegend": false
-        }
-      },
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "network-flows"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "network-flows"
-          },
-          "rawSql": "SELECT COALESCE(d.label,t.device_mac::text) AS \"Device\",sum(bytes)::double precision AS \"Bytes\" FROM traffic t LEFT JOIN device_labels d ON d.mac=t.device_mac WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY t.device_mac,d.label ORDER BY 2 DESC LIMIT 10",
-          "format": "table",
-          "editorMode": "code",
-          "rawQuery": true
-        }
-      ],
-      "transformations": [
-        {
-          "id": "rowsToFields",
-          "options": {
-            "mappings": [
-              {
-                "fieldName": "Device",
-                "handlerKey": "field.name"
-              },
-              {
-                "fieldName": "Bytes",
-                "handlerKey": "field.value"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": 16,
-      "title": "TOP REMOTE AS · Transfer volume",
-      "type": "bargauge",
-      "gridPos": {
-        "x": 12,
-        "y": 47,
-        "w": 12,
-        "h": 10
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "noValue": "—",
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "#FFB357"
-          },
-          "min": 0,
-          "decimals": 1
-        },
-        "overrides": []
-      },
-      "options": {
-        "displayMode": "gradient",
-        "orientation": "horizontal",
-        "namePlacement": "left",
-        "valueMode": "color",
-        "showUnfilled": true,
-        "sizing": "auto",
-        "minVizHeight": 18,
-        "maxVizHeight": 30,
-        "minVizWidth": 8,
-        "reduceOptions": {
-          "values": false,
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": ""
-        },
-        "legend": {
-          "showLegend": false
-        }
-      },
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "network-flows"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "network-flows"
-          },
-          "rawSql": "SELECT COALESCE(a.name,'AS'||remote_as::text) AS \"AS\",sum(bytes)::double precision AS \"Bytes\" FROM traffic LEFT JOIN as_names a ON a.asn=remote_as WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring}) GROUP BY 1 ORDER BY 2 DESC LIMIT 10",
-          "format": "table",
-          "editorMode": "code",
-          "rawQuery": true
-        }
-      ],
-      "transformations": [
-        {
-          "id": "rowsToFields",
-          "options": {
-            "mappings": [
-              {
-                "fieldName": "AS",
-                "handlerKey": "field.name"
-              },
-              {
-                "fieldName": "Bytes",
-                "handlerKey": "field.value"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": 17,
-      "title": "AS MIX · Traffic over time",
-      "type": "timeseries",
-      "gridPos": {
-        "x": 0,
-        "y": 57,
-        "w": 16,
-        "h": 10
-      },
-      "description": "選択期間で転送量の多い上位8組織とOtherを積み上げ表示します。",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bps",
-          "noValue": "—",
-          "min": 0,
-          "decimals": 1,
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "fillOpacity": 65,
-            "gradientMode": "opacity",
-            "showPoints": "never",
-            "spanNulls": false,
-            "axisBorderShow": false,
-            "axisLabel": "",
-            "axisColorMode": "text",
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "stacking": {
-              "mode": "normal",
-              "group": "A"
-            },
-            "hideFrom": {
-              "tooltip": false,
-              "viz": false,
-              "legend": false
-            }
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "showLegend": true,
-          "displayMode": "table",
-          "placement": "bottom",
-          "calcs": [
-            "mean",
-            "max"
-          ]
-        }
-      },
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "network-flows"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "network-flows"
-          },
-          "rawSql": "WITH selected AS (\n SELECT time, COALESCE(a.name,'AS'||remote_as::text) AS name,bytes\n FROM traffic LEFT JOIN as_names a ON a.asn=remote_as WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), top_ases AS (\n SELECT name FROM selected GROUP BY name ORDER BY sum(bytes) DESC LIMIT 8\n)\nSELECT $__timeGroupAlias(time,'5m',0), CASE WHEN name IN (SELECT name FROM top_ases) THEN name ELSE 'Other ASes' END AS metric,\n       sum(bytes)::double precision * 8 / 300 AS value\nFROM selected GROUP BY 1,2 ORDER BY 1\n",
-          "format": "time_series",
-          "editorMode": "code",
-          "rawQuery": true
-        }
-      ]
-    },
-    {
-      "id": 18,
-      "title": "SERVICE PORTS · Traffic mix",
-      "type": "piechart",
-      "gridPos": {
-        "x": 16,
-        "y": 57,
-        "w": 8,
-        "h": 10
-      },
-      "description": "転送量の多い上位6ポートとOther。名称はポート番号からの推定であり、通信内容の解析結果ではありません。",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "noValue": "—",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "decimals": 1
-        },
-        "overrides": []
-      },
-      "options": {
-        "pieType": "donut",
-        "displayLabels": [
-          "percent"
-        ],
-        "legend": {
-          "showLegend": true,
-          "displayMode": "table",
-          "placement": "bottom",
-          "values": [
-            "value",
-            "percent"
-          ]
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "desc"
-        },
-        "reduceOptions": {
-          "values": true,
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": ""
-        },
-        "sort": "desc"
-      },
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "network-flows"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "network-flows"
-          },
-          "rawSql": "WITH selected AS (\n SELECT CASE\n  WHEN ip_proto=6 AND service_port=443 THEN 'HTTPS · TCP/443'\n  WHEN ip_proto=17 AND service_port=443 THEN 'QUIC · UDP/443'\n  WHEN ip_proto IN (6,17) AND service_port=53 THEN CASE WHEN ip_proto=6 THEN 'DNS · TCP/53' ELSE 'DNS · UDP/53' END\n  WHEN ip_proto=6 AND service_port=853 THEN 'DoT · TCP/853'\n  WHEN ip_proto=17 AND service_port=853 THEN 'DoQ · UDP/853'\n  WHEN ip_proto=6 AND service_port=80 THEN 'HTTP · TCP/80'\n  WHEN ip_proto=6 AND service_port=22 THEN 'SSH · TCP/22'\n  WHEN ip_proto=1 THEN 'ICMP'\n  WHEN ip_proto=58 THEN 'ICMPv6'\n  WHEN ip_proto IN (6,17) THEN CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n  ELSE 'IP/' || ip_proto::text END AS service, bytes FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), ranked AS (\n SELECT service,sum(bytes)::double precision AS bytes,row_number() OVER (ORDER BY sum(bytes) DESC) AS rank\n FROM selected GROUP BY service\n)\nSELECT CASE WHEN rank<=6 THEN service ELSE 'Other ports' END AS \"Port\", sum(bytes)::double precision AS \"Bytes\"\nFROM ranked GROUP BY 1 ORDER BY 2 DESC\n",
-          "format": "table",
-          "editorMode": "code",
-          "rawQuery": true
-        }
-      ]
-    },
-    {
       "id": 19,
-      "title": "DEVICE ACTIVITY · Click a name to focus",
+      "title": "DEVICES · Transfer volume & drilldown",
       "type": "table",
       "gridPos": {
         "x": 0,
-        "y": 67,
-        "w": 24,
+        "y": 48,
+        "w": 16,
         "h": 10
       },
       "description": "端末名のリンクでダッシュボード全体を絞り込み。Download/Uploadは方向フィルターに関係なく両方向の期間合計です。",
@@ -1743,13 +1350,80 @@
       ]
     },
     {
+      "id": 18,
+      "title": "SERVICE PORTS · Traffic mix",
+      "type": "piechart",
+      "gridPos": {
+        "x": 16,
+        "y": 48,
+        "w": 8,
+        "h": 10
+      },
+      "description": "転送量の多い上位6ポートとOther。名称はポート番号からの推定であり、通信内容の解析結果ではありません。",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "noValue": "—",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "showLegend": true,
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "desc"
+        },
+        "reduceOptions": {
+          "values": true,
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": ""
+        },
+        "sort": "desc"
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "network-flows"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "network-flows"
+          },
+          "rawSql": "WITH selected AS (\n SELECT CASE\n  WHEN ip_proto=6 AND service_port=443 THEN 'HTTPS · TCP/443'\n  WHEN ip_proto=17 AND service_port=443 THEN 'QUIC · UDP/443'\n  WHEN ip_proto IN (6,17) AND service_port=53 THEN CASE WHEN ip_proto=6 THEN 'DNS · TCP/53' ELSE 'DNS · UDP/53' END\n  WHEN ip_proto=6 AND service_port=853 THEN 'DoT · TCP/853'\n  WHEN ip_proto=17 AND service_port=853 THEN 'DoQ · UDP/853'\n  WHEN ip_proto=6 AND service_port=80 THEN 'HTTP · TCP/80'\n  WHEN ip_proto=6 AND service_port=22 THEN 'SSH · TCP/22'\n  WHEN ip_proto=1 THEN 'ICMP'\n  WHEN ip_proto=58 THEN 'ICMPv6'\n  WHEN ip_proto IN (6,17) THEN CASE WHEN ip_proto=6 THEN 'TCP/' ELSE 'UDP/' END || service_port::text\n  ELSE 'IP/' || ip_proto::text END AS service, bytes FROM traffic WHERE $__timeFilter(time) AND direction = ${direction:sqlstring} AND (${device:sqlstring} = 'all' OR device_mac::text = ${device:sqlstring})\n), ranked AS (\n SELECT service,sum(bytes)::double precision AS bytes,row_number() OVER (ORDER BY sum(bytes) DESC) AS rank\n FROM selected GROUP BY service\n)\nSELECT CASE WHEN rank<=6 THEN service ELSE 'Other ports' END AS \"Port\", sum(bytes)::double precision AS \"Bytes\"\nFROM ranked GROUP BY 1 ORDER BY 2 DESC\n",
+          "format": "table",
+          "editorMode": "code",
+          "rawQuery": true
+        }
+      ]
+    },
+    {
       "id": 20,
-      "title": "ADDRESS DETAILS · Device IPs, remote IPs & reverse DNS",
       "type": "row",
+      "title": "ADDRESS DETAILS · Device / remote IPs & reverse DNS",
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 77,
+        "y": 58,
         "w": 24,
         "h": 1
       },
@@ -1760,7 +1434,7 @@
           "type": "table",
           "gridPos": {
             "x": 0,
-            "y": 78,
+            "y": 59,
             "w": 24,
             "h": 10
           },
@@ -1848,7 +1522,7 @@
           "type": "table",
           "gridPos": {
             "x": 0,
-            "y": 88,
+            "y": 69,
             "w": 24,
             "h": 12
           },
@@ -1934,408 +1608,18 @@
     },
     {
       "id": 4001,
-      "title": "PING PONG DETAILS · Individual targets & availability",
       "type": "row",
+      "title": "CONNECTIVITY DETAILS · Availability & TCP connect",
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 78,
+        "y": 59,
         "w": 24,
         "h": 1
       },
       "panels": [
         {
-          "title": "1.1.1.1 RTT (ms)",
-          "type": "timeseries",
-          "description": "1.1.1.1 RTT (ms)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "probe_icmp_duration_seconds{job=\"chlorinate\",phase=\"rtt\",instance=\"1.1.1.1\"} * 1000",
-              "legendFormat": "Cloudflare DNS · IPv4",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "ms",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 79,
-            "w": 12,
-            "h": 8
-          },
-          "id": 3001,
-          "interval": "1m"
-        },
-        {
-          "title": "8.8.8.8 RTT (ms)",
-          "type": "timeseries",
-          "description": "8.8.8.8 RTT (ms)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "probe_icmp_duration_seconds{job=\"chlorinate\",phase=\"rtt\",instance=\"8.8.8.8\"} * 1000",
-              "legendFormat": "Google DNS · IPv4",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "ms",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 12,
-            "y": 79,
-            "w": 12,
-            "h": 8
-          },
-          "id": 3002,
-          "interval": "1m"
-        },
-        {
-          "title": "2606:4700:4700::1111 RTT (ms)",
-          "type": "timeseries",
-          "description": "2606:4700:4700::1111 RTT (ms)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "probe_icmp_duration_seconds{job=\"chlorinate\",phase=\"rtt\",instance=\"2606:4700:4700::1111\"} * 1000",
-              "legendFormat": "Cloudflare DNS · IPv6",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "ms",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 87,
-            "w": 12,
-            "h": 8
-          },
-          "id": 3003,
-          "interval": "1m"
-        },
-        {
-          "title": "2001:4860:4860::8888 RTT (ms)",
-          "type": "timeseries",
-          "description": "2001:4860:4860::8888 RTT (ms)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "probe_icmp_duration_seconds{job=\"chlorinate\",phase=\"rtt\",instance=\"2001:4860:4860::8888\"} * 1000",
-              "legendFormat": "Google DNS · IPv6",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "ms",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 12,
-            "y": 87,
-            "w": 12,
-            "h": 8
-          },
-          "id": 3004,
-          "interval": "1m"
-        },
-        {
-          "title": "MAP-E BR RTT (ms)",
-          "type": "timeseries",
-          "description": "MAP-E BR RTT (ms)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "probe_icmp_duration_seconds{job=\"chlorinate\",phase=\"rtt\",instance=\"2404:9200:225:100::64\"} * 1000",
-              "legendFormat": "MAP-E BR",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "ms",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 95,
-            "w": 12,
-            "h": 8
-          },
-          "id": 3005,
-          "interval": "1m"
-        },
-        {
-          "title": "FLET'S IPv6 TCP Connect (ms)",
-          "type": "timeseries",
-          "description": "FLET'S IPv6 TCP Connect (ms)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "probe_http_duration_seconds{job=\"chlorinate\",phase=\"connect\",instance=\"http://www1.speed-test.flets-east.jp\"} * 1000",
-              "legendFormat": "TCP connect",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "ms",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 12,
-            "y": 95,
-            "w": 12,
-            "h": 8
-          },
-          "id": 3006,
-          "interval": "1m"
-        },
-        {
-          "title": "Probe Availability",
+          "title": "PROBE AVAILABILITY",
           "type": "state-timeline",
           "description": "Probe Availability。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -2404,17 +1688,17 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 103,
-            "w": 12,
-            "h": 8
+            "y": 60,
+            "w": 16,
+            "h": 9
           },
           "id": 3007,
           "interval": "1m"
         },
         {
-          "title": "Availability over Selected Period",
-          "type": "stat",
-          "description": "Availability over Selected Period。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+          "title": "TCP CONNECT · FLET’S IPv6",
+          "type": "timeseries",
+          "description": "FLET'S IPv6 TCP Connect (ms)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
             "type": "prometheus",
             "uid": "bdy6m43uy9ybkd"
@@ -2422,16 +1706,16 @@
           "targets": [
             {
               "refId": "A",
-              "expr": "avg_over_time(probe_success{job=\"chlorinate\"}[$__range]) * 100",
-              "legendFormat": "{{instance}}",
-              "range": false,
-              "instant": true,
+              "expr": "probe_http_duration_seconds{job=\"chlorinate\",phase=\"connect\",instance=\"http://www1.speed-test.flets-east.jp\"} * 1000",
+              "legendFormat": "TCP connect",
+              "range": true,
+              "instant": false,
               "interval": "1m"
             }
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "percent",
+              "unit": "ms",
               "color": {
                 "mode": "palette-classic"
               },
@@ -2454,60 +1738,46 @@
             "overrides": []
           },
           "options": {
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
             },
-            "graphMode": "area",
-            "colorMode": "value",
-            "textMode": "auto",
-            "wideLayout": true
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
           },
           "gridPos": {
-            "x": 12,
-            "y": 103,
-            "w": 12,
-            "h": 8
+            "x": 16,
+            "y": 60,
+            "w": 8,
+            "h": 9
           },
-          "id": 3008,
+          "id": 3006,
           "interval": "1m"
         }
       ]
     },
     {
       "id": 4002,
-      "title": "ROUTER DIAGNOSTICS · WAN / VLAN / NAT / hardware / logs",
       "type": "row",
+      "title": "NETWORK INTERFACES · WAN / other LANs / packets",
       "collapsed": true,
       "gridPos": {
         "x": 0,
-        "y": 79,
+        "y": 60,
         "w": 24,
         "h": 1
       },
       "panels": [
         {
-          "title": "WAN / インターネット",
-          "type": "text",
-          "options": {
-            "mode": "markdown",
-            "content": "FLET'S (enp5s0f0) / MAP-E トンネル (mape0) / iTSCOM (enp5s0f1.200) の流量と疎通性"
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 80,
-            "w": 24,
-            "h": 3
-          },
-          "id": 2005
-        },
-        {
-          "title": "WAN RX (bps)",
+          "title": "WAN INTERFACES · RX / TX",
           "type": "timeseries",
-          "description": "WAN RX (bps)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+          "description": "RXはルーターへの受信、TXは送信。TXを下側に反転表示します。インターフェース間の転送を含むため、各系列を足してインターネット通信量とはみなしません。",
           "datasource": {
             "type": "prometheus",
             "uid": "bdy6m43uy9ybkd"
@@ -2516,7 +1786,15 @@
             {
               "refId": "A",
               "expr": "irate(node_network_receive_bytes_total{job=\"chlorinate\",device=~\"enp5s0f0|mape0|enp5s0f1[.]200\"}[$__rate_interval]) * 8",
-              "legendFormat": "{{device}}",
+              "legendFormat": "{{device}} · RX",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            },
+            {
+              "refId": "B",
+              "expr": "irate(node_network_transmit_bytes_total{job=\"chlorinate\",device=~\"enp5s0f0|mape0|enp5s0f1[.]200\"}[$__rate_interval]) * 8",
+              "legendFormat": "{{device}} · TX",
               "range": true,
               "instant": false,
               "interval": "1m"
@@ -2544,7 +1822,20 @@
                 ]
               }
             },
-            "overrides": []
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": ".* · TX$"
+                },
+                "properties": [
+                  {
+                    "id": "custom.transform",
+                    "value": "negative-Y"
+                  }
+                ]
+              }
+            ]
           },
           "options": {
             "tooltip": {
@@ -2562,17 +1853,17 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 83,
+            "y": 61,
             "w": 12,
-            "h": 8
+            "h": 9
           },
           "id": 2006,
           "interval": "1m"
         },
         {
-          "title": "WAN TX (bps)",
+          "title": "OTHER NETWORKS · Server / materia / Tailscale",
           "type": "timeseries",
-          "description": "WAN TX (bps)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+          "description": "RXはルーターへの受信、TXは送信。TXを下側に反転表示します。インターフェース間の転送を含むため、各系列を足してインターネット通信量とはみなしません。",
           "datasource": {
             "type": "prometheus",
             "uid": "bdy6m43uy9ybkd"
@@ -2580,8 +1871,16 @@
           "targets": [
             {
               "refId": "A",
-              "expr": "irate(node_network_transmit_bytes_total{job=\"chlorinate\",device=~\"enp5s0f0|mape0|enp5s0f1[.]200\"}[$__rate_interval]) * 8",
-              "legendFormat": "{{device}}",
+              "expr": "irate(node_network_receive_bytes_total{job=\"chlorinate\",device=~\"enp5s0f1[.]20|enp5s0f1[.]30|tailscale0\"}[$__rate_interval]) * 8",
+              "legendFormat": "{{device}} · RX",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            },
+            {
+              "refId": "B",
+              "expr": "irate(node_network_transmit_bytes_total{job=\"chlorinate\",device=~\"enp5s0f1[.]20|enp5s0f1[.]30|tailscale0\"}[$__rate_interval]) * 8",
+              "legendFormat": "{{device}} · TX",
               "range": true,
               "instant": false,
               "interval": "1m"
@@ -2609,7 +1908,20 @@
                 ]
               }
             },
-            "overrides": []
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": ".* · TX$"
+                },
+                "properties": [
+                  {
+                    "id": "custom.transform",
+                    "value": "negative-Y"
+                  }
+                ]
+              }
+            ]
           },
           "options": {
             "tooltip": {
@@ -2627,422 +1939,17 @@
           },
           "gridPos": {
             "x": 12,
-            "y": 83,
+            "y": 61,
             "w": 12,
-            "h": 8
-          },
-          "id": 2007,
-          "interval": "1m"
-        },
-        {
-          "title": "RX Errors (/s)",
-          "type": "timeseries",
-          "description": "RX Errors (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "irate(node_network_receive_errs_total{job=\"chlorinate\"}[$__rate_interval])",
-              "legendFormat": "{{device}}",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 91,
-            "w": 6,
-            "h": 8
-          },
-          "id": 2010,
-          "interval": "1m"
-        },
-        {
-          "title": "RX Drops (/s)",
-          "type": "timeseries",
-          "description": "RX Drops (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "irate(node_network_receive_drop_total{job=\"chlorinate\"}[$__rate_interval])",
-              "legendFormat": "{{device}}",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 6,
-            "y": 91,
-            "w": 6,
-            "h": 8
-          },
-          "id": 2011,
-          "interval": "1m"
-        },
-        {
-          "title": "TX Drops (/s)",
-          "type": "timeseries",
-          "description": "TX Drops (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "irate(node_network_transmit_drop_total{job=\"chlorinate\"}[$__rate_interval])",
-              "legendFormat": "{{device}}",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 12,
-            "y": 91,
-            "w": 6,
-            "h": 8
-          },
-          "id": 2012,
-          "interval": "1m"
-        },
-        {
-          "title": "IPv6 Throughput (bps)",
-          "type": "timeseries",
-          "description": "IPv6 Throughput (bps)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "irate(node_netstat_Ip6_InOctets{job=\"chlorinate\"}[$__rate_interval]) * 8",
-              "legendFormat": "IPv6 in",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "bps",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 18,
-            "y": 91,
-            "w": 6,
-            "h": 8
-          },
-          "id": 2013,
-          "interval": "1m"
-        },
-        {
-          "title": "LAN / VLAN",
-          "type": "text",
-          "options": {
-            "mode": "markdown",
-            "content": "mgmt (enp5s0f1) / home (.10) / server (.20) / materia (.30) / Tailscale"
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 99,
-            "w": 24,
-            "h": 3
-          },
-          "id": 2014
-        },
-        {
-          "title": "LAN RX (bps)",
-          "type": "timeseries",
-          "description": "LAN RX (bps)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "irate(node_network_receive_bytes_total{job=\"chlorinate\",device=~\"enp5s0f1|enp5s0f1[.]10|enp5s0f1[.]20|enp5s0f1[.]30|tailscale0\"}[$__rate_interval]) * 8",
-              "legendFormat": "{{device}}",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "bps",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 102,
-            "w": 12,
-            "h": 8
+            "h": 9
           },
           "id": 2015,
           "interval": "1m"
         },
         {
-          "title": "LAN TX (bps)",
+          "title": "INTERFACE PACKETS · RX / TX",
           "type": "timeseries",
-          "description": "LAN TX (bps)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "irate(node_network_transmit_bytes_total{job=\"chlorinate\",device=~\"enp5s0f1|enp5s0f1[.]10|enp5s0f1[.]20|enp5s0f1[.]30|tailscale0\"}[$__rate_interval]) * 8",
-              "legendFormat": "{{device}}",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "bps",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 12,
-            "y": 102,
-            "w": 12,
-            "h": 8
-          },
-          "id": 2016,
-          "interval": "1m"
-        },
-        {
-          "title": "RX Packets (/s)",
-          "type": "timeseries",
-          "description": "RX Packets (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+          "description": "RXはルーターへの受信、TXは送信。TXを下側に反転表示します。インターフェース間の転送を含むため、各系列を足してインターネット通信量とはみなしません。",
           "datasource": {
             "type": "prometheus",
             "uid": "bdy6m43uy9ybkd"
@@ -3051,7 +1958,15 @@
             {
               "refId": "A",
               "expr": "irate(node_network_receive_packets_total{job=\"chlorinate\",device=~\"enp5s0f0|mape0|enp5s0f1.*|tailscale0\"}[$__rate_interval])",
-              "legendFormat": "{{device}}",
+              "legendFormat": "{{device}} · RX",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            },
+            {
+              "refId": "B",
+              "expr": "irate(node_network_transmit_packets_total{job=\"chlorinate\",device=~\"enp5s0f0|mape0|enp5s0f1.*|tailscale0\"}[$__rate_interval])",
+              "legendFormat": "{{device}} · TX",
               "range": true,
               "instant": false,
               "interval": "1m"
@@ -3059,7 +1974,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "pps",
               "color": {
                 "mode": "palette-classic"
               },
@@ -3079,7 +1994,20 @@
                 ]
               }
             },
-            "overrides": []
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": ".* · TX$"
+                },
+                "properties": [
+                  {
+                    "id": "custom.transform",
+                    "value": "negative-Y"
+                  }
+                ]
+              }
+            ]
           },
           "options": {
             "tooltip": {
@@ -3097,80 +2025,15 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 110,
-            "w": 8,
-            "h": 8
+            "y": 70,
+            "w": 12,
+            "h": 9
           },
           "id": 2017,
           "interval": "1m"
         },
         {
-          "title": "TX Packets (/s)",
-          "type": "timeseries",
-          "description": "TX Packets (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "irate(node_network_transmit_packets_total{job=\"chlorinate\",device=~\"enp5s0f0|mape0|enp5s0f1.*|tailscale0\"}[$__rate_interval])",
-              "legendFormat": "{{device}}",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 8,
-            "y": 110,
-            "w": 8,
-            "h": 8
-          },
-          "id": 2018,
-          "interval": "1m"
-        },
-        {
-          "title": "Link Carrier (1 = up)",
+          "title": "LINK STATE",
           "type": "state-timeline",
           "description": "Link Carrier (1 = up)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -3239,33 +2102,18 @@
             }
           },
           "gridPos": {
-            "x": 16,
-            "y": 110,
-            "w": 8,
-            "h": 8
+            "x": 12,
+            "y": 70,
+            "w": 12,
+            "h": 9
           },
           "id": 2019,
           "interval": "1m"
         },
         {
-          "title": "NAT / フィルタ / セッション",
-          "type": "text",
-          "options": {
-            "mode": "markdown",
-            "content": "nf_conntrack_max = 524288 / nftables カウンタは firewall.nix の名前付きカウンタ (input_drop, forward_drop, input_invalid, forward_invalid)"
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 118,
-            "w": 24,
-            "h": 3
-          },
-          "id": 2020
-        },
-        {
-          "title": "Conntrack Entries",
+          "title": "INTERFACE ERRORS & DROPS",
           "type": "timeseries",
-          "description": "Conntrack Entries。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+          "description": "受信エラー・受信破棄・送信破棄をインターフェース別に表示します。",
           "datasource": {
             "type": "prometheus",
             "uid": "bdy6m43uy9ybkd"
@@ -3273,8 +2121,23 @@
           "targets": [
             {
               "refId": "A",
-              "expr": "node_nf_conntrack_entries{job=\"chlorinate\"}",
-              "legendFormat": "entries",
+              "expr": "irate(node_network_receive_errs_total{job=\"chlorinate\"}[$__rate_interval])",
+              "range": true,
+              "instant": false,
+              "legendFormat": "{{device}} · RX errors"
+            },
+            {
+              "refId": "B",
+              "expr": "irate(node_network_receive_drop_total{job=\"chlorinate\"}[$__rate_interval])",
+              "legendFormat": "{{device}} · RX drops",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            },
+            {
+              "refId": "C",
+              "expr": "irate(node_network_transmit_drop_total{job=\"chlorinate\"}[$__rate_interval])",
+              "legendFormat": "{{device}} · TX drops",
               "range": true,
               "instant": false,
               "interval": "1m"
@@ -3282,7 +2145,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "pps",
               "color": {
                 "mode": "palette-classic"
               },
@@ -3320,15 +2183,29 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 121,
-            "w": 6,
-            "h": 8
+            "y": 79,
+            "w": 24,
+            "h": 10
           },
-          "id": 2021,
+          "id": 2010,
           "interval": "1m"
-        },
+        }
+      ]
+    },
+    {
+      "id": 4003,
+      "type": "row",
+      "title": "PACKETS & SESSIONS · Firewall / kernel / TCP",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 61,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [
         {
-          "title": "Firewall Drops (/s)",
+          "title": "FIREWALL DROPS",
           "type": "timeseries",
           "description": "Firewall Drops (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -3347,7 +2224,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "pps",
               "color": {
                 "mode": "palette-classic"
               },
@@ -3384,16 +2261,16 @@
             }
           },
           "gridPos": {
-            "x": 6,
-            "y": 121,
-            "w": 6,
+            "x": 0,
+            "y": 62,
+            "w": 12,
             "h": 8
           },
           "id": 2022,
           "interval": "1m"
         },
         {
-          "title": "Invalid Packets (/s)",
+          "title": "INVALID PACKETS",
           "type": "timeseries",
           "description": "Invalid Packets (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -3412,7 +2289,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "pps",
               "color": {
                 "mode": "palette-classic"
               },
@@ -3450,17 +2327,17 @@
           },
           "gridPos": {
             "x": 12,
-            "y": 121,
-            "w": 6,
+            "y": 62,
+            "w": 12,
             "h": 8
           },
           "id": 2023,
           "interval": "1m"
         },
         {
-          "title": "Conntrack Failures (/s)",
+          "title": "KERNEL & CONNTRACK ERRORS",
           "type": "timeseries",
-          "description": "Conntrack Failures (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
+          "description": "異なるエラーを足し合わせず、種類別の系列として表示します。",
           "datasource": {
             "type": "prometheus",
             "uid": "bdy6m43uy9ybkd"
@@ -3468,81 +2345,36 @@
           "targets": [
             {
               "refId": "A",
-              "expr": "sum(irate(node_nf_conntrack_stat_drop{job=\"chlorinate\"}[$__rate_interval])) + sum(irate(node_nf_conntrack_stat_insert_failed{job=\"chlorinate\"}[$__rate_interval]))",
-              "legendFormat": "drop + insert_failed",
+              "expr": "sum(irate(node_nf_conntrack_stat_drop{job=\"chlorinate\"}[$__rate_interval]))",
+              "legendFormat": "Conntrack drops",
               "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
+              "instant": false
             },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 18,
-            "y": 121,
-            "w": 6,
-            "h": 8
-          },
-          "id": 2024,
-          "interval": "1m"
-        },
-        {
-          "title": "Firewall Drops (bytes/s)",
-          "type": "timeseries",
-          "description": "Firewall Drops (bytes/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
             {
-              "refId": "A",
-              "expr": "irate(nftables_counter_bytes_total{job=\"chlorinate\",name=~\"input_drop|forward_drop\"}[$__rate_interval])",
-              "legendFormat": "{{name}}",
+              "refId": "B",
+              "expr": "sum(irate(node_nf_conntrack_stat_insert_failed{job=\"chlorinate\"}[$__rate_interval]))",
+              "legendFormat": "Conntrack insert failures",
               "range": true,
-              "instant": false,
-              "interval": "1m"
+              "instant": false
+            },
+            {
+              "refId": "C",
+              "expr": "sum(irate(node_softnet_dropped_total{job=\"chlorinate\"}[$__rate_interval]))",
+              "legendFormat": "Softnet drops",
+              "range": true,
+              "instant": false
+            },
+            {
+              "refId": "D",
+              "expr": "sum(irate(node_netstat_Udp_InErrors{job=\"chlorinate\"}[$__rate_interval]))",
+              "legendFormat": "UDP errors",
+              "range": true,
+              "instant": false
             }
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "Bps",
+              "unit": "suffix:/s",
               "color": {
                 "mode": "palette-classic"
               },
@@ -3580,15 +2412,15 @@
           },
           "gridPos": {
             "x": 0,
-            "y": 129,
-            "w": 6,
-            "h": 8
+            "y": 70,
+            "w": 24,
+            "h": 9
           },
-          "id": 2025,
+          "id": 2024,
           "interval": "1m"
         },
         {
-          "title": "TCP Established",
+          "title": "TCP CONNECTIONS",
           "type": "timeseries",
           "description": "TCP Established。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -3644,16 +2476,16 @@
             }
           },
           "gridPos": {
-            "x": 6,
-            "y": 129,
-            "w": 6,
+            "x": 0,
+            "y": 79,
+            "w": 12,
             "h": 8
           },
           "id": 2026,
           "interval": "1m"
         },
         {
-          "title": "TCP Retransmits (/s)",
+          "title": "TCP RETRANSMISSIONS",
           "type": "timeseries",
           "description": "TCP Retransmits (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -3672,7 +2504,7 @@
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "short",
+              "unit": "suffix:/s",
               "color": {
                 "mode": "palette-classic"
               },
@@ -3710,160 +2542,29 @@
           },
           "gridPos": {
             "x": 12,
-            "y": 129,
-            "w": 6,
+            "y": 79,
+            "w": 12,
             "h": 8
           },
           "id": 2027,
           "interval": "1m"
-        },
+        }
+      ]
+    },
+    {
+      "id": 4004,
+      "type": "row",
+      "title": "HARDWARE & SYSTEM · Temperatures / CPU frequency / storage",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 62,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [
         {
-          "title": "Softnet Dropped / UDP Errors (/s)",
-          "type": "timeseries",
-          "description": "Softnet Dropped / UDP Errors (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "sum(irate(node_softnet_dropped_total{job=\"chlorinate\"}[$__rate_interval])) + sum(irate(node_netstat_Udp_InErrors{job=\"chlorinate\"}[$__rate_interval]))",
-              "legendFormat": "softnet drop + udp in errors",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 18,
-            "y": 129,
-            "w": 6,
-            "h": 8
-          },
-          "id": 2028,
-          "interval": "1m"
-        },
-        {
-          "title": "温度 / ハードウェア",
-          "type": "text",
-          "options": {
-            "mode": "markdown",
-            "content": "coretemp: temp1 = Package, temp2〜temp9 = Core 0〜7 / nvme_nvme0 = SSD Composite / i2c_0_0_0050 = 基板センサー"
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 137,
-            "w": 24,
-            "h": 3
-          },
-          "id": 2029
-        },
-        {
-          "title": "CPU Temperature (°C)",
-          "type": "timeseries",
-          "description": "CPU Temperature (°C)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "node_hwmon_temp_celsius{job=\"chlorinate\",chip=\"platform_coretemp_0\"}",
-              "legendFormat": "{{sensor}}",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "celsius",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 140,
-            "w": 8,
-            "h": 8
-          },
-          "id": 2030,
-          "interval": "1m"
-        },
-        {
-          "title": "NVMe / Board Temperature (°C)",
+          "title": "HARDWARE TEMPERATURE · NVMe / board",
           "type": "timeseries",
           "description": "NVMe / Board Temperature (°C)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -3919,81 +2620,16 @@
             }
           },
           "gridPos": {
-            "x": 8,
-            "y": 140,
-            "w": 8,
+            "x": 0,
+            "y": 63,
+            "w": 12,
             "h": 8
           },
           "id": 2031,
           "interval": "1m"
         },
         {
-          "title": "Thermal Zone Temperature (°C)",
-          "type": "timeseries",
-          "description": "Thermal Zone Temperature (°C)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "node_thermal_zone_temp{job=\"chlorinate\"}",
-              "legendFormat": "{{type}}",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "celsius",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 16,
-            "y": 140,
-            "w": 8,
-            "h": 8
-          },
-          "id": 2032,
-          "interval": "1m"
-        },
-        {
-          "title": "CPU Frequency (GHz)",
+          "title": "CPU FREQUENCY",
           "type": "timeseries",
           "description": "CPU Frequency (GHz)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -4049,8 +2685,8 @@
             }
           },
           "gridPos": {
-            "x": 0,
-            "y": 148,
+            "x": 12,
+            "y": 63,
             "w": 12,
             "h": 8
           },
@@ -4058,7 +2694,7 @@
           "interval": "1m"
         },
         {
-          "title": "Context Switches (/s)",
+          "title": "CONTEXT SWITCHES",
           "type": "timeseries",
           "description": "Context Switches (/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -4070,6 +2706,71 @@
               "refId": "A",
               "expr": "irate(node_context_switches_total{job=\"chlorinate\"}[$__rate_interval])",
               "legendFormat": "context switches",
+              "range": true,
+              "instant": false,
+              "interval": "1m"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "suffix:/s",
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 1,
+                "fillOpacity": 10,
+                "spanNulls": false
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "calcs": [
+                "lastNotNull",
+                "max"
+              ]
+            }
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 71,
+            "w": 12,
+            "h": 8
+          },
+          "id": 2034,
+          "interval": "1m"
+        },
+        {
+          "title": "LOAD AVERAGE · 5 min",
+          "type": "timeseries",
+          "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bdy6m43uy9ybkd"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "node_load5{job=\"chlorinate\"}",
+              "legendFormat": "__auto",
               "range": true,
               "instant": false,
               "interval": "1m"
@@ -4115,225 +2816,15 @@
           },
           "gridPos": {
             "x": 12,
-            "y": 148,
+            "y": 71,
             "w": 12,
-            "h": 8
-          },
-          "id": 2034,
-          "interval": "1m"
-        },
-        {
-          "title": "システム (mackerel-agent)",
-          "type": "text",
-          "options": {
-            "mode": "markdown",
-            "content": "chlorine のホストメトリック"
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 156,
-            "w": 24,
-            "h": 3
-          },
-          "id": 2035
-        },
-        {
-          "title": "CPU",
-          "type": "timeseries",
-          "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "100 * (1 - avg(rate(node_cpu_seconds_total{job=\"chlorinate\",mode=\"idle\"}[$__rate_interval])))",
-              "legendFormat": "__auto",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percent",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 159,
-            "w": 12,
-            "h": 8
-          },
-          "id": 2036,
-          "interval": "1m"
-        },
-        {
-          "title": "Memory",
-          "type": "timeseries",
-          "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "node_memory_MemTotal_bytes{job=\"chlorinate\"} - node_memory_MemAvailable_bytes{job=\"chlorinate\"}",
-              "legendFormat": "__auto",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "bytes",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 12,
-            "y": 159,
-            "w": 12,
-            "h": 8
-          },
-          "id": 2037,
-          "interval": "1m"
-        },
-        {
-          "title": "Load Average",
-          "type": "timeseries",
-          "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "bdy6m43uy9ybkd"
-          },
-          "targets": [
-            {
-              "refId": "A",
-              "expr": "node_load5{job=\"chlorinate\"}",
-              "legendFormat": "__auto",
-              "range": true,
-              "instant": false,
-              "interval": "1m"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "s",
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "drawStyle": "line",
-                "lineWidth": 1,
-                "fillOpacity": 10,
-                "spanNulls": false
-              },
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "options": {
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            },
-            "legend": {
-              "displayMode": "table",
-              "placement": "bottom",
-              "calcs": [
-                "lastNotNull",
-                "max"
-              ]
-            }
-          },
-          "gridPos": {
-            "x": 0,
-            "y": 167,
-            "w": 8,
             "h": 8
           },
           "id": 2038,
           "interval": "1m"
         },
         {
-          "title": "Filesystem",
+          "title": "FILESYSTEM USAGE",
           "type": "timeseries",
           "description": "Mackerelのホスト／コンテナ指標をPrometheusの指標で代替。CPUは100%=1コア（ルーター・ノードは全コア平均）。メモリはworking setまたはMemTotal−MemAvailable。",
           "datasource": {
@@ -4389,16 +2880,16 @@
             }
           },
           "gridPos": {
-            "x": 8,
-            "y": 167,
-            "w": 8,
+            "x": 0,
+            "y": 79,
+            "w": 12,
             "h": 8
           },
           "id": 2039,
           "interval": "1m"
         },
         {
-          "title": "Disk Write (bytes/s)",
+          "title": "DISK WRITES",
           "type": "timeseries",
           "description": "Disk Write (bytes/s)。選択期間の実測値。イベント指標はイベント発生前に系列が存在しない場合があります。",
           "datasource": {
@@ -4454,14 +2945,28 @@
             }
           },
           "gridPos": {
-            "x": 16,
-            "y": 167,
-            "w": 8,
+            "x": 12,
+            "y": 79,
+            "w": 12,
             "h": 8
           },
           "id": 2040,
           "interval": "1m"
-        },
+        }
+      ]
+    },
+    {
+      "id": 4005,
+      "type": "row",
+      "title": "ROUTER LOGS · Selected time range",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 63,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [
         {
           "title": "Logs — Selected Time Range",
           "type": "logs",
@@ -4480,9 +2985,9 @@
           ],
           "gridPos": {
             "x": 0,
-            "y": 175,
+            "y": 64,
             "w": 24,
-            "h": 10
+            "h": 12
           },
           "options": {
             "showTime": true,

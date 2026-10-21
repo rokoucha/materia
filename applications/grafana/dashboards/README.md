@@ -97,3 +97,10 @@ are available in collapsed rows. The standalone Chlorine Router and Ping Pong da
 use the unified Home network dashboard for both overview and diagnostics.
 
 再撮影でクラスタのLoad Average・Image Pull件数の単位と`exported_namespace` / `exported_pod`の凡例も補正。SwitchBotとOrphaned Resourcesは凡例領域を調整する。
+
+
+The network overview avoids duplicate device/AS rankings, IPv6 percentage cards,
+per-target ICMP charts and separate router CPU/memory/conntrack history plots.
+Health cards include those histories. RX/TX interface and error charts retain
+separate series in combined panels; the overview covers VLAN 10 and diagnostics
+cover the other networks. Logs and hardware/session checks have separate rows.
