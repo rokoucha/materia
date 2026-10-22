@@ -6,7 +6,7 @@ metadata:
 
 spec:
   automountServiceAccountToken: false
-  image: quay.io/prometheus/prometheus:v3.15.0
+  image: quay.io/prometheus/prometheus:v3.15.1
   enableOTLPReceiver: true
   enableFeatures:
     - otlp-deltatocumulative
