@@ -6,7 +6,9 @@ Talosの`KubeAuditPolicyConfig`でヘルスチェック以外のAPIアクセス�
 
 各ノードの`/var/log/audit/kube/audit*.log`を既存otelcol-agentの読み取り専用hostPathから収集し、
 gateway経由でLokiへ全件送信する。Mackerelへは既存設定どおり10%を送信する。
-監査ディレクトリは0700、ファイルは0600で所有者が65534のため、CollectorもUID/GID 65534で実行する。
+監査ディレクトリは0700、ファイルは0600で所有者が65534のため、CollectorもUID 65534で実行する。
+Podログはroot:rootの0640なのでGIDは0とし、監査ログとPodログの両方を読み取る。
+UIDは非rootのまま維持し、hostPathは引き続き読み取り専用とする。
 親の`/var/log/audit`はroot専用のため、`kube`ディレクトリを直接マウントする。
 Admission policyもこのパスをCollectorの読み取り専用マウントとして許可する。
 Talosのkubeletからはホスト側の監査パスをstatできないため、hostPathの`type`は指定しない。
