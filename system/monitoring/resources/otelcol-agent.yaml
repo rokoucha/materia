@@ -221,9 +221,9 @@ spec:
   replicas: 1
   serviceAccount: otelcol-agent-sa
   securityContext:
-    # Talos audit files and their directory are private to the API server UID.
+    # Audit files require the API server UID; Pod logs are root:root 0640.
     runAsUser: 65534
-    runAsGroup: 65534
+    runAsGroup: 0
     runAsNonRoot: true
   volumeMounts:
     - name: hostfs
