@@ -1,4 +1,4 @@
-FROM python:3.14.7-slim-bookworm
+FROM python:3.15.0-slim-bookworm
 LABEL org.opencontainers.image.source="https://github.com/rokoucha/materia"
 WORKDIR /app
 COPY requirements.txt .
