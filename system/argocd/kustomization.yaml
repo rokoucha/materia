@@ -18,7 +18,7 @@ resources:
   - ./resources/projects/default.yaml
   - ./resources/projects/root.yaml
   - ./resources/projects/system.yaml
-  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.5/manifests/install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.6/manifests/install.yaml
 
 patches:
   - path: ./patches/argocd-application-controller.yaml
