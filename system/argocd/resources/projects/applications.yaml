@@ -18,6 +18,8 @@ spec:
       server: https://kubernetes.default.svc
     - namespace: grafana
       server: https://kubernetes.default.svc
+    - namespace: home-assistant
+      server: https://kubernetes.default.svc
     - namespace: influxdb
       server: https://kubernetes.default.svc
     - namespace: loki
