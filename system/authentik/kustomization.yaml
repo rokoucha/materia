@@ -21,3 +21,10 @@ resources:
   - ./resources/persistent-volume-claim.yaml
   - ./resources/postgresql.yaml
   - ./resources/secret-authentik.yaml
+
+configMapGenerator:
+  - name: home-assistant-blueprint
+    files:
+      - blueprints/home-assistant.yaml
+    options:
+      disableNameSuffixHash: true

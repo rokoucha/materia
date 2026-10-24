@@ -5,6 +5,7 @@ resources:
 - "./apcupsd"
 - "./cosense-cli-mcp"
 - "./grafana"
+- "./home-assistant"
 - "./influxdb"
 - "./loki"
 - "./mahiron"

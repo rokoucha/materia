@@ -1,0 +1,27 @@
+default_config:
+
+homeassistant:
+  name: Home
+  time_zone: Asia/Tokyo
+  country: JP
+  unit_system: metric
+  external_url: https://h.rokoucha.net
+  internal_url: https://h.rokoucha.net
+
+auth_oidc:
+  client_id: home-assistant
+  discovery_url: https://auth.ggrel.net/application/o/home-assistant/.well-known/openid-configuration
+  display_name: Authentik
+  roles:
+    admin: authentik Admins
+    user: authentik Admins
+  features:
+    automatic_user_linking: false
+    default_redirect: true
+
+recorder:
+  purge_keep_days: 10
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml

@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: default
+  template:
+    metadata:
+      labels:
+        app: default
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 120
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: initialize
+          image: ghcr.io/home-assistant/home-assistant:2026.10.3
+          command: [python3, /bootstrap/initialize.py]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: bootstrap
+              mountPath: /bootstrap
+              readOnly: true
+      containers:
+        - name: home-assistant
+          image: ghcr.io/home-assistant/home-assistant:2026.10.3
+          # Run Core directly; the image's s6 entrypoint requires root.
+          command: [python3, -m, homeassistant, --config, /config]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          env:
+            - name: TZ
+              value: Asia/Tokyo
+            - name: HOME
+              value: /config
+          ports:
+            - name: http
+              containerPort: 8123
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+          startupProbe:
+            httpGet:
+              path: /manifest.json
+              port: http
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /manifest.json
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /manifest.json
+              port: http
+            periodSeconds: 30
+            failureThreshold: 5
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: bootstrap
+              mountPath: /config/configuration.yaml
+              subPath: configuration.yaml
+              readOnly: true
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config
+        - name: bootstrap
+          configMap:
+            name: config

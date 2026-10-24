@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    haproxy.org/ssl-redirect: "true"
+    haproxy.org/timeout-tunnel: 1h
+spec:
+  ingressClassName: haproxy
+  tls:
+    - secretName: tls
+      hosts: [h.rokoucha.net]
+  rules:
+    - host: h.rokoucha.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: service
+                port:
+                  name: http
