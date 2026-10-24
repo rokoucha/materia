@@ -2,7 +2,7 @@
 
 Home Assistant Containerを単一Podで実行する。`hostNetwork`、USB、Bluetoothの直接接続は使わず、ESPHome・Bluetooth Proxy・MQTTは機器用ネットワーク整備後に追加する。
 
-- URL: https://ha.ggrel.net
+- URL: https://h.rokoucha.net
 - 通常の認証: Authentik OIDC（公開クライアント＋PKCE、`rokoucha`のみ許可）
 - HA管理者: Authentikの`authentik Admins`グループから割り当て
 - `/config`: `beryllium-iscsi`、10 GiB、SQLiteを含む
@@ -20,7 +20,7 @@ Home Assistantの更新はイメージタグを両コンテナで揃え、事前
 
 ## 復旧用認証
 
-初回導入時にローカル所有者`ha-recovery`を作成し、ランダムなパスワードをNamespace内のSecret `recovery`へ保存する。通常はOIDC経由で利用する。Authentikに接続できない場合は`https://ha.ggrel.net/?skip_oidc_redirect=true`からローカル認証を使える。
+初回導入時にローカル所有者`ha-recovery`を作成し、ランダムなパスワードをNamespace内のSecret `recovery`へ保存する。通常はOIDC経由で利用する。Authentikに接続できない場合は`https://h.rokoucha.net/?skip_oidc_redirect=true`からローカル認証を使える。
 
 ```sh
 kubectl -n home-assistant get secret recovery -o jsonpath='{.data.password}' | base64 -d

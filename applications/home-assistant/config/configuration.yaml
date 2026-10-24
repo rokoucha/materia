@@ -5,8 +5,8 @@ homeassistant:
   time_zone: Asia/Tokyo
   country: JP
   unit_system: metric
-  external_url: https://ha.ggrel.net
-  internal_url: https://ha.ggrel.net
+  external_url: https://h.rokoucha.net
+  internal_url: https://h.rokoucha.net
 
 auth_oidc:
   client_id: home-assistant

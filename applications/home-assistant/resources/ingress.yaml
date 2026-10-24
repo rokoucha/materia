@@ -9,9 +9,9 @@ spec:
   ingressClassName: haproxy
   tls:
     - secretName: tls
-      hosts: [ha.ggrel.net]
+      hosts: [h.rokoucha.net]
   rules:
-    - host: ha.ggrel.net
+    - host: h.rokoucha.net
       http:
         paths:
           - path: /
