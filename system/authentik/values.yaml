@@ -62,3 +62,7 @@ worker:
       memory: 384Mi
     limits:
       memory: 640Mi
+
+blueprints:
+  configMaps:
+    - home-assistant-blueprint

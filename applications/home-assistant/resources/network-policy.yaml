@@ -1,0 +1,69 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: home-assistant
+spec:
+  podSelector:
+    matchLabels:
+      app: default
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: haproxy-controller
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: haproxy-ingress
+              app.kubernetes.io/name: kubernetes-ingress
+      ports:
+        - port: 8123
+          protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: home-assistant-egress
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: default
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+          rules:
+            dns:
+              - matchPattern: "*"
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: haproxy-controller
+            k8s:app.kubernetes.io/instance: haproxy-ingress
+            k8s:app.kubernetes.io/name: kubernetes-ingress
+      toPorts:
+        - ports:
+            - port: "8443"
+              protocol: TCP
+    - toFQDNs:
+        - matchName: auth.ggrel.net
+        - matchName: github.com
+        - matchName: release-assets.githubusercontent.com
+        - matchName: pypi.org
+        - matchName: files.pythonhosted.org
+        - matchName: wheels.home-assistant.io
+        - matchName: version.home-assistant.io
+        - matchName: alerts.home-assistant.io
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

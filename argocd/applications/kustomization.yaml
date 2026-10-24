@@ -6,6 +6,7 @@ namespace: argocd
 resources:
   - ./cosense-cli-mcp.yaml
   - ./grafana.yaml
+  - ./home-assistant.yaml
   - ./influxdb.yaml
   - ./loki.yaml
   - ./mahiron.yaml
