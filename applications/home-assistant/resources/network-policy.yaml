@@ -32,6 +32,12 @@ spec:
     ingress: false
     egress: false
   egress:
+    - toCIDR:
+        - 172.16.4.12/32
+      toPorts:
+        - ports:
+            - port: "6053"
+              protocol: TCP
     - toEndpoints:
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: kube-system
