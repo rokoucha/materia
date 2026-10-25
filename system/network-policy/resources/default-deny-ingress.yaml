@@ -7,10 +7,6 @@ spec:
     matchExpressions:
       - key: k8s:io.kubernetes.pod.namespace
         operator: Exists
-      - key: k8s:io.kubernetes.pod.namespace
-        operator: NotIn
-        values:
-          - influxdb
   enableDefaultDeny:
     ingress: true
     egress: false

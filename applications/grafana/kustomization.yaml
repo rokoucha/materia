@@ -38,9 +38,6 @@ configMapGenerator:
   - name: dashboards-cilium
     files:
       - dashboards/cilium.json
-  - name: dashboards-environment
-    files:
-      - dashboards/environment.json
   - name: dashboards-mahiron
     files:
       - dashboards/mahiron.json

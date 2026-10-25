@@ -25,7 +25,6 @@ helmCharts:
       - network-flows
       - otel-external
       - sophie
-      - switchbot-meter-exporter
       roleBinding:
         create: false
       clusterRole:

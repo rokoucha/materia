@@ -159,16 +159,6 @@ dashboardProviders:
         updateIntervalSeconds: 30
         options:
           path: /var/lib/grafana/dashboards/cilium
-      - name: environment
-        orgId: 1
-        folder: Environment
-        folderUid: svc-environment
-        type: file
-        disableDeletion: false
-        allowUiUpdates: false
-        updateIntervalSeconds: 30
-        options:
-          path: /var/lib/grafana/dashboards/environment
       - name: mahiron
         orgId: 1
         folder: Mahiron
@@ -226,7 +216,6 @@ dashboardsConfigMaps:
   argo-cd: dashboards-argo-cd
   authentik: dashboards-authentik
   cilium: dashboards-cilium
-  environment: dashboards-environment
   mahiron: dashboards-mahiron
   materia-cluster: dashboards-materia-cluster
   opentelemetry-collector: dashboards-opentelemetry-collector

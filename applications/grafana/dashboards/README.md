@@ -20,7 +20,6 @@ JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正として
 - [Argo CD](https://monitor.ggrel.net/d/materia-argo-cd)
 - [Authentik](https://monitor.ggrel.net/d/materia-authentik)
 - [Cilium](https://monitor.ggrel.net/d/materia-cilium)
-- [Environment](https://monitor.ggrel.net/d/materia-environment)
 - [Mahiron](https://monitor.ggrel.net/d/materia-mahiron)
 - [Materia Cluster](https://monitor.ggrel.net/d/materia-materia-cluster)
 - [OpenTelemetry Collector](https://monitor.ggrel.net/d/materia-opentelemetry-collector)
@@ -61,7 +60,6 @@ JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正として
 | --- | --- | --- |
 | [APC RS 550VA](https://monitor.ggrel.net/d/materia-apc-rs-550va) | 状態・残時間、充電率／負荷ゲージ、電圧と履歴 | `zlnq0Cynk` |
 | [Argo CD](https://monitor.ggrel.net/d/materia-argo-cd) | Project／Application選択、状態一覧、reconcile／Git分布、コンポーネント診断 | `qPkgGHg7k` |
-| [Environment](https://monitor.ggrel.net/d/materia-environment) | SwitchBot機器選択と電池、Envcolの温度・湿度・気圧・CO₂履歴 | `fdyds678jw45ca` |
 | [OpenTelemetry Collector](https://monitor.ggrel.net/d/materia-opentelemetry-collector) | Collector選択、processor入出力、バッチ分布、送信失敗／キュー、ランタイム | `BKf2sowmj` |
 | [Materia Cluster](https://monitor.ggrel.net/d/materia-materia-cluster) | Namespace／Pod選択、Pod状態、requests／limits、ノード割り当て容量 | `sxhrdsz` |
 
@@ -76,7 +74,7 @@ Grafana chartのリモートimageRenderer（`v5.12.7`）を利用する。共有
 レンダラーは同時1要求、CPU上限2コア・メモリ上限3 GiB、Goのメモリ目標384 MiB。軽い逐次実行向けの設定なので、複数同時レンダリングは行わない。負荷が増えた場合は実測に応じてリソースを調整する。
 
 ```sh
-gcx dashboards snapshot materia-apc-rs-550va materia-argo-cd materia-environment materia-opentelemetry-collector materia-materia-cluster \
+gcx dashboards snapshot materia-apc-rs-550va materia-argo-cd materia-opentelemetry-collector materia-materia-cluster \
   --since 6h --width 1920 --concurrency 1 --timeout 90s --output-dir /tmp/grafana-snapshots
 ```
 
@@ -113,3 +111,5 @@ cover the other networks. Logs and hardware/session checks have separate rows.
 - Mahiron: コンテナCPUの単位をpercent、メモリをbytesへ訂正。
 
 本番反映後、Redis 2データソースの疎通OKとRedis／cert-managerの描画回復を確認。CoreDNS 2 Podの新規系列を確認し、OTLP変換後の実job `kube-system/coredns`へクエリを揃えた。全15画面の保存済み設定が過去24時間・1分更新であることもAPIで確認。
+
+2026-10-26: Home Assistantへの移行に伴い、EnvironmentダッシュボードとInfluxDBデータソースを撤去。

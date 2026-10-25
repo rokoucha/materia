@@ -89,14 +89,6 @@ spec:
               protocol: TCP
     - toEndpoints:
         - matchLabels:
-            k8s:io.kubernetes.pod.namespace: influxdb
-            k8s:app: influxdb
-      toPorts:
-        - ports:
-            - port: "8086"
-              protocol: TCP
-    - toEndpoints:
-        - matchLabels:
             k8s:io.kubernetes.pod.namespace: haproxy-controller
             k8s:app.kubernetes.io/instance: haproxy-ingress
             k8s:app.kubernetes.io/name: kubernetes-ingress
