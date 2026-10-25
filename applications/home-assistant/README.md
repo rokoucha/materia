@@ -8,7 +8,7 @@ Home Assistant Containerを単一Podで実行する。`hostNetwork`、USB、Blue
 - `/config`: `beryllium-iscsi`、10 GiB、SQLiteを含む
 - PVCとNamespaceはArgo CDの削除・pruneから保護し、PVはStorageClassのRetain設定で保持する。
 
-既存Ingress経由でHTTPS公開する。通常のログインはAuthentikの`rokoucha`に限定する。IoT向け通信はnitrogenのTCP 1883だけを許可する。
+既存Ingress経由でHTTPS公開する。通常のログインはAuthentikの`rokoucha`に限定する。IoT向け通信はnitrogen（172.16.4.11）のTCP 1883と、Stamp Pico（172.16.4.12）のESPHome API（TCP 6053）を許可する。
 
 ## 設定と更新
 
