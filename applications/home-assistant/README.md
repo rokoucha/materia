@@ -1,6 +1,6 @@
 # Home Assistant
 
-Home Assistant Containerを単一Podで実行する。`hostNetwork`、USB、Bluetoothの直接接続は使わず、ESPHome・Bluetooth Proxy・MQTTは機器用ネットワーク整備後に追加する。
+Home Assistant Containerを単一Podで実行する。`hostNetwork`、USB、Bluetoothの直接接続は使わない。Wi-SUNスマートメーターは[nitrogenのMQTTブローカー](../../hosts/nitrogen/route-b-exporter/README.md)に接続する。
 
 - URL: https://h.rokoucha.net
 - 通常の認証: Authentik OIDC（公開クライアント＋PKCE、`rokoucha`のみ許可）
@@ -8,7 +8,7 @@ Home Assistant Containerを単一Podで実行する。`hostNetwork`、USB、Blue
 - `/config`: `beryllium-iscsi`、10 GiB、SQLiteを含む
 - PVCとNamespaceはArgo CDの削除・pruneから保護し、PVはStorageClassのRetain設定で保持する。
 
-既存Ingress経由でHTTPS公開する。通常のログインはAuthentikの`rokoucha`に限定する。ルーター・IoT WLAN・機器向けの通信許可は変更しない。
+既存Ingress経由でHTTPS公開する。通常のログインはAuthentikの`rokoucha`に限定する。IoT向け通信はnitrogenのTCP 1883だけを許可する。
 
 ## 設定と更新
 
