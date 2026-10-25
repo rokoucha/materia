@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - ./resources/network-policy.yaml
-  - https://github.com/cert-manager/cert-manager/releases/download/v1.21.2/cert-manager.yaml
+  - https://github.com/cert-manager/cert-manager/releases/download/v1.21.3/cert-manager.yaml
   - ./resources/cloudflare-api-token.yaml
   - ./resources/cluster-issuer.yaml
   - ./resources/monitor.yaml
