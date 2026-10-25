@@ -45,6 +45,9 @@ persistence:
 datasources:
   datasources.yaml:
     apiVersion: 1
+    deleteDatasources:
+      - name: influxdb
+        orgId: 1
     datasources:
       - name: Network flows
         uid: network-flows
