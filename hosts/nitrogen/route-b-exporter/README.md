@@ -2,9 +2,9 @@
 
 `nitrogen.dns.ggrel.net`（172.16.4.11、Arch Linux ARMv7）の内蔵Wi-SUNモジュールは`/dev/ttyS1`。`route-b-exporter.service`が60秒間隔で取得し、同じホストのMosquittoへ送信する。送信時間予算は既定の180秒/時。
 
-- exporter: [v0.0.1](https://github.com/rokoucha/akizuki-dg-route-b-exporter/releases/tag/v0.0.1)
-- 配布物: `akizuki-dg-route-b-exporter_0.0.1_linux_armv7.tar.gz`
-- SHA-256: `e55ac1de1d2dc4342eb024fd106ec1965f998139de6f1db48b1ad5c373c6f6ce`
+- exporter: [v1.0.0](https://github.com/rokoucha/akizuki-dg-route-b-exporter/releases/tag/v1.0.0)
+- 配布物: `akizuki-dg-route-b-exporter_1.0.0_linux_armv7.tar.gz`
+- SHA-256: `bd81327102f091a7eac55ff617cdf984effac4dca8c4f840621f499fa974a2a2`
 - バイナリ: `/usr/local/bin/akizuki-dg-route-b-exporter`
 - `exporter.service` → `/etc/systemd/system/route-b-exporter.service`
 - `mosquitto.conf` → `/etc/mosquitto/mosquitto.conf`
@@ -16,6 +16,8 @@
 MQTT用パスワードはホストで生成し、root専用の`mqtt-exporter-password`と`mqtt-ha-password`へ保存する。Mosquittoの`/etc/mosquitto/route-b.passwd`はハッシュ形式で保存し、ACLとともに所有者`mosquitto`、モード0600にする。`/var/lib/mosquitto`は所有者`mosquitto`、モード0750。Discoveryとavailabilityを永続化する。
 
 Home AssistantのMQTT統合は`172.16.4.11:1883`、ユーザー`home-assistant`、MQTT v5、Discovery有効。計測値とDiscoveryの購読、`homeassistant/status`への発行だけを許可する。正方向の積算電力量をエネルギーダッシュボードの買電量へ登録する。
+
+このメーターのT相は計測値なし（`0x7FFE`）。v1.0.0はこの値を発行しない。Home AssistantのT相エンティティは無効のままにする。旧バイナリは`/usr/local/bin/akizuki-dg-route-b-exporter.v0.0.1`へ退避済み。
 
 nitrogenの`/etc/nftables.conf`と[chlorinate](https://github.com/rokoucha/chlorinate)のルーター設定は、送信元`172.16.2.21`・`.22`・`.23`、宛先`172.16.4.11`、TCP 1883だけを許可する。Home AssistantのCiliumポリシーも同じ宛先・ポートに限定する。MQTTはloopbackとプライベートIPv4だけで待ち受ける。
 
