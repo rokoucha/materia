@@ -1,6 +1,6 @@
 # Home Assistant
 
-Home Assistant Containerを単一Podで実行する。`hostNetwork`、USB、Bluetoothの直接接続は使わない。Wi-SUNスマートメーターは[nitrogenのMQTTブローカー](../../hosts/nitrogen/route-b-exporter/README.md)に接続する。
+Home Assistant Containerを単一Podで実行する。`hostNetwork`、USB、Bluetoothの直接接続は使わない。Wi-SUNスマートメーターはクラスタ外のnitrogenにあるMQTTブローカー（172.16.4.11:1883）に接続する。
 
 - URL: https://h.rokoucha.net
 - 通常の認証: Authentik OIDC（公開クライアント＋PKCE、`rokoucha`のみ許可）

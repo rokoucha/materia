@@ -1,8 +1,0 @@
-user route-b-exporter
-topic write homeassistant/device/100723FFFEA80237/config
-topic write akizuki-dg-route-b/100723FFFEA80237/#
-
-user home-assistant
-topic read homeassistant/#
-topic write homeassistant/status
-topic read akizuki-dg-route-b/100723FFFEA80237/#
