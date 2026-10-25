@@ -1,8 +1,0 @@
-apiVersion: onepassword.com/v1
-kind: OnePasswordItem
-
-metadata:
-  name: switchbot-token
-
-spec:
-  itemPath: vaults/materia-applications/items/switchbot-token

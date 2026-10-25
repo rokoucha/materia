@@ -20,8 +20,6 @@ spec:
       server: https://kubernetes.default.svc
     - namespace: home-assistant
       server: https://kubernetes.default.svc
-    - namespace: influxdb
-      server: https://kubernetes.default.svc
     - namespace: loki
       server: https://kubernetes.default.svc
     - namespace: mahiron
@@ -41,8 +39,6 @@ spec:
     - namespace: prometheus
       server: https://kubernetes.default.svc
     - namespace: sophie
-      server: https://kubernetes.default.svc
-    - namespace: switchbot-meter-exporter
       server: https://kubernetes.default.svc
     - namespace: teamspeak
       server: https://kubernetes.default.svc

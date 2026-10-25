@@ -26,12 +26,6 @@
   {
     "apiVersion": "apps/v1",
     "kind": "StatefulSet",
-    "name": "influxdb",
-    "namespace": "influxdb"
-  },
-  {
-    "apiVersion": "apps/v1",
-    "kind": "StatefulSet",
     "name": "loki",
     "namespace": "loki"
   },
