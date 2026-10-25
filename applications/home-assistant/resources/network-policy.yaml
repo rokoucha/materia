@@ -68,3 +68,22 @@ spec:
         - ports:
             - port: "443"
               protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: route-b-mqtt
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: default
+  enableDefaultDeny:
+    ingress: false
+    egress: false
+  egress:
+    - toCIDR:
+        - 172.16.4.11/32
+      toPorts:
+        - ports:
+            - port: "1883"
+              protocol: TCP
