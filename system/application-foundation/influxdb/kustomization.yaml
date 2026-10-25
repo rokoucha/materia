@@ -1,0 +1,6 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Retain historical data after retiring InfluxDB.
+resources:
+  - ./persistentvolume-pvc-9c6e10ab-0422-490d-ad99-94064fdc7bfb.yaml
