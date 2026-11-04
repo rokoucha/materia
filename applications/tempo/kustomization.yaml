@@ -13,6 +13,7 @@ helmCharts:
 
 resources:
   - ./network-policy.yaml
+  - ./resources/persistent-volume-claim.yaml
 
 patches:
   - path: ./patches/service-dual-stack.yaml

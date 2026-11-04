@@ -33,7 +33,7 @@ tempo:
 persistence:
   enabled: true
   storageClassName: beryllium-iscsi
-  size: 20Gi
+  size: 40Gi
 
 service:
   type: ClusterIP
