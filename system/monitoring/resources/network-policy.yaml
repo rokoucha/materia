@@ -512,6 +512,14 @@ spec:
               protocol: TCP
     - toEndpoints:
         - matchLabels:
+            k8s:io.kubernetes.pod.namespace: sophie
+            k8s:cnpg.io/cluster: postgresql
+      toPorts:
+        - ports:
+            - port: "9187"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
             k8s:io.kubernetes.pod.namespace: monitoring
             k8s:app.kubernetes.io/instance: drm-exporter
             k8s:app.kubernetes.io/name: drm-exporter
