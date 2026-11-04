@@ -19,6 +19,9 @@ tolerations:
 
 extraArgs:
   - --collector.hwmon
+  # Per-operation NFS client latency (RTT and execute time) for each mount,
+  # to tell NAS/NFS stalls from database load (rokoucha/sophie#1752).
+  - --collector.mountstats
 
 prometheus:
   monitor:
@@ -31,6 +34,21 @@ prometheus:
       - sourceLabels:
           - __meta_kubernetes_node_name
         targetLabel: k8s_node_name
+    # Keep per-operation series only for the data and metadata operations
+    # that explain storage latency; NFSv4 has ~60 operations per mount.
+    metricRelabelings:
+      - sourceLabels:
+          - operation
+        regex: READ|WRITE|COMMIT|GETATTR|ACCESS|LOOKUP|OPEN|CLOSE|SETATTR
+        targetLabel: __tmp_keep_operation
+        replacement: 'true'
+      - sourceLabels:
+          - __name__
+          - __tmp_keep_operation
+        regex: node_mountstats_nfs_operations_.+;
+        action: drop
+      - regex: __tmp_keep_operation
+        action: labeldrop
 
 resources:
   requests:
