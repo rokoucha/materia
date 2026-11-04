@@ -25,4 +25,4 @@ spec:
             resources:
               requests:
                 storage: 2Gi
-            storageClassName: beryllium-iscsi
+            storageClassName: beryllium-nfs-sync

@@ -14,5 +14,5 @@ spec:
     initdb:
       database: miniflux
   storage:
-    storageClass: beryllium-iscsi
+    storageClass: beryllium-nfs-sync
     size: 5Gi
