@@ -27,7 +27,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - image: ghcr.io/mastodon/mastodon-streaming:v4.7.4
+        - image: ghcr.io/mastodon/mastodon-streaming:v4.7.5
           name: mastodon-streaming
           securityContext:
             allowPrivilegeEscalation: false
