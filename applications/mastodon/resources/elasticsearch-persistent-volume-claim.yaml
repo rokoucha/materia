@@ -10,6 +10,6 @@ spec:
   resources:
     requests:
       storage: 2Gi
-  storageClassName: beryllium-iscsi
+  storageClassName: beryllium-nfs-sync
   volumeMode: Filesystem
-  volumeName: pvc-7c391557-b7b8-4ea2-b21a-582c3b2c6c79
+  volumeName: mastodon-elasticsearch-nfs
