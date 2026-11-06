@@ -17,7 +17,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: cosense-cli-mcp
-          image: ghcr.io/rokoucha/cosense-cli-mcp:20261105.073113
+          image: ghcr.io/rokoucha/cosense-cli-mcp:20261106.155942
           envFrom:
             - configMapRef:
                 name: config
