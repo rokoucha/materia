@@ -34,6 +34,10 @@ controller:
 
   config:
     ssl-redirect-port: "443"
+    frontend-config-snippet: |
+      log stdout format raw profile materia_mcp_auth local0 notice
+      http-request set-var(txn.ha_mcp_auth_count) req.hdr_cnt(authorization) if { hdr(host) -i h.rokoucha.net } { path -m str /api/mcp }
+      http-request set-log-level notice if { var(txn.ha_mcp_auth_count) -m found }
     global-config-snippet: |
       tune.lua.bool-sample-conversion normal
       lua-load /etc/haproxy/forward-auth.lua
@@ -68,6 +72,9 @@ controller:
         name: haproxy-forward-auth-lua
 
   auxiliaryConfig: |
+    log-profile materia_mcp_auth
+      on close format "mcp-auth-observation method=%HM status=%ST auth_header_count=%[var(txn.ha_mcp_auth_count)]"
+
     listen materia_forward_auth_relay
       mode http
       bind 127.0.0.1:10080
