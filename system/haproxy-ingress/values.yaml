@@ -36,8 +36,12 @@ controller:
     ssl-redirect-port: "443"
     frontend-config-snippet: |
       log stdout format raw local0 notice
-      log-format "mcp-auth-observation method=%HM status=%ST auth_header_count=%[var(txn.ha_mcp_auth_count)]"
-      http-request set-var(txn.ha_mcp_auth_count) req.hdr_cnt(authorization) if { hdr(host) -i h.rokoucha.net } { path -m str /api/mcp }
+      log-format "mcp-auth-observation route=%[var(txn.ha_mcp_route)] method=%HM status=%ST auth_header_count=%[var(txn.ha_mcp_auth_count)]"
+      http-request set-var(txn.ha_mcp_auth_count) req.hdr_cnt(authorization) if { hdr(host) -i h.rokoucha.net }
+      http-request set-var(txn.ha_mcp_route) str(other) if { var(txn.ha_mcp_auth_count) -m found }
+      http-request set-var(txn.ha_mcp_route) str(mcp) if { var(txn.ha_mcp_auth_count) -m found } { path -m str /api/mcp }
+      http-request set-var(txn.ha_mcp_route) str(resource_metadata) if { var(txn.ha_mcp_auth_count) -m found } { path -m str /.well-known/oauth-protected-resource }
+      http-request set-var(txn.ha_mcp_route) str(server_metadata) if { var(txn.ha_mcp_auth_count) -m found } { path -m str /.well-known/oauth-authorization-server }
       http-request set-log-level notice if { var(txn.ha_mcp_auth_count) -m found }
     global-config-snippet: |
       tune.lua.bool-sample-conversion normal
