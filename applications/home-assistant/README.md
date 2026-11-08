@@ -35,3 +35,9 @@ kubectl -n home-assistant port-forward service/service 8123:8123
 このSecretはGitへ保存しない。復旧用パスワードは別の安全な保管先にも保存する。
 
 バックアップは現時点では設定しない。
+
+## MCPの認証チャレンジ
+
+Coreは認証情報なしの401もIP BANへ加算する（[上流Issue #186574](https://github.com/home-assistant/core/issues/186574)）。暫定対応として、ServiceのHAProxy設定で`/api/mcp`のAuthorizationヘッダーなし要求に401とOAuthメタデータURLを返す。ヘッダー付き要求はCoreが検証する。上流で修正されたら撤去する。
+
+対象は公開Ingress経由の`/api/mcp`だけで、個別API URL・旧SSE URL・直接接続には適用しない。ヘッダー付きの認証失敗によるBANと、通信経路によって内部IPへ失敗が集約される問題は残る。
