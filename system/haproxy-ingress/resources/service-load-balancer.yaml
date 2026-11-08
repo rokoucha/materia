@@ -20,7 +20,7 @@ spec:
   ipFamilies:
     - IPv4
   ipFamilyPolicy: SingleStack
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: Cluster
   ports:
     - name: http
       port: 80
@@ -56,7 +56,7 @@ spec:
   ipFamilies:
     - IPv6
   ipFamilyPolicy: SingleStack
-  externalTrafficPolicy: Local
+  externalTrafficPolicy: Cluster
   ports:
     - name: http
       port: 80
