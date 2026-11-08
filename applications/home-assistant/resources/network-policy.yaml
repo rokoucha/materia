@@ -32,6 +32,14 @@ spec:
     ingress: false
     egress: false
   egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: apcupsd
+            k8s:app: apcupsd
+      toPorts:
+        - ports:
+            - port: "3551"
+              protocol: TCP
     - toCIDR:
         - 172.16.4.12/32
       toPorts:
