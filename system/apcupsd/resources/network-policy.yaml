@@ -16,6 +16,12 @@ spec:
           podSelector:
             matchLabels:
               app: apcupsd-exporter
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: home-assistant
+          podSelector:
+            matchLabels:
+              app: default
       ports:
         - port: 3551
           protocol: TCP
