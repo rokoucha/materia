@@ -6,6 +6,15 @@ controller:
   # Keep ingress available through a single-node failure.
   kind: DaemonSet
 
+  # L2 announcement candidates must always have a local ingress endpoint.
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
   # Custom validation rules are loaded when the controller starts.
   podAnnotations: |
     materia.ggrel.net/validation-rules-revision: "2"
@@ -77,6 +86,7 @@ controller:
       server outpost ak-outpost-authentik-embedded-outpost.authentik.svc.materia-cluster.ggrel.net:9000 init-addr last,libc,none
 
   service:
+    externalTrafficPolicy: Local
     nodePorts:
       http: 80
       https: 443
