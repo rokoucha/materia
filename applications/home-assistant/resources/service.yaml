@@ -2,6 +2,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service
+  annotations:
+    # Core counts credential-free OAuth discovery as a failed login (#186574).
+    haproxy.org/backend-config-snippet: |
+      http-request return status 401 hdr WWW-Authenticate 'Bearer resource_metadata="https://h.rokoucha.net/.well-known/oauth-protected-resource"' if { path -m str /api/mcp } { req.hdr_cnt(authorization) eq 0 }
 spec:
   selector:
     app: default
