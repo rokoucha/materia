@@ -17,3 +17,17 @@ spec:
         http-request deny deny_status 403 if { var(txn.forward_auth_result) -m str forbidden }
         http-request deny deny_status 503 if { var(txn.forward_auth_result) -m str error }
         http-after-response add-header Set-Cookie %[var(txn.forward_auth_client_header_set_cookie)] if { var(txn.forward_auth_client_header_set_cookie) -m found }
+    mcp-anonymous-challenge:
+      section: backend
+      type: bool
+      rule: value == true
+      template: |
+        http-request return status 401 hdr WWW-Authenticate 'Bearer resource_metadata="https://h.rokoucha.net/.well-known/oauth-protected-resource"' if { path -m str /api/mcp } { req.hdr_cnt(authorization) eq 0 }
+    normalize-rpc-path:
+      # Normalize before forward-auth, matching the former snippet order.
+      order_priority: 10
+      section: backend
+      type: bool
+      rule: value == true
+      template: |
+        http-request set-path /rpc if { path -m str //rpc }
