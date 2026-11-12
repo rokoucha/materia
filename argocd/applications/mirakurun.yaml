@@ -26,6 +26,20 @@ spec:
       name: tls
   project: applications
   source:
+    kustomize:
+      patches:
+        # The source repository still uses the snippet removed in controller 3.4.
+        - target:
+            kind: Service
+            name: service
+          patch: |-
+            apiVersion: v1
+            kind: Service
+            metadata:
+              name: service
+              annotations:
+                haproxy.org/backend-config-snippet: null
+                backend.materia.ggrel.net/normalize-rpc-path: "true"
     path: applications/mirakurun
     repoURL: https://github.com/rokoucha/materia-arcanum.git
     targetRevision: HEAD

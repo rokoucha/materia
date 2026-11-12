@@ -1,0 +1,21 @@
+apiVersion: ingress.v3.haproxy.org/v3
+kind: Global
+metadata:
+  name: materia
+spec:
+  lua_options:
+    loads:
+      - file: /etc/haproxy/forward-auth.lua
+  tune_lua_options:
+    bool_sample_conversion: normal
+  http_client_options:
+    timeout_connect: 3000
+  ssl_options:
+    default_bind_ciphers: ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384
+    default_bind_ciphersuites: TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384
+    default_bind_curves: X25519MLKEM768:secp521r1:secp384r1
+    default_bind_options: prefer-client-ciphers no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
+    default_server_ciphers: ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384
+    default_server_ciphersuites: TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384
+    default_server_curves: secp521r1:secp384r1
+    default_server_options: no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets

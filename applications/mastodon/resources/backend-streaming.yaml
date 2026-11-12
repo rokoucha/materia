@@ -1,0 +1,15 @@
+apiVersion: ingress.v3.haproxy.org/v3
+kind: Backend
+metadata:
+  name: streaming
+spec:
+  from: haproxytech
+  mode: http
+  balance:
+    algorithm: roundrobin
+  forwardfor:
+    enabled: enabled
+  abortonclose: disabled
+  default_server:
+    check: enabled
+  http_keep_alive_timeout: 70000
