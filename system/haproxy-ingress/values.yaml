@@ -1,7 +1,7 @@
 controller:
   image:
     # renovate: image=ghcr.io/haproxytech/kubernetes-ingress
-    tag: 3.2.19
+    tag: 3.4.0
 
   # Keep ingress available through a single-node failure.
   kind: DaemonSet
