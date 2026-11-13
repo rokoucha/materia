@@ -21,6 +21,7 @@ helmCharts:
       - mahiron
       - mastodon
       - miniflux
+      - miniflux-mcp-server
       - mirakurun
       - network-flows
       - otel-external

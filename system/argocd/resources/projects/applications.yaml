@@ -26,6 +26,8 @@ spec:
       server: https://kubernetes.default.svc
     - namespace: mastodon
       server: https://kubernetes.default.svc
+    - namespace: miniflux-mcp-server
+      server: https://kubernetes.default.svc
     - namespace: miniflux
       server: https://kubernetes.default.svc
     - namespace: mirakurun
