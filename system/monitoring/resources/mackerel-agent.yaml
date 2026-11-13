@@ -26,7 +26,7 @@ spec:
           effect: NoSchedule
       containers:
         - name: mackerel-agent
-          image: mackerel/mackerel-agent:0.87.2
+          image: mackerel/mackerel-agent:0.87.3
           imagePullPolicy: IfNotPresent
           env:
             - name: apikey
