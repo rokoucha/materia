@@ -65,6 +65,14 @@ spec:
               protocol: TCP
     - toEndpoints:
         - matchLabels:
+            k8s:io.kubernetes.pod.namespace: miniflux-mcp-server
+            k8s:app: miniflux-mcp-server
+      toPorts:
+        - ports:
+            - port: "3000"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
             k8s:io.kubernetes.pod.namespace: grafana
             k8s:app.kubernetes.io/instance: grafana
             k8s:app.kubernetes.io/name: grafana

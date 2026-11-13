@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: miniflux-mcp-server
+
+resources:
+  - ./resources/ghcr-credentials.yaml
+  - ./resources/deployment.yaml
+  - ./resources/ingress.yaml
+  - ./resources/network-policy.yaml
+  - ./resources/secrets.yaml
+  - ./resources/service.yaml
+  - ./resources/tls.yaml
+  - ./resources/persistent-volume-claim.yaml
+
+configMapGenerator:
+  - name: config
+    literals:
+      - ISSUER=https://miniflux-mcp.ggrel.net
+      - MINIFLUX_URL=http://service.miniflux.svc:8080
+      - DATABASE_PATH=/data/oauth.sqlite

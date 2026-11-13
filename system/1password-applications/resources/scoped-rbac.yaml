@@ -760,6 +760,7 @@ rules:
   - mahiron
   - mastodon
   - miniflux
+  - miniflux-mcp-server
   - mirakurun
   - network-flows
   - otel-external
@@ -774,6 +775,88 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
+  name: onepassword-applications-operator
+subjects:
+- kind: ServiceAccount
+  name: onepassword-connect-operator
+  namespace: 1password-applications
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: onepassword-applications-operator
+  namespace: miniflux-mcp-server
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+- apiGroups:
+  - ''
+  resources:
+  - secrets
+  resourceNames:
+  - miniflux-mcp-server-secrets
+  verbs:
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - onepassword.com
+  resources:
+  - onepassworditems
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - onepassword.com
+  resources:
+  - onepassworditems
+  - onepassworditems/status
+  - onepassworditems/finalizers
+  resourceNames:
+  - miniflux-mcp-server-secrets
+  verbs:
+  - update
+  - patch
+- apiGroups:
+  - ''
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  resourceNames:
+  - deployment
+  verbs:
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: onepassword-applications-operator
+  namespace: miniflux-mcp-server
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
   name: onepassword-applications-operator
 subjects:
 - kind: ServiceAccount

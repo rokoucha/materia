@@ -10,6 +10,7 @@ resources:
 - "./mahiron"
 - "./mastodon"
 - "./miniflux"
+- "./miniflux-mcp-server"
 - "./mirakurun"
 - "./network-flows"
 - "./nginx"

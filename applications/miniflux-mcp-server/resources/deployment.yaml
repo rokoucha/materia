@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: deployment
+
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: miniflux-mcp-server
+  template:
+    metadata:
+      labels:
+        app: miniflux-mcp-server
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: ghcr-credentials
+      containers:
+        - name: miniflux-mcp-server
+          image: ghcr.io/rokoucha/miniflux-mcp-server:20261113.235421
+          envFrom:
+            - configMapRef:
+                name: config
+            - secretRef:
+                name: miniflux-mcp-server-secrets
+          ports:
+            - name: http
+              containerPort: 3000
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      securityContext:
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data

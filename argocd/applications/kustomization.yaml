@@ -11,6 +11,7 @@ resources:
   - ./mahiron.yaml
   - ./mastodon.yaml
   - ./miniflux.yaml
+  - ./miniflux-mcp-server.yaml
   - ./mirakurun.yaml
   - ./network-flows.yaml
   - ./nginx.yaml
