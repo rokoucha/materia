@@ -18,7 +18,7 @@ jobs:
           version: v1.37.2
       - uses: azure/setup-helm@2f5e7bc67f1f9972ab16657bb795f36d8f04de0e # v5.1.0
         with:
-          version: v4.3.1
+          version: v4.3.2
       - name: Install yq
         run: |
           curl -fsSL https://github.com/mikefarah/yq/releases/download/v4.54.1/yq_linux_amd64 -o "$RUNNER_TEMP/yq"
