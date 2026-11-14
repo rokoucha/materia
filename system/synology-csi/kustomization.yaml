@@ -6,7 +6,7 @@ namespace: synology-csi
 resources:
   - ./resources/beryllium-iscsi.yaml
   - ./resources/beryllium-nfs.yaml
-  - ./resources/beryllium-nfs-fsgroup.yaml
+  - ./resources/beryllium-nfs-group.yaml
   - ./resources/beryllium-nfs-sync.yaml
   - ./resources/client-info-secret.yaml
   - https://raw.githubusercontent.com/zebernst/synology-csi-talos/v1.2.0/deploy/kubernetes/v1.20/controller.yml

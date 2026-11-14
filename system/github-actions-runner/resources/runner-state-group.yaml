@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: runner-state-fsgroup
+  name: runner-state-group
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi
-  storageClassName: beryllium-nfs-fsgroup
+  storageClassName: beryllium-nfs-group

@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pnpm-store-fsgroup
+  name: pnpm-store-group
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 20Gi
-  storageClassName: beryllium-nfs-fsgroup
+  storageClassName: beryllium-nfs-group

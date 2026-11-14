@@ -38,24 +38,26 @@ is managed in the Sophie repository.
 
 # Actions runner CSI migration
 
-The `beryllium-nfs-fsgroup` StorageClass sets the Synology CSI driver's supported
-`mountPermissions: "0"`. Kubelet retains ownership of fsGroup permissions, so
+The `beryllium-nfs-group` StorageClass sets the Synology CSI driver's supported
+`mountPermissions: "0770"`. The driver skips chmod when the ordinary permission bits already match 0770,
+preserving kubelet's setgid bit. Kubelet retains fsGroup ownership, so
 `OnRootMismatch` can skip subsequent recursive scans. The default StorageClass
 and existing unrelated volumes are unchanged. Both new PVCs use new CSI volumes;
 old claims and data remain as rollback copies. Do not modify immutable PV source
 fields, remove protection finalizers, or point two claims at the same CSI handle.
 
 1. Wait for the runner's current GitHub job to finish. Merge the preparation
-   change (StorageClass, two `*-fsgroup` PVCs, Deployment `sophie` replicas zero)
+   change (StorageClass, two `*-group` PVCs, Deployment `sophie` replicas zero)
    and wait for its Pod to disappear. Keep this maintenance state in Git so
    parent self-heal cannot restart it. Separate Argo applications may reconcile
    in either order; wait until both new PVCs are Bound with distinct CSI handles
-   and `mountPermissions: "0"` before proceeding.
+   and `mountPermissions: "0770"` before proceeding.
 2. Confirm the runner is stopped. Record old/new bindings and runner
    file checksums privately; do not print registration credentials.
 3. Apply `runner-storage-copy.yaml` explicitly. It runs non-root under the
    namespace's existing restricted policy. It copies all children including
-   registration dotfiles, preserves file modes, and compares contents. The new
+   registration dotfiles, preserves file modes, and compares contents, modes and symbolic links. Synology
+   owns `@eaDir` and `#recycle`; these NAS metadata directories are excluded. The new
    volume roots retain kubelet-managed ownership. If it fails, keep the runner
    stopped while investigating; never retry over a partially copied target.
 4. After the Job completes successfully, delete the Job and wait until its Pod

@@ -1,14 +1,15 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: beryllium-nfs-fsgroup
+  name: beryllium-nfs-group
 provisioner: csi.san.synology.com
 parameters:
   dsm: 172.16.2.17
   location: /volume1
   protocol: nfs
-  # Let kubelet manage fsGroup. CSI's default 0750 defeats OnRootMismatch.
-  mountPermissions: "0"
+  # Match group-writable permissions so remounts preserve kubelet's setgid
+  # bit (the driver skips chmod when ordinary permission bits already match).
+  mountPermissions: "0770"
 mountOptions:
   - nfsvers=4.1
 reclaimPolicy: Retain

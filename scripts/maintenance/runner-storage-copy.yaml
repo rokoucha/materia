@@ -31,14 +31,16 @@ spec:
             - -c
             - |
               for name in runner-state pnpm-store; do
+                # Synology owns @eaDir/#recycle on both shares; do not copy or
+                # erase those NAS metadata directories.
                 # Copy children (including dotfiles), leaving the target root's
                 # kubelet-managed owner, group and setgid permissions intact.
-                test -z "$(find "/target/$name" -mindepth 1 -maxdepth 1 -print -quit)"
-                find "/source/$name" -mindepth 1 -maxdepth 1 \
+                test -z "$(find "/target/$name" -mindepth 1 -maxdepth 1 ! -name @eaDir ! -name '#recycle' -print -quit)"
+                find "/source/$name" -mindepth 1 -maxdepth 1 ! -name @eaDir ! -name '#recycle' \
                   -exec cp -a --no-preserve=ownership -t "/target/$name" -- {} +
-                diff -qr --no-dereference "/source/$name" "/target/$name" >/dev/null
-                cmp <(cd "/source/$name" && find . -mindepth 1 -printf '%P:%y:%m:%l\0' | sort -z) \
-                    <(cd "/target/$name" && find . -mindepth 1 -printf '%P:%y:%m:%l\0' | sort -z)
+                diff -qr --no-dereference --exclude=@eaDir --exclude='#recycle' "/source/$name" "/target/$name" >/dev/null
+                cmp <(cd "/source/$name" && find . -mindepth 1 \( -name @eaDir -o -name '#recycle' \) -prune -o -mindepth 1 -printf '%P:%y:%m:%l\0' | sort -z) \
+                    <(cd "/target/$name" && find . -mindepth 1 \( -name @eaDir -o -name '#recycle' \) -prune -o -mindepth 1 -printf '%P:%y:%m:%l\0' | sort -z)
                 echo "$name: content verified"
               done
           resources:
@@ -69,7 +71,7 @@ spec:
             claimName: pnpm-store
         - name: new-state
           persistentVolumeClaim:
-            claimName: runner-state-fsgroup
+            claimName: runner-state-group
         - name: new-store
           persistentVolumeClaim:
-            claimName: pnpm-store-fsgroup
+            claimName: pnpm-store-group
