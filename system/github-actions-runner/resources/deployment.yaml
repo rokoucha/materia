@@ -5,8 +5,7 @@ metadata:
   name: sophie
 
 spec:
-  # Maintenance: populate the new CSI claims before resuming the runner.
-  replicas: 0
+  replicas: 1
   strategy:
     type: Recreate
   selector:
@@ -167,14 +166,14 @@ spec:
       volumes:
         - name: pnpm-store
           persistentVolumeClaim:
-            claimName: pnpm-store
+            claimName: pnpm-store-group
         - name: registration
           secret:
             optional: true
             secretName: registration
         - name: runner-state
           persistentVolumeClaim:
-            claimName: runner-state
+            claimName: runner-state-group
         - name: work
           emptyDir:
             sizeLimit: 80Gi
