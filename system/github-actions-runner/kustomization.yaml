@@ -9,4 +9,6 @@ resources:
   - ./resources/priority-class.yaml
   - ./resources/runner-state.yaml
   - ./resources/pnpm-store.yaml
+  - ./resources/runner-state-fsgroup.yaml
+  - ./resources/pnpm-store-fsgroup.yaml
   - ./resources/deployment.yaml

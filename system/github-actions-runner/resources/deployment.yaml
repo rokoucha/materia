@@ -5,7 +5,8 @@ metadata:
   name: sophie
 
 spec:
-  replicas: 1
+  # Maintenance: populate the new CSI claims before resuming the runner.
+  replicas: 0
   strategy:
     type: Recreate
   selector:

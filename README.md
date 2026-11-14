@@ -58,7 +58,15 @@ talosctl kubeconfig
 ./scripts/talos-upgrade-commands.sh lithium
 ```
 
-手順が出てくるのでそれにそってコマンド実行する
+上記はコマンド表示のみ。並行事前取得と健全性確認を挟む逐次更新は次を使う。
+
+```sh
+./scripts/talos-upgrade.py --prefetch-only
+./scripts/talos-upgrade.py --execute hydrogen phosphorus lithium
+```
+
+更新順、確認項目、バックアップとログは [運用手順](scripts/maintenance/README.md) を参照。
+CNPG の接続終了待ちは30秒とし、その後の正常停止の猶予は維持する。
 
 ## 設定の検証
 

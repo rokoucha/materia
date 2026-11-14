@@ -5,6 +5,8 @@ metadata:
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1-minimal-trixie
   instances: 1
+  # Bound connection draining; retain the default 1800s clean shutdown budget.
+  smartShutdownTimeout: 30
   enablePDB: false
   bootstrap:
     initdb:
