@@ -38,32 +38,37 @@ is managed in the Sophie repository.
 
 # Actions runner CSI migration
 
-The `beryllium-nfs-fsgroup` StorageClass sets the Synology CSI driver's supported
-`mountPermissions: "0"`. Kubelet retains ownership of fsGroup permissions, so
+The `beryllium-nfs-group` StorageClass sets the Synology CSI driver's supported
+`mountPermissions: "0770"`. The driver skips chmod when the ordinary permission bits already match 0770,
+preserving kubelet's setgid bit. Kubelet retains fsGroup ownership, so
 `OnRootMismatch` can skip subsequent recursive scans. The default StorageClass
 and existing unrelated volumes are unchanged. Both new PVCs use new CSI volumes;
 old claims and data remain as rollback copies. Do not modify immutable PV source
 fields, remove protection finalizers, or point two claims at the same CSI handle.
 
 1. Wait for the runner's current GitHub job to finish. Merge the preparation
-   change (StorageClass, two `*-fsgroup` PVCs, Deployment `sophie` replicas zero)
+   change (StorageClass, two `*-group` PVCs, Deployment `sophie` replicas zero)
    and wait for its Pod to disappear. Keep this maintenance state in Git so
    parent self-heal cannot restart it. Separate Argo applications may reconcile
    in either order; wait until both new PVCs are Bound with distinct CSI handles
-   and `mountPermissions: "0"` before proceeding.
+   and `mountPermissions: "0770"` before proceeding.
 2. Confirm the runner is stopped. Record old/new bindings and runner
    file checksums privately; do not print registration credentials.
 3. Apply `runner-storage-copy.yaml` explicitly. It runs non-root under the
    namespace's existing restricted policy. It copies all children including
-   registration dotfiles, preserves file modes, and compares contents. The new
+   registration dotfiles, preserves file modes, and compares contents, modes and symbolic links. Synology
+   owns `@eaDir` and `#recycle`; these NAS metadata directories are excluded. The new
    volume roots retain kubelet-managed ownership. If it fails, keep the runner
    stopped while investigating; never retry over a partially copied target.
 4. After the Job completes successfully, delete the Job and wait until its Pod
    has disappeared. Change only the Deployment's two claim references to the
    new PVCs and replicas one in Git, then wait for the runner to become Ready/online.
-5. Verify checksums and normal non-root reads/writes, then recreate the idle
+5. Verify root owner/group/mode are `0:123 / 2770`, checksums and normal non-root
+   reads/writes, then recreate the idle
    runner Pod again. Record mount-to-Ready time and absence of recursive fsGroup
-   repair events. Do not submit a synthetic workflow with repository writes.
+   repair events. Compare root stat before/after and CSI logs for absence of
+   chmod as well; no warning event alone does not prove a walk was skipped.
+   Do not submit a synthetic workflow with repository writes.
 6. Keep old PVCs managed in Git during the rollback window. To roll back, stop
    the runner, wait for its Pod to disappear and restore both old claim names.
    Old caches/state are a point-in-time copy; inspect jobs run after migration
@@ -75,3 +80,19 @@ remain the rollback copy, but filesystem permissions may be normalized by
 kubelet. If copying fails, resume on the old claims via Git and investigate the
 new targets before an explicit cleanup/retry. The Job will never erase a target.
 For long CI jobs, increase `--health-timeout` before starting maintenance.
+
+For new Synology shares, validate each new claim separately before copying:
+use the runner image with runAsUser 1001, fsGroup 123, OnRootMismatch, dropped
+capabilities and RuntimeDefault seccomp. Do not write probe files to the volume.
+Require root `0:123 / 2770` and no entries except NAS-owned top-level `@eaDir`
+and `#recycle`. Delete each probe Job/Pod normally before proceeding. After
+copying, verify concurrent mounting of both claims twice; a single-volume probe
+does not establish normal runner startup reliability. Stop and restore the old
+runner if that acceptance fails, rather than altering NFS exports manually.
+
+The unused `*-fsgroup` trial claims contained only NAS metadata and were pruned
+normally before any copy started. Their Retain PVs may remain Released, using
+StorageClass `beryllium-nfs-fsgroup`; identify them by both class and old claim
+name. These are distinct from the original `runner-state`/`pnpm-store` rollback
+claims. Record their handles/paths before any reviewed reclamation. Never delete
+shares by a broad name prefix or remove PV protection finalizers.

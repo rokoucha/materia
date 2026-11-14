@@ -31,14 +31,17 @@ spec:
             - -c
             - |
               for name in runner-state pnpm-store; do
+                # Synology owns @eaDir/#recycle on both shares; do not copy or
+                # erase those NAS metadata directories.
                 # Copy children (including dotfiles), leaving the target root's
                 # kubelet-managed owner, group and setgid permissions intact.
-                test -z "$(find "/target/$name" -mindepth 1 -maxdepth 1 -print -quit)"
-                find "/source/$name" -mindepth 1 -maxdepth 1 \
-                  -exec cp -a --no-preserve=ownership -t "/target/$name" -- {} +
-                diff -qr --no-dereference "/source/$name" "/target/$name" >/dev/null
-                cmp <(cd "/source/$name" && find . -mindepth 1 -printf '%P:%y:%m:%l\0' | sort -z) \
-                    <(cd "/target/$name" && find . -mindepth 1 -printf '%P:%y:%m:%l\0' | sort -z)
+                test -z "$(find "/target/$name" -mindepth 1 -maxdepth 1 ! -name @eaDir ! -name '#recycle' -print -quit)"
+                while IFS= read -r -d '' entry; do
+                  cp -a --no-preserve=ownership -- "$entry" "/target/$name/"
+                  diff -qr --no-dereference -- "$entry" "/target/$name/${entry##*/}" >/dev/null
+                done < <(find "/source/$name" -mindepth 1 -maxdepth 1 ! -name @eaDir ! -name '#recycle' -print0)
+                cmp <(cd "/source/$name" && find . -mindepth 1 \( -path ./@eaDir -o -path './#recycle' \) -prune -o -printf '%P:%y:%m:%l\0' | sort -z) \
+                    <(cd "/target/$name" && find . -mindepth 1 \( -path ./@eaDir -o -path './#recycle' \) -prune -o -printf '%P:%y:%m:%l\0' | sort -z)
                 echo "$name: content verified"
               done
           resources:
@@ -69,7 +72,7 @@ spec:
             claimName: pnpm-store
         - name: new-state
           persistentVolumeClaim:
-            claimName: runner-state-fsgroup
+            claimName: runner-state-group
         - name: new-store
           persistentVolumeClaim:
-            claimName: pnpm-store-fsgroup
+            claimName: pnpm-store-group
