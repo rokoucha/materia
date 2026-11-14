@@ -36,63 +36,29 @@ The default 1800-second `stopDelay` remains for clean shutdown and WAL work.
 This does not make a single-instance database highly available. Sophie's Cluster
 is managed in the Sophie repository.
 
-# Actions runner CSI migration
+# Actions runner CSI storage
 
-The `beryllium-nfs-group` StorageClass sets the Synology CSI driver's supported
-`mountPermissions: "0770"`. The driver skips chmod when the ordinary permission bits already match 0770,
-preserving kubelet's setgid bit. Kubelet retains fsGroup ownership, so
-`OnRootMismatch` can skip subsequent recursive scans. The default StorageClass
-and existing unrelated volumes are unchanged. Both new PVCs use new CSI volumes;
-old claims and data remain as rollback copies. Do not modify immutable PV source
-fields, remove protection finalizers, or point two claims at the same CSI handle.
+The runner uses runner-state-group and pnpm-store-group, provisioned through
+beryllium-nfs-group with Synology CSI mountPermissions: "0770". When ordinary
+permission bits already match, the driver skips chmod and preserves kubelet's
+setgid bit. With fsGroup 123 and OnRootMismatch, roots remain 0:123 / 2770
+without repeating the recursive ownership repair.
 
-1. Wait for the runner's current GitHub job to finish. Merge the preparation
-   change (StorageClass, two `*-group` PVCs, Deployment `sophie` replicas zero)
-   and wait for its Pod to disappear. Keep this maintenance state in Git so
-   parent self-heal cannot restart it. Separate Argo applications may reconcile
-   in either order; wait until both new PVCs are Bound with distinct CSI handles
-   and `mountPermissions: "0770"` before proceeding.
-2. Confirm the runner is stopped. Record old/new bindings and runner
-   file checksums privately; do not print registration credentials.
-3. Apply `runner-storage-copy.yaml` explicitly. It runs non-root under the
-   namespace's existing restricted policy. It copies all children including
-   registration dotfiles, preserves file modes, and compares contents, modes and symbolic links. Synology
-   owns `@eaDir` and `#recycle`; these NAS metadata directories are excluded. The new
-   volume roots retain kubelet-managed ownership. If it fails, keep the runner
-   stopped while investigating; never retry over a partially copied target.
-4. After the Job completes successfully, delete the Job and wait until its Pod
-   has disappeared. Change only the Deployment's two claim references to the
-   new PVCs and replicas one in Git, then wait for the runner to become Ready/online.
-5. Verify root owner/group/mode are `0:123 / 2770`, checksums and normal non-root
-   reads/writes, then recreate the idle
-   runner Pod again. Record mount-to-Ready time and absence of recursive fsGroup
-   repair events. Compare root stat before/after and CSI logs for absence of
-   chmod as well; no warning event alone does not prove a walk was skipped.
-   Do not submit a synthetic workflow with repository writes.
-6. Keep old PVCs managed in Git during the rollback window. To roll back, stop
-   the runner, wait for its Pod to disappear and restore both old claim names.
-   Old caches/state are a point-in-time copy; inspect jobs run after migration
-   before rollback. Never delete either set automatically.
+The 2026-11-14 migration verified copied file contents, modes and symbolic links.
+Two concurrent remount checks started in 5 and 10 seconds, with unchanged stable
+file ctime/inode and CSI chmod skipped. The production runner became Ready in
+5 seconds and resumed queued CI. These are Pod remount measurements; total time
+for a subsequent Talos version upgrade still needs measurement.
 
-Do not run node maintenance during the storage migration. The old CSI source
-mount can perform its usual fsGroup walk once during copying; source contents
-remain the rollback copy, but filesystem permissions may be normalized by
-kubelet. If copying fails, resume on the old claims via Git and investigate the
-new targets before an explicit cleanup/retry. The Job will never erase a target.
-For long CI jobs, increase `--health-timeout` before starting maintenance.
+The obsolete claim definitions and one-time copy Job have been removed after
+acceptance. Backend reclamation is a separate operational step: confirm each
+PV and NAS share is gone rather than assuming a Git merge reclaimed storage.
+A future storage migration needs a new plan; the removed claims are not a
+rollback target. The default StorageClass and other applications are unchanged.
 
-For new Synology shares, validate each new claim separately before copying:
-use the runner image with runAsUser 1001, fsGroup 123, OnRootMismatch, dropped
-capabilities and RuntimeDefault seccomp. Do not write probe files to the volume.
-Require root `0:123 / 2770` and no entries except NAS-owned top-level `@eaDir`
-and `#recycle`. Delete each probe Job/Pod normally before proceeding. After
-copying, verify concurrent mounting of both claims twice; a single-volume probe
-does not establish normal runner startup reliability. Stop and restore the old
-runner if that acceptance fails, rather than altering NFS exports manually.
-
-The unused `*-fsgroup` trial claims contained only NAS metadata and were pruned
-normally before any copy started. Their Retain PVs may remain Released, using
-StorageClass `beryllium-nfs-fsgroup`; identify them by both class and old claim
-name. These are distinct from the original `runner-state`/`pnpm-store` rollback
-claims. Record their handles/paths before any reviewed reclamation. Never delete
-shares by a broad name prefix or remove PV protection finalizers.
+Keep PV protection finalizers intact. For retiring unused storage, remove Git
+references first, confirm no consumers or VolumeAttachments, then use normal
+CSI reclamation and verify both PV and NAS share removal. A Retain PV alone does
+not reclaim its backing data. Process one volume at a time and stop on failure;
+changing a still-present, non-deleting PV back to Retain can stop later retries,
+but cannot undo a DeleteVolume request already in progress.
