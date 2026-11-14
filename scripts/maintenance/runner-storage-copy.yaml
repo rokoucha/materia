@@ -36,11 +36,12 @@ spec:
                 # Copy children (including dotfiles), leaving the target root's
                 # kubelet-managed owner, group and setgid permissions intact.
                 test -z "$(find "/target/$name" -mindepth 1 -maxdepth 1 ! -name @eaDir ! -name '#recycle' -print -quit)"
-                find "/source/$name" -mindepth 1 -maxdepth 1 ! -name @eaDir ! -name '#recycle' \
-                  -exec cp -a --no-preserve=ownership -t "/target/$name" -- {} +
-                diff -qr --no-dereference --exclude=@eaDir --exclude='#recycle' "/source/$name" "/target/$name" >/dev/null
-                cmp <(cd "/source/$name" && find . -mindepth 1 \( -name @eaDir -o -name '#recycle' \) -prune -o -mindepth 1 -printf '%P:%y:%m:%l\0' | sort -z) \
-                    <(cd "/target/$name" && find . -mindepth 1 \( -name @eaDir -o -name '#recycle' \) -prune -o -mindepth 1 -printf '%P:%y:%m:%l\0' | sort -z)
+                while IFS= read -r -d '' entry; do
+                  cp -a --no-preserve=ownership -- "$entry" "/target/$name/"
+                  diff -qr --no-dereference -- "$entry" "/target/$name/${entry##*/}" >/dev/null
+                done < <(find "/source/$name" -mindepth 1 -maxdepth 1 ! -name @eaDir ! -name '#recycle' -print0)
+                cmp <(cd "/source/$name" && find . -mindepth 1 \( -path ./@eaDir -o -path './#recycle' \) -prune -o -printf '%P:%y:%m:%l\0' | sort -z) \
+                    <(cd "/target/$name" && find . -mindepth 1 \( -path ./@eaDir -o -path './#recycle' \) -prune -o -printf '%P:%y:%m:%l\0' | sort -z)
                 echo "$name: content verified"
               done
           resources:

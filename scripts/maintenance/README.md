@@ -63,9 +63,12 @@ fields, remove protection finalizers, or point two claims at the same CSI handle
 4. After the Job completes successfully, delete the Job and wait until its Pod
    has disappeared. Change only the Deployment's two claim references to the
    new PVCs and replicas one in Git, then wait for the runner to become Ready/online.
-5. Verify checksums and normal non-root reads/writes, then recreate the idle
+5. Verify root owner/group/mode are `0:123 / 2770`, checksums and normal non-root
+   reads/writes, then recreate the idle
    runner Pod again. Record mount-to-Ready time and absence of recursive fsGroup
-   repair events. Do not submit a synthetic workflow with repository writes.
+   repair events. Compare root stat before/after and CSI logs for absence of
+   chmod as well; no warning event alone does not prove a walk was skipped.
+   Do not submit a synthetic workflow with repository writes.
 6. Keep old PVCs managed in Git during the rollback window. To roll back, stop
    the runner, wait for its Pod to disappear and restore both old claim names.
    Old caches/state are a point-in-time copy; inspect jobs run after migration
@@ -77,3 +80,19 @@ remain the rollback copy, but filesystem permissions may be normalized by
 kubelet. If copying fails, resume on the old claims via Git and investigate the
 new targets before an explicit cleanup/retry. The Job will never erase a target.
 For long CI jobs, increase `--health-timeout` before starting maintenance.
+
+For new Synology shares, validate each new claim separately before copying:
+use the runner image with runAsUser 1001, fsGroup 123, OnRootMismatch, dropped
+capabilities and RuntimeDefault seccomp. Do not write probe files to the volume.
+Require root `0:123 / 2770` and no entries except NAS-owned top-level `@eaDir`
+and `#recycle`. Delete each probe Job/Pod normally before proceeding. After
+copying, verify concurrent mounting of both claims twice; a single-volume probe
+does not establish normal runner startup reliability. Stop and restore the old
+runner if that acceptance fails, rather than altering NFS exports manually.
+
+The unused `*-fsgroup` trial claims contained only NAS metadata and were pruned
+normally before any copy started. Their Retain PVs may remain Released, using
+StorageClass `beryllium-nfs-fsgroup`; identify them by both class and old claim
+name. These are distinct from the original `runner-state`/`pnpm-store` rollback
+claims. Record their handles/paths before any reviewed reclamation. Never delete
+shares by a broad name prefix or remove PV protection finalizers.
