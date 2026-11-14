@@ -7,6 +7,8 @@ metadata:
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:18.1-minimal-trixie
   instances: 1
+  # Bound connection draining; retain the default 1800s clean shutdown budget.
+  smartShutdownTimeout: 30
   # Single instance: a PDB could only ever block eviction outright, which
   # stops node drains and rebalancing. Accept the restart instead.
   enablePDB: false

@@ -31,13 +31,21 @@ if [[ ! -f "${CONFIG_FILE}" ]]; then
   exit 1
 fi
 
-mapfile -t talos_nodes < <("${YQ_BIN}" -r '.nodes[].host // ""' "${CONFIG_FILE}" | sed '/^$/d')
+talos_nodes=()
+while IFS= read -r node; do
+  [[ -z "${node}" ]] || talos_nodes+=("${node}")
+done < <("${YQ_BIN}" -r '.nodes[].host // ""' "${CONFIG_FILE}")
 
 if [[ ${#talos_nodes[@]} -eq 0 ]]; then
   echo "No Talos nodes were found in ${CONFIG_FILE}" >&2
   exit 1
 fi
 
+plan_only=false
+if [[ "${1:-}" == --plan ]]; then
+  plan_only=true
+  shift
+fi
 requested_nodes=("$@")
 
 if [[ ${#requested_nodes[@]} -gt 0 ]]; then
@@ -79,12 +87,24 @@ for talos_node in "${talos_nodes[@]}"; do
     echo "Expected one Talos installer image for ${talos_node}" >&2
     exit 1
   fi
+  expected_version="$("${YQ_BIN}" -er .talosVersion "${CONFIG_FILE}")"
+  if [[ ! "${installer_image}" =~ ^factory\.talos\.dev/metal-installer-secureboot/[a-f0-9]{64}:${expected_version//./\\.}$ ]]; then
+    echo "Unexpected installer image/version for ${talos_node}: ${installer_image}" >&2
+    exit 1
+  fi
   installer_images+=("${installer_image}")
 done
 
+if [[ "${plan_only}" == true ]]; then
+  for node_index in "${!talos_nodes[@]}"; do
+    printf "%s\t%s\n" "${talos_nodes[${node_index}]}.${TALOS_NODE_DOMAIN}" "${installer_images[${node_index}]}"
+  done
+  exit 0
+fi
+
 echo "# Upgrade Talos nodes"
 for node_index in "${!talos_nodes[@]}"; do
-  printf "%s upgrade --nodes %s --image %s\n" \
+  printf "%s upgrade --nodes %s --image %s --progress plain\n" \
     "${TALOSCTL_BIN}" \
     "$(shell_quote "${talos_nodes[${node_index}]}.${TALOS_NODE_DOMAIN}")" \
     "$(shell_quote "${installer_images[${node_index}]}")"

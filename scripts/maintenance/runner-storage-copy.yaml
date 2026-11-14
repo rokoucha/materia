@@ -1,0 +1,75 @@
+# One-time, explicit migration: not included in an Argo CD Kustomization.
+# Stop the runner and wait for its Pod to disappear before creating this Job.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: runner-storage-copy
+  namespace: actions-runner
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 1800
+  template:
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      nodeSelector:
+        kubernetes.io/hostname: lithium
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 123
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: copy
+          image: ghcr.io/actions/actions-runner:2.338.2
+          command:
+            - /bin/bash
+            - -euo
+            - pipefail
+            - -c
+            - |
+              for name in runner-state pnpm-store; do
+                # Copy children (including dotfiles), leaving the target root's
+                # kubelet-managed owner, group and setgid permissions intact.
+                test -z "$(find "/target/$name" -mindepth 1 -maxdepth 1 -print -quit)"
+                find "/source/$name" -mindepth 1 -maxdepth 1 \
+                  -exec cp -a --no-preserve=ownership -t "/target/$name" -- {} +
+                diff -qr --no-dereference "/source/$name" "/target/$name" >/dev/null
+                cmp <(cd "/source/$name" && find . -mindepth 1 -printf '%P:%y:%m:%l\0' | sort -z) \
+                    <(cd "/target/$name" && find . -mindepth 1 -printf '%P:%y:%m:%l\0' | sort -z)
+                echo "$name: content verified"
+              done
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: old-state
+              mountPath: /source/runner-state
+            - name: old-store
+              mountPath: /source/pnpm-store
+            - name: new-state
+              mountPath: /target/runner-state
+            - name: new-store
+              mountPath: /target/pnpm-store
+      volumes:
+        - name: old-state
+          persistentVolumeClaim:
+            claimName: runner-state
+        - name: old-store
+          persistentVolumeClaim:
+            claimName: pnpm-store
+        - name: new-state
+          persistentVolumeClaim:
+            claimName: runner-state-fsgroup
+        - name: new-store
+          persistentVolumeClaim:
+            claimName: pnpm-store-fsgroup
