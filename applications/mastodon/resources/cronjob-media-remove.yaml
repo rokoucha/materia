@@ -23,7 +23,7 @@ spec:
             seccompProfile:
               type: RuntimeDefault
           containers:
-            - image: ghcr.io/mastodon/mastodon:v4.7.5
+            - image: ghcr.io/mastodon/mastodon:v4.7.6
               name: mastodon-media-remove
               securityContext:
                 allowPrivilegeEscalation: false
