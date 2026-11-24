@@ -76,7 +76,7 @@ spec:
         fieldRef:
           apiVersion: v1
           fieldPath: status.podIP
-  image: ghcr.io/rokoucha/otelcol/materia-clusteragent:20261118.050929
+  image: ghcr.io/rokoucha/otelcol/materia-clusteragent:20261124.134619
   mode: deployment
   replicas: 1
   serviceAccount: otelcol-clusteragent-sa
