@@ -23,7 +23,7 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - image: docker.io/library/nginx:1.31.9
+        - image: docker.io/library/nginx:1.31.10
           name: nginx
           securityContext:
             allowPrivilegeEscalation: false
