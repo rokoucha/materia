@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
       - uses: azure/setup-kubectl@bda439f5f36b99b262ebdcd3613869bddb064c8e # v5.2.0
         with:
-          version: v1.37.2
+          version: v1.37.3
       - uses: azure/setup-helm@2f5e7bc67f1f9972ab16657bb795f36d8f04de0e # v5.1.0
         with:
           version: v4.3.2
