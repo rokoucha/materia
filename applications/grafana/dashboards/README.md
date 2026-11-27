@@ -25,6 +25,16 @@ JSONはGrafanaネイティブ形式。既存UIDを維持し、Gitを正として
 - [OpenTelemetry Collector](https://monitor.ggrel.net/d/materia-opentelemetry-collector)
 - [Sophie](https://monitor.ggrel.net/d/materia-sophie)
 
+## Sophie
+
+GraphQL の操作別 p95・結果別の処理率、検索反映の滞留件数と最古の経過時間、
+後処理の dispatch・ML admission の結果、ストレージの処理段階とキャッシュ、
+ワークロード別の CPU・メモリを確認できる。
+
+Grafana は Prometheus のヒストグラムバケットを合算して p95 を算出する。
+[Mackerel の Sophie ダッシュボード](https://mackerel.io/orgs/rokoucha/dashboards/sophie)
+では、Mackerel が保存する系列別 p95 の最大値を表示する。
+
 ## 既存Grafanaからの取り込み
 
 `existing/`は既存のデータソース・クエリ・変数・パネル・UIDを保持する。UI編集は無効化し、APIのresource envelopeを外してGrafanaネイティブ形式で保存する。
